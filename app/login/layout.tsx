@@ -4,8 +4,6 @@ export default function LoginLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="h-full bg-white">
-      <body className="h-full">{children}</body>
-    </html>
+    <div className="h-full bg-white">{children}</div>
   )
 }
