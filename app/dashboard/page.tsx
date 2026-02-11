@@ -1,28 +1,192 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ElementType } from 'react'
 import { useRouter } from 'next/navigation'
-import { Dialog, DialogBackdrop, DialogPanel, TransitionChild } from '@headlessui/react'
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogPanel,
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+  TransitionChild,
+} from '@headlessui/react'
 import {
   Bars3Icon,
   BellIcon,
-  CalendarIcon,
-  ChartPieIcon,
-  DocumentDuplicateIcon,
-  FolderIcon,
-  HomeIcon,
   MagnifyingGlassIcon,
-  UsersIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
+import { ChevronRightIcon } from '@heroicons/react/20/solid'
+import {
+  HomeIcon,
+  ShoppingCartIcon,
+  CurrencyDollarIcon,
+  BanknotesIcon,
+  CubeIcon,
+  TruckIcon,
+  ClipboardDocumentListIcon,
+  WrenchScrewdriverIcon,
+  BuildingStorefrontIcon,
+  CalculatorIcon,
+  TagIcon,
+  DocumentChartBarIcon,
+  Cog6ToothIcon,
+  UserIcon,
+  ArrowRightStartOnRectangleIcon,
+} from '@heroicons/react/24/outline'
 
-const navigation = [
-  { name: 'Dashboard', href: '#', icon: HomeIcon, current: true },
-  { name: 'Team', href: '#', icon: UsersIcon, current: false },
-  { name: 'Projects', href: '#', icon: FolderIcon, current: false },
-  { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
-  { name: 'Documents', href: '#', icon: DocumentDuplicateIcon, current: false },
-  { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },
+// Simplified ERP navigation derived from frameworks-menu.json
+// Grouped into core functional areas with key sub-items
+
+type NavChild = {
+  name: string
+  href: string
+}
+
+type NavItem = {
+  name: string
+  href?: string
+  icon: ElementType
+  current?: boolean
+  children?: NavChild[]
+}
+
+const navigation: NavItem[] = [
+  { name: 'Dashboard', href: '/dashboard', icon: HomeIcon, current: true },
+  {
+    name: 'Sales',
+    icon: ShoppingCartIcon,
+    children: [
+      { name: 'Point of Sale', href: '#' },
+      { name: 'Sales Orders', href: '#' },
+      { name: 'Credit Memos', href: '#' },
+      { name: 'Customer Orders', href: '#' },
+      { name: 'Picking Dashboard', href: '#' },
+      { name: 'Projects', href: '#' },
+    ],
+  },
+  {
+    name: 'Receivables',
+    icon: CurrencyDollarIcon,
+    children: [
+      { name: 'Customer Dashboard', href: '#' },
+      { name: 'Customer Payments', href: '#' },
+      { name: 'Customer Statements', href: '#' },
+      { name: 'Customer Maintenance', href: '#' },
+      { name: 'AR Dashboard', href: '#' },
+      { name: 'Credit Approval', href: '#' },
+    ],
+  },
+  {
+    name: 'Payables',
+    icon: BanknotesIcon,
+    children: [
+      { name: 'Supplier Dashboard', href: '#' },
+      { name: 'Expense Invoice Entry', href: '#' },
+      { name: 'Invoice Maintenance', href: '#' },
+      { name: 'Payment Selection', href: '#' },
+      { name: 'Supplier Maintenance', href: '#' },
+      { name: 'Invoice Scanning', href: '#' },
+    ],
+  },
+  {
+    name: 'Inventory',
+    icon: CubeIcon,
+    children: [
+      { name: 'Product Dashboard', href: '#' },
+      { name: 'Product Maintenance', href: '#' },
+      { name: 'Inventory Adjustments', href: '#' },
+      { name: 'Physical Inventory', href: '#' },
+      { name: 'Price Inquiry', href: '#' },
+      { name: 'Product Locations', href: '#' },
+    ],
+  },
+  {
+    name: 'Purchasing',
+    icon: ClipboardDocumentListIcon,
+    children: [
+      { name: 'Purchase Requisitions', href: '#' },
+      { name: 'Purchase Orders', href: '#' },
+      { name: 'Receiving', href: '#' },
+      { name: 'Quick Transfers', href: '#' },
+      { name: 'Reorder Inventory', href: '#' },
+    ],
+  },
+  {
+    name: 'Dispatch',
+    icon: TruckIcon,
+    children: [
+      { name: 'Dispatch Dashboard', href: '#' },
+      { name: 'Dispatch Calendar', href: '#' },
+      { name: 'Runsheet Maintenance', href: '#' },
+    ],
+  },
+  {
+    name: 'Pricing',
+    icon: TagIcon,
+    children: [
+      { name: 'Promotions', href: '#' },
+      { name: 'Contracts', href: '#' },
+      { name: 'Tier Pricing Dashboard', href: '#' },
+      { name: 'Customer Price Books', href: '#' },
+      { name: 'Discount Maintenance', href: '#' },
+    ],
+  },
+  {
+    name: 'General Ledger',
+    icon: CalculatorIcon,
+    children: [
+      { name: 'GL Dashboard', href: '#' },
+      { name: 'Journal Entry', href: '#' },
+      { name: 'Bank Reconciliation', href: '#' },
+      { name: 'Chart of Accounts', href: '#' },
+      { name: 'Financial Reporting', href: '#' },
+    ],
+  },
+  {
+    name: 'Production',
+    icon: BuildingStorefrontIcon,
+    children: [
+      { name: 'Process Management', href: '#' },
+      { name: 'Production Dashboard', href: '#' },
+      { name: 'Work Orders', href: '#' },
+      { name: 'Time Sheet Entry', href: '#' },
+    ],
+  },
+  {
+    name: 'Reports',
+    icon: DocumentChartBarIcon,
+    children: [
+      { name: 'Financial Reporting', href: '#' },
+      { name: 'AR Dashboard', href: '#' },
+      { name: 'Documents & Reports', href: '#' },
+    ],
+  },
+]
+
+const bottomNav: NavItem[] = [
+  {
+    name: 'Administration',
+    icon: Cog6ToothIcon,
+    children: [
+      { name: 'System Setup', href: '#' },
+      { name: 'Users & Security', href: '#' },
+      { name: 'Task Scheduler', href: '#' },
+      { name: 'Audit Inquiry', href: '#' },
+      { name: 'Licencing', href: '#' },
+    ],
+  },
+  {
+    name: 'My Settings',
+    icon: UserIcon,
+    children: [
+      { name: 'My Printer Configuration', href: '#' },
+      { name: 'Change Password/PIN', href: '#' },
+      { name: 'Reset your MFA', href: '#' },
+      { name: 'Tasks', href: '#' },
+    ],
+  },
 ]
 
 function classNames(...classes: string[]) {
@@ -35,6 +199,83 @@ function getInitials(name: string) {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
   }
   return name.slice(0, 2).toUpperCase()
+}
+
+function SidebarNav({
+  items,
+  onLogout,
+  userName,
+  initials,
+  showLogout = false,
+}: {
+  items: NavItem[]
+  onLogout?: () => void
+  userName?: string
+  initials?: string
+  showLogout?: boolean
+}) {
+  return (
+    <ul role="list" className="-mx-2 space-y-1">
+      {items.map((item) => (
+        <li key={item.name}>
+          {!item.children ? (
+            <a
+              href={item.href}
+              className={classNames(
+                item.current
+                  ? 'bg-gray-50 text-indigo-600'
+                  : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
+                'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold',
+              )}
+            >
+              <item.icon
+                aria-hidden="true"
+                className={classNames(
+                  item.current ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
+                  'size-6 shrink-0',
+                )}
+              />
+              {item.name}
+            </a>
+          ) : (
+            <Disclosure as="div">
+              <DisclosureButton
+                className={classNames(
+                  item.current ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
+                  'group flex w-full items-center gap-x-3 rounded-md p-2 text-left text-sm/6 font-semibold',
+                )}
+              >
+                <item.icon
+                  aria-hidden="true"
+                  className={classNames(
+                    item.current ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
+                    'size-6 shrink-0',
+                  )}
+                />
+                {item.name}
+                <ChevronRightIcon
+                  aria-hidden="true"
+                  className="ml-auto size-5 shrink-0 text-gray-400 group-data-[open]:rotate-90 group-data-[open]:text-gray-500"
+                />
+              </DisclosureButton>
+              <DisclosurePanel as="ul" className="mt-1 px-2">
+                {item.children.map((subItem) => (
+                  <li key={subItem.name}>
+                    <a
+                      href={subItem.href}
+                      className="block rounded-md py-2 pr-2 pl-11 text-sm/6 text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
+                    >
+                      {subItem.name}
+                    </a>
+                  </li>
+                ))}
+              </DisclosurePanel>
+            </Disclosure>
+          )}
+        </li>
+      ))}
+    </ul>
+  )
 }
 
 export default function DashboardPage() {
@@ -60,6 +301,62 @@ export default function DashboardPage() {
 
   const initials = getInitials(userName)
 
+  const sidebarContent = (
+    <>
+      <div className="flex h-16 shrink-0 items-center">
+        <img
+          alt="FW ERP"
+          src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
+          className="h-8 w-auto"
+        />
+        <span className="ml-3 text-lg font-semibold text-gray-900">Frameworks</span>
+      </div>
+      <nav className="flex flex-1 flex-col">
+        <ul role="list" className="flex flex-1 flex-col gap-y-7">
+          {/* Main navigation */}
+          <li>
+            <SidebarNav items={navigation} />
+          </li>
+
+          {/* Admin & Settings section */}
+          <li>
+            <div className="text-xs/6 font-semibold text-gray-400">System</div>
+            <div className="mt-2">
+              <SidebarNav items={bottomNav} />
+            </div>
+          </li>
+
+          {/* Logout */}
+          <li className="-mx-2">
+            <button
+              onClick={handleLogout}
+              className="group flex w-full gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
+            >
+              <ArrowRightStartOnRectangleIcon
+                aria-hidden="true"
+                className="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
+              />
+              Logout
+            </button>
+          </li>
+
+          {/* User profile at bottom */}
+          <li className="-mx-6 mt-auto">
+            <div className="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-gray-900">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-medium text-white">
+                {initials}
+              </span>
+              <span className="flex flex-col">
+                <span aria-hidden="true">{userName}</span>
+                <span className="text-xs font-normal text-gray-500">{userEmail}</span>
+              </span>
+            </div>
+          </li>
+        </ul>
+      </nav>
+    </>
+  )
+
   return (
     <div>
       {/* Mobile sidebar */}
@@ -82,45 +379,8 @@ export default function DashboardPage() {
               </div>
             </TransitionChild>
 
-            <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-2">
-              <div className="flex h-16 shrink-0 items-center">
-                <img
-                  alt="FW ERP"
-                  src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
-                  className="h-8 w-auto"
-                />
-                <span className="ml-3 text-lg font-semibold text-gray-900">FW ERP</span>
-              </div>
-              <nav className="flex flex-1 flex-col">
-                <ul role="list" className="flex flex-1 flex-col gap-y-7">
-                  <li>
-                    <ul role="list" className="-mx-2 space-y-1">
-                      {navigation.map((item) => (
-                        <li key={item.name}>
-                          <a
-                            href={item.href}
-                            className={classNames(
-                              item.current
-                                ? 'bg-gray-50 text-indigo-600'
-                                : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
-                              'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold',
-                            )}
-                          >
-                            <item.icon
-                              aria-hidden="true"
-                              className={classNames(
-                                item.current ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
-                                'size-6 shrink-0',
-                              )}
-                            />
-                            {item.name}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </li>
-                </ul>
-              </nav>
+            <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
+              {sidebarContent}
             </div>
           </DialogPanel>
         </div>
@@ -129,59 +389,7 @@ export default function DashboardPage() {
       {/* Static sidebar for desktop */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
         <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
-          <div className="flex h-16 shrink-0 items-center">
-            <img
-              alt="FW ERP"
-              src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
-              className="h-8 w-auto"
-            />
-            <span className="ml-3 text-lg font-semibold text-gray-900">FW ERP</span>
-          </div>
-          <nav className="flex flex-1 flex-col">
-            <ul role="list" className="flex flex-1 flex-col gap-y-7">
-              <li>
-                <ul role="list" className="-mx-2 space-y-1">
-                  {navigation.map((item) => (
-                    <li key={item.name}>
-                      <a
-                        href={item.href}
-                        className={classNames(
-                          item.current
-                            ? 'bg-gray-50 text-indigo-600'
-                            : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
-                          'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold',
-                        )}
-                      >
-                        <item.icon
-                          aria-hidden="true"
-                          className={classNames(
-                            item.current ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
-                            'size-6 shrink-0',
-                          )}
-                        />
-                        {item.name}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </li>
-              {/* User profile at bottom of sidebar */}
-              <li className="-mx-6 mt-auto">
-                <button
-                  onClick={handleLogout}
-                  className="flex w-full items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-gray-900 hover:bg-gray-50"
-                >
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-medium text-white">
-                    {initials}
-                  </span>
-                  <span className="flex flex-col items-start">
-                    <span aria-hidden="true">{userName}</span>
-                    <span className="text-xs font-normal text-gray-500">Logout</span>
-                  </span>
-                </button>
-              </li>
-            </ul>
-          </nav>
+          {sidebarContent}
         </div>
       </div>
 
@@ -195,7 +403,7 @@ export default function DashboardPage() {
           <span className="sr-only">Open sidebar</span>
           <Bars3Icon aria-hidden="true" className="size-6" />
         </button>
-        <div className="flex-1 text-sm/6 font-semibold text-gray-900">Dashboard</div>
+        <div className="flex-1 text-sm/6 font-semibold text-gray-900">Frameworks</div>
         <button type="button" className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
           <span className="sr-only">View notifications</span>
           <BellIcon aria-hidden="true" className="size-6" />
@@ -234,17 +442,14 @@ export default function DashboardPage() {
           <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" aria-hidden="true" />
 
           {/* User avatar */}
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-x-3 -m-1.5 p-1.5 hover:opacity-80"
-          >
+          <div className="flex items-center gap-x-3 -m-1.5 p-1.5">
             <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-medium text-white">
               {initials}
             </span>
             <span className="hidden lg:flex lg:flex-col lg:items-start">
               <span className="text-sm/6 font-semibold text-gray-900">{userName}</span>
             </span>
-          </button>
+          </div>
         </div>
       </div>
 
