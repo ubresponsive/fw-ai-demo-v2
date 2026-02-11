@@ -34,7 +34,7 @@ const quickLinks = [
   { name: 'Invoice Entry', href: '#', description: 'Enter supplier invoices', icon: DocumentTextIcon },
   { name: 'Price Inquiry', href: '#', description: 'Check product pricing', icon: ReceiptPercentIcon },
   { name: 'Inventory Lookup', href: '#', description: 'Search stock levels', icon: CubeIcon },
-  { name: 'Financial Reports', href: '#', description: 'Run financial reports', icon: ChartBarIcon },
+  { name: 'Financial Reports', href: '/financial-reports', description: 'Run financial reports', icon: ChartBarIcon },
   { name: 'Production Dashboard', href: '#', description: 'View production status', icon: WrenchScrewdriverIcon },
   { name: 'GL Journal Entry', href: '#', description: 'Post journal entries', icon: CalculatorIcon },
 ]
@@ -77,8 +77,8 @@ export default function DashboardPage() {
                   className="relative overflow-hidden rounded-lg bg-white px-4 pt-5 pb-12 shadow-sm sm:px-6 sm:pt-6"
                 >
                   <dt>
-                    <div className="absolute rounded-md bg-primary-50 p-3">
-                      <item.icon aria-hidden="true" className="size-6 text-primary-500" />
+                    <div className="absolute rounded-md bg-secondary-100 p-3">
+                      <item.icon aria-hidden="true" className="size-6 text-secondary-700" />
                     </div>
                     <p className="ml-16 truncate text-sm font-medium text-gray-500">{item.name}</p>
                   </dt>

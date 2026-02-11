@@ -118,7 +118,7 @@ export const navigation: NavItem[] = [
       { name: 'Journal Entry', href: '#' },
       { name: 'Bank Reconciliation', href: '#' },
       { name: 'Chart of Accounts', href: '#' },
-      { name: 'Financial Reporting', href: '#' },
+      { name: 'Financial Reporting', href: '/financial-reports' },
     ],
   },
   {
@@ -135,7 +135,7 @@ export const navigation: NavItem[] = [
     name: 'Reports',
     icon: DocumentChartBarIcon,
     children: [
-      { name: 'Financial Reporting', href: '#' },
+      { name: 'Financial Reporting', href: '/financial-reports' },
       { name: 'AR Dashboard', href: '#' },
       { name: 'Documents & Reports', href: '#' },
     ],

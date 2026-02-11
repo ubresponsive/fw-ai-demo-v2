@@ -22,19 +22,19 @@ module.exports = {
           900: '#1a2152',
           950: '#0f1331',
         },
-        // Secondary — warm amber/gold for accents
+        // Secondary — light cyan based on #C7EAF4
         secondary: {
-          50: '#fffbeb',
-          100: '#fef3c7',
-          200: '#fde68a',
-          300: '#fcd34d',
-          400: '#fbbf24',
-          500: '#f59e0b',
-          600: '#d97706',
-          700: '#b45309',
-          800: '#92400e',
-          900: '#78350f',
-          950: '#451a03',
+          50: '#f0f9fc',
+          100: '#e0f2f9',
+          200: '#C7EAF4',
+          300: '#9ad8eb',
+          400: '#65c0de',
+          500: '#3aa8d0',
+          600: '#2b8ab0',
+          700: '#256f8f',
+          800: '#235c76',
+          900: '#214d63',
+          950: '#153342',
         },
         // Tertiary — teal for success/info states
         tertiary: {
