@@ -9,20 +9,19 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
+  const [name, setName] = useState('')
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
-    // Simple text-based authentication
-    if (email && password) {
-      // Store auth state in sessionStorage
+    if (email && password && name) {
       sessionStorage.setItem('isAuthenticated', 'true')
       sessionStorage.setItem('userEmail', email)
-
-      // Redirect to dashboard or home
+      sessionStorage.setItem('userName', name)
       router.push('/dashboard')
     } else {
-      setError('Please enter both email and password')
+      setError('Please enter your name, email, and password')
     }
   }
 
@@ -46,6 +45,24 @@ export default function LoginPage() {
               <p className="text-sm text-red-800">{error}</p>
             </div>
           )}
+
+          <div>
+            <label htmlFor="name" className="block text-sm/6 font-medium text-gray-900">
+              Full name
+            </label>
+            <div className="mt-2">
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                autoComplete="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="block w-full rounded-md border border-gray-300 bg-white px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 focus:outline-none sm:text-sm/6"
+              />
+            </div>
+          </div>
 
           <div>
             <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
