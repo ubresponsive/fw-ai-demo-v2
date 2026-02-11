@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect, useCallback } from 'react'
 import {
   Dialog,
   DialogBackdrop,
@@ -11,7 +11,11 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
   useReactTable,
+  type SortingState,
+  type ColumnFiltersState,
 } from '@tanstack/react-table'
 import {
   XMarkIcon,
@@ -49,7 +53,10 @@ import {
   ArrowsUpDownIcon,
   Bars3BottomLeftIcon,
   ArrowRightIcon,
+  MagnifyingGlassIcon,
+  MapPinIcon,
 } from '@heroicons/react/24/outline'
+import { ChevronUpIcon as ChevronUpSolidIcon, ChevronDownIcon as ChevronDownSolidIcon } from '@heroicons/react/20/solid'
 import { classNames } from '@/lib/utils'
 
 // ── Order line data ──
@@ -115,116 +122,138 @@ function Tab({ active, icon: Icon, label, count, onClick }: { active: boolean; i
 // ── Column definitions for TanStack Table ──
 const columnHelper = createColumnHelper<OrderLine>()
 
-const columns = [
-  columnHelper.display({
-    id: 'select',
-    header: ({ table }) => (
-      <input
-        type="checkbox"
-        className="rounded border-gray-300"
-        checked={table.getIsAllRowsSelected()}
-        onChange={table.getToggleAllRowsSelectedHandler()}
-      />
-    ),
-    cell: ({ row }) => (
-      <input
-        type="checkbox"
-        className="rounded border-gray-300"
-        checked={row.getIsSelected()}
-        onChange={row.getToggleSelectedHandler()}
-      />
-    ),
-    size: 40,
-  }),
-  columnHelper.accessor('ln', {
-    header: 'Ln',
-    cell: (info) => <span className="text-gray-400 font-mono">{info.getValue()}</span>,
-    size: 50,
-  }),
-  columnHelper.accessor('product', {
-    header: 'Product',
-    cell: (info) => <button className="font-medium text-primary-500 hover:underline">{info.getValue()}</button>,
-  }),
-  columnHelper.accessor('desc', {
-    header: 'Description',
-    cell: (info) => <span className="text-gray-700">{info.getValue()}</span>,
-    size: 220,
-  }),
-  columnHelper.accessor('supplier', {
-    header: 'Supplier',
-    cell: (info) => <span className="text-gray-500">{info.getValue()}</span>,
-  }),
-  columnHelper.accessor('qty', {
-    header: () => <span className="block text-right">Qty</span>,
-    cell: (info) => <span className="block text-right font-mono text-gray-700">{info.getValue().toFixed(1)}</span>,
-    size: 70,
-  }),
-  columnHelper.accessor('uom', {
-    header: () => <span className="block text-center">UOM</span>,
-    cell: (info) => <span className="block text-center text-gray-500">{info.getValue()}</span>,
-    size: 60,
-  }),
-  columnHelper.accessor('sell', {
-    header: () => <span className="block text-right">Sell Price</span>,
-    cell: (info) => <span className="block text-right font-mono text-gray-700">${info.getValue().toFixed(2)}</span>,
-    size: 90,
-  }),
-  columnHelper.accessor('disc', {
-    header: () => <span className="block text-right">Disc%</span>,
-    cell: (info) => <span className="block text-right font-mono text-gray-400">{info.getValue().toFixed(0)}</span>,
-    size: 60,
-  }),
-  columnHelper.accessor('total', {
-    header: () => <span className="block text-right">Total</span>,
-    cell: (info) => <span className="block text-right font-mono font-medium text-gray-800">${info.getValue().toFixed(2)}</span>,
-    size: 100,
-  }),
-  columnHelper.accessor('pickGroup', {
-    header: 'Pick Grp',
-    cell: (info) => <span className="text-gray-500">{info.getValue()}</span>,
-    size: 80,
-  }),
-  columnHelper.accessor('unitCost', {
-    header: () => <span className="block text-right">Unit Cost</span>,
-    cell: (info) => <span className="block text-right font-mono text-gray-500">${info.getValue().toFixed(2)}</span>,
-    size: 90,
-  }),
-  columnHelper.accessor('gp', {
-    header: () => <span className="block text-right">GP%</span>,
-    cell: (info) => {
-      const val = info.getValue()
-      return (
-        <span className="block text-right">
-          <span className={classNames(
-            val < 0 ? 'bg-red-50 text-red-700' : val < 15 ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700',
-            'inline-flex items-center px-1.5 py-0.5 rounded-md text-xs font-medium font-mono',
-          )}>
-            {val.toFixed(1)}%
+function buildColumns(lineComments: Record<number, string>, onToggleComment: (ln: number) => void) {
+  return [
+    columnHelper.display({
+      id: 'select',
+      header: ({ table }) => (
+        <input
+          type="checkbox"
+          className="rounded border-gray-300"
+          checked={table.getIsAllRowsSelected()}
+          onChange={table.getToggleAllRowsSelectedHandler()}
+        />
+      ),
+      cell: ({ row }) => (
+        <input
+          type="checkbox"
+          className="rounded border-gray-300"
+          checked={row.getIsSelected()}
+          onChange={row.getToggleSelectedHandler()}
+        />
+      ),
+      size: 40,
+      enableSorting: false,
+    }),
+    columnHelper.accessor('ln', {
+      header: 'Ln',
+      cell: (info) => <span className="text-gray-400 font-mono">{info.getValue()}</span>,
+      size: 50,
+    }),
+    columnHelper.accessor('product', {
+      header: 'Product',
+      cell: (info) => <button className="font-medium text-primary-500 hover:underline">{info.getValue()}</button>,
+    }),
+    columnHelper.accessor('desc', {
+      header: 'Description',
+      cell: (info) => <span className="text-gray-700">{info.getValue()}</span>,
+      size: 220,
+    }),
+    columnHelper.accessor('supplier', {
+      header: 'Supplier',
+      cell: (info) => <span className="text-gray-500">{info.getValue()}</span>,
+    }),
+    columnHelper.accessor('qty', {
+      header: () => <span className="block text-right">Qty</span>,
+      cell: (info) => <span className="block text-right font-mono text-gray-700">{info.getValue().toFixed(1)}</span>,
+      size: 70,
+    }),
+    columnHelper.accessor('uom', {
+      header: () => <span className="block text-center">UOM</span>,
+      cell: (info) => <span className="block text-center text-gray-500">{info.getValue()}</span>,
+      size: 60,
+      enableSorting: false,
+    }),
+    columnHelper.accessor('sell', {
+      header: () => <span className="block text-right">Sell Price</span>,
+      cell: (info) => <span className="block text-right font-mono text-gray-700">${info.getValue().toFixed(2)}</span>,
+      size: 90,
+    }),
+    columnHelper.accessor('disc', {
+      header: () => <span className="block text-right">Disc%</span>,
+      cell: (info) => <span className="block text-right font-mono text-gray-400">{info.getValue().toFixed(0)}</span>,
+      size: 60,
+    }),
+    columnHelper.accessor('total', {
+      header: () => <span className="block text-right">Total</span>,
+      cell: (info) => <span className="block text-right font-mono font-medium text-gray-800">${info.getValue().toFixed(2)}</span>,
+      size: 100,
+    }),
+    columnHelper.accessor('pickGroup', {
+      header: 'Pick Grp',
+      cell: (info) => <span className="text-gray-500">{info.getValue()}</span>,
+      size: 80,
+    }),
+    columnHelper.accessor('unitCost', {
+      header: () => <span className="block text-right">Unit Cost</span>,
+      cell: (info) => <span className="block text-right font-mono text-gray-500">${info.getValue().toFixed(2)}</span>,
+      size: 90,
+    }),
+    columnHelper.accessor('gp', {
+      header: () => <span className="block text-right">GP%</span>,
+      cell: (info) => {
+        const val = info.getValue()
+        return (
+          <span className="block text-right">
+            <span className={classNames(
+              val < 0 ? 'bg-red-50 text-red-700' : val < 15 ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700',
+              'inline-flex items-center px-1.5 py-0.5 rounded-md text-xs font-medium font-mono',
+            )}>
+              {val.toFixed(1)}%
+            </span>
           </span>
-        </span>
-      )
-    },
-    size: 80,
-  }),
-  columnHelper.display({
-    id: 'actions',
-    cell: () => (
-      <button className="p-0.5 rounded hover:bg-gray-100">
-        <EllipsisHorizontalIcon className="size-4 text-gray-400" />
-      </button>
-    ),
-    size: 40,
-  }),
-]
+        )
+      },
+      size: 80,
+    }),
+    columnHelper.display({
+      id: 'actions',
+      cell: ({ row }) => {
+        const ln = row.original.ln
+        const hasComment = !!lineComments[ln]
+        return (
+          <div className="flex items-center gap-0.5">
+            <button
+              onClick={() => onToggleComment(ln)}
+              className="p-0.5 rounded hover:bg-gray-100"
+              title={hasComment ? 'Edit comment' : 'Add comment'}
+            >
+              <ChatBubbleLeftRightIcon className={classNames(hasComment ? 'text-primary-500' : 'text-gray-400', 'size-4')} />
+            </button>
+            <button className="p-0.5 rounded hover:bg-gray-100">
+              <EllipsisHorizontalIcon className="size-4 text-gray-400" />
+            </button>
+          </div>
+        )
+      },
+      size: 60,
+      enableSorting: false,
+    }),
+  ]
+}
 
 // ── Footer totals ──
 const footerTotals = [
-  { label: 'Total Exc', value: '$464.29', bold: true },
-  { label: 'Total Inc', value: '$510.72' },
+  { label: 'Total Exc', value: '$35.45', bold: true },
+  { label: 'Total Inc', value: '$39.00' },
   { label: 'GP%', value: '-26.71', warn: true },
   { label: 'Rebated GP%', value: '-22.34', warn: true },
-  { label: 'Total Cost', value: '$544.92' },
+  { label: 'Fully Reb. GP%', value: '-13.74', warn: true },
+  { label: 'Total Cost', value: '$44.92' },
   { label: 'Delivery Fee', value: '$10.00' },
+  { label: 'Weight', value: '0.00' },
+  { label: 'Area', value: '0.00' },
+  { label: 'Volume', value: '0.00' },
 ]
 
 // ── Actions menu items ──
@@ -244,6 +273,8 @@ const actionItems = [
   { icon: DocumentDuplicateIcon, label: 'Copy Order' },
 ]
 
+const COMMENTS_KEY = 'so-436-0-comments'
+
 export default function SalesOrdersPage() {
   const [activeTab, setActiveTab] = useState('lines')
   const [aiOpen, setAiOpen] = useState(false)
@@ -251,18 +282,105 @@ export default function SalesOrdersPage() {
   const [showActions, setShowActions] = useState(false)
   const [rowSelection, setRowSelection] = useState({})
 
+  // Sorting
+  const [sorting, setSorting] = useState<SortingState>([])
+
+  // Filtering
+  const [showFilterBar, setShowFilterBar] = useState(false)
+  const [globalFilter, setGlobalFilter] = useState('')
+  const [negativeGpOnly, setNegativeGpOnly] = useState(false)
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+
+  // Comments
+  const [lineComments, setLineComments] = useState<Record<number, string>>({})
+  const [expandedCommentRow, setExpandedCommentRow] = useState<number | null>(null)
+  const [commentDraft, setCommentDraft] = useState('')
+
+  // Density
+  const [compact, setCompact] = useState(false)
+
+  // Load comments from localStorage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(COMMENTS_KEY)
+      if (stored) setLineComments(JSON.parse(stored))
+    } catch { /* ignore */ }
+  }, [])
+
+  const saveComment = useCallback((ln: number, text: string) => {
+    setLineComments((prev) => {
+      const next = { ...prev }
+      if (text.trim()) {
+        next[ln] = text.trim()
+      } else {
+        delete next[ln]
+      }
+      localStorage.setItem(COMMENTS_KEY, JSON.stringify(next))
+      return next
+    })
+  }, [])
+
+  const toggleCommentRow = useCallback((ln: number) => {
+    setExpandedCommentRow((prev) => {
+      if (prev === ln) return null
+      setCommentDraft(lineComments[ln] || '')
+      return ln
+    })
+  }, [lineComments])
+
+  // Sync negative GP filter with columnFilters
+  useEffect(() => {
+    setColumnFilters(negativeGpOnly ? [{ id: 'gp', value: 'negative' }] : [])
+  }, [negativeGpOnly])
+
   const data = useMemo(() => orderLines, [])
+
+  const columns = useMemo(
+    () => buildColumns(lineComments, toggleCommentRow),
+    [lineComments, toggleCommentRow],
+  )
 
   const table = useReactTable({
     data,
     columns,
-    state: { rowSelection },
+    state: { rowSelection, sorting, globalFilter, columnFilters },
     onRowSelectionChange: setRowSelection,
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     enableRowSelection: true,
+    globalFilterFn: (row, _columnId, filterValue) => {
+      const search = String(filterValue).toLowerCase()
+      const { product, desc, supplier } = row.original
+      return product.toLowerCase().includes(search) ||
+        desc.toLowerCase().includes(search) ||
+        supplier.toLowerCase().includes(search)
+    },
+    filterFns: {
+      gpFilter: (row, _columnId, filterValue) => {
+        if (filterValue === 'negative') return row.original.gp < 0
+        return true
+      },
+    },
   })
 
+  // Apply custom filter fn to gp column
+  useEffect(() => {
+    const gpColumn = table.getColumn('gp')
+    if (gpColumn) {
+      gpColumn.columnDef.filterFn = (row, _columnId, filterValue) => {
+        if (filterValue === 'negative') return row.original.gp < 0
+        return true
+      }
+    }
+  }, [table])
+
   const selectedCount = Object.keys(rowSelection).length
+  const commentCount = Object.keys(lineComments).length
+  const hasActiveFilters = globalFilter || negativeGpOnly
 
   return (
     <div className="flex h-[calc(100vh-4rem)] flex-col bg-gray-50">
@@ -296,10 +414,10 @@ export default function SalesOrdersPage() {
               onClick={() => setAiOpen(true)}
               className={classNames(
                 aiOpen ? 'border-tertiary-500 text-tertiary-500 bg-tertiary-50' : 'border-gray-200 text-gray-600 bg-white hover:bg-gray-50',
-                'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all border',
+                'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all border group',
               )}
             >
-              <SparklesIcon className="size-4" />
+              <SparklesIcon className="size-4 group-hover:animate-[sparkle_1.5s_ease-in-out_infinite]" />
               AI Assistant
             </button>
 
@@ -365,95 +483,540 @@ export default function SalesOrdersPage() {
         <Tab active={activeTab === 'lines'} icon={ShoppingCartIcon} label="Order Lines" count={4} onClick={() => setActiveTab('lines')} />
         <Tab active={activeTab === 'delivery'} icon={TruckIcon} label="Delivery Details" onClick={() => setActiveTab('delivery')} />
         <Tab active={activeTab === 'header'} icon={DocumentTextIcon} label="Header" onClick={() => setActiveTab('header')} />
-        <Tab active={activeTab === 'diary'} icon={ClipboardDocumentListIcon} label="Diary Notes" onClick={() => setActiveTab('diary')} />
+        <Tab active={activeTab === 'diary'} icon={ClipboardDocumentListIcon} label="Diary Notes" count={commentCount || undefined} onClick={() => setActiveTab('diary')} />
         <Tab active={activeTab === 'messages'} icon={ChatBubbleLeftRightIcon} label="Messages" onClick={() => setActiveTab('messages')} />
         <Tab active={activeTab === 'tasks'} icon={CheckCircleIcon} label="Tasks" onClick={() => setActiveTab('tasks')} />
       </div>
 
-      {/* Line Entry + Grid */}
+      {/* Tab Content */}
       <div className="flex-1 mx-4 bg-white border-x border-b border-gray-200 rounded-b-lg flex flex-col overflow-hidden mb-4">
-        {/* Quick Add Bar */}
-        <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100 bg-gray-50/50 flex-wrap">
-          <div className="flex items-center gap-1.5 text-xs font-medium text-gray-500">
-            <PlusIcon className="size-4" />
-            Quick Add:
-          </div>
-          <input className="w-32 px-2 py-1 text-xs border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-300 focus:border-primary-300" placeholder="Product code..." />
-          <input className="w-16 px-2 py-1 text-xs border border-gray-200 rounded-md text-center" placeholder="Qty" defaultValue="1" />
-          <input className="w-20 px-2 py-1 text-xs border border-gray-200 rounded-md text-right" placeholder="Sell Price" />
-          <input className="w-16 px-2 py-1 text-xs border border-gray-200 rounded-md text-center" placeholder="Disc%" defaultValue="0" />
-          <input className="flex-1 min-w-[120px] px-2 py-1 text-xs border border-gray-200 rounded-md" placeholder="Comments..." />
-          <button className="p-1.5 rounded-md text-white bg-tertiary-500 hover:bg-tertiary-600">
-            <CheckIcon className="size-4" />
-          </button>
-          <button className="p-1.5 rounded-md bg-gray-100 text-gray-500 hover:bg-gray-200">
-            <XMarkIcon className="size-4" />
-          </button>
-          <div className="ml-auto flex items-center gap-3 text-xs text-gray-500">
-            <span>SOH: <strong className="text-gray-700">—</strong></span>
-            <span>Avail: <strong className="text-gray-700">—</strong></span>
-          </div>
-        </div>
 
-        {/* Table Toolbar */}
-        <div className="flex items-center justify-between px-3 py-1.5 border-b border-gray-100">
-          <div className="flex items-center gap-2">
-            {selectedCount > 0 && (
-              <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-50 text-primary-500">
-                {selectedCount} selected
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-1">
-            <button className="p-1 rounded hover:bg-gray-100"><FunnelIcon className="size-4 text-gray-400" /></button>
-            <button className="p-1 rounded hover:bg-gray-100"><ArrowsUpDownIcon className="size-4 text-gray-400" /></button>
-            <button className="p-1 rounded hover:bg-gray-100"><Bars3BottomLeftIcon className="size-4 text-gray-400" /></button>
-          </div>
-        </div>
+        {/* ── Order Lines Tab ── */}
+        {activeTab === 'lines' && (
+          <>
+            {/* Quick Add Bar */}
+            <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100 bg-gray-50/50 flex-wrap">
+              <div className="flex items-center gap-1.5 text-xs font-medium text-gray-500">
+                <PlusIcon className="size-4" />
+                Quick Add:
+              </div>
+              <input className="w-32 px-2 py-1 text-xs border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-300 focus:border-primary-300" placeholder="Product code..." />
+              <input className="w-16 px-2 py-1 text-xs border border-gray-200 rounded-md text-center" placeholder="Qty" defaultValue="1" />
+              <input className="w-20 px-2 py-1 text-xs border border-gray-200 rounded-md text-right" placeholder="Sell Price" />
+              <input className="w-16 px-2 py-1 text-xs border border-gray-200 rounded-md text-center" placeholder="Disc%" defaultValue="0" />
+              <input className="flex-1 min-w-[120px] px-2 py-1 text-xs border border-gray-200 rounded-md" placeholder="Comments..." />
+              <button className="p-1.5 rounded-md text-white bg-tertiary-500 hover:bg-tertiary-600">
+                <CheckIcon className="size-4" />
+              </button>
+              <button className="p-1.5 rounded-md bg-gray-100 text-gray-500 hover:bg-gray-200">
+                <XMarkIcon className="size-4" />
+              </button>
+              <div className="ml-auto flex items-center gap-3 text-xs text-gray-500">
+                <span>SOH: <strong className="text-gray-700">—</strong></span>
+                <span>Avail: <strong className="text-gray-700">—</strong></span>
+              </div>
+            </div>
 
-        {/* TanStack Data Table */}
-        <div className="flex-1 overflow-auto">
-          <table className="w-full text-xs">
-            <thead className="sticky top-0 z-10">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id} className="bg-gray-50 border-b border-gray-200">
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      className="px-2 py-2 text-left font-medium text-gray-500 uppercase tracking-wider"
-                      style={{ fontSize: '10px', width: header.getSize() }}
-                    >
-                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <tr
-                  key={row.id}
+            {/* Table Toolbar */}
+            <div className="flex items-center justify-between px-3 py-1.5 border-b border-gray-100">
+              <div className="flex items-center gap-2">
+                {selectedCount > 0 && (
+                  <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-50 text-primary-500">
+                    {selectedCount} selected
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setShowFilterBar(!showFilterBar)}
+                  className={classNames(hasActiveFilters ? 'bg-primary-50' : '', 'relative p-1 rounded hover:bg-gray-100')}
+                  title="Toggle filters"
+                >
+                  <FunnelIcon className={classNames(hasActiveFilters ? 'text-primary-500' : 'text-gray-400', 'size-4')} />
+                  {hasActiveFilters && (
+                    <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-primary-500" />
+                  )}
+                </button>
+                <button
+                  onClick={() => setSorting([])}
+                  className={classNames(sorting.length > 0 ? 'bg-primary-50' : '', 'p-1 rounded hover:bg-gray-100')}
+                  title={sorting.length > 0 ? 'Clear sorting' : 'No active sorting'}
+                >
+                  <ArrowsUpDownIcon className={classNames(sorting.length > 0 ? 'text-primary-500' : 'text-gray-400', 'size-4')} />
+                </button>
+                <button
+                  onClick={() => setCompact(!compact)}
+                  className={classNames(compact ? 'bg-primary-50' : '', 'p-1 rounded hover:bg-gray-100')}
+                  title={compact ? 'Normal density' : 'Compact density'}
+                >
+                  <Bars3BottomLeftIcon className={classNames(compact ? 'text-primary-500' : 'text-gray-400', 'size-4')} />
+                </button>
+              </div>
+            </div>
+
+            {/* Filter Bar */}
+            {showFilterBar && (
+              <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100 bg-gray-50/30">
+                <div className="relative flex-1 max-w-xs">
+                  <MagnifyingGlassIcon className="absolute left-2 top-1/2 -translate-y-1/2 size-3.5 text-gray-400 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={globalFilter}
+                    onChange={(e) => setGlobalFilter(e.target.value)}
+                    placeholder="Search product, description, supplier..."
+                    className="w-full pl-7 pr-2 py-1 text-xs border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-300 focus:border-primary-300"
+                  />
+                </div>
+                <button
+                  onClick={() => setNegativeGpOnly(!negativeGpOnly)}
                   className={classNames(
-                    row.getIsSelected() ? 'bg-primary-50' : 'hover:bg-gray-50',
-                    'border-b border-gray-100 transition-colors',
+                    negativeGpOnly ? 'bg-red-50 text-red-700 border-red-200' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50',
+                    'px-2.5 py-1 text-xs font-medium rounded-full border transition-colors',
                   )}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-2 py-2.5">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  Negative GP
+                </button>
+                {hasActiveFilters && (
+                  <button
+                    onClick={() => { setGlobalFilter(''); setNegativeGpOnly(false) }}
+                    className="text-xs text-gray-400 hover:text-gray-600"
+                  >
+                    Clear all
+                  </button>
+                )}
+              </div>
+            )}
 
-        {/* Footer Totals */}
-        <div className="border-t border-gray-200 bg-gray-50 px-4 py-2.5 flex items-center gap-6 text-xs shrink-0 flex-wrap">
+            {/* TanStack Data Table */}
+            <div className="flex-1 overflow-auto">
+              <table className="w-full text-xs">
+                <thead className="sticky top-0 z-10">
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <tr key={headerGroup.id} className="bg-gray-50 border-b border-gray-200">
+                      {headerGroup.headers.map((header) => {
+                        const canSort = header.column.getCanSort()
+                        const sorted = header.column.getIsSorted()
+                        return (
+                          <th
+                            key={header.id}
+                            className={classNames(
+                              canSort ? 'cursor-pointer select-none hover:bg-gray-100' : '',
+                              'px-2 py-2 text-left font-medium text-gray-500 uppercase tracking-wider',
+                            )}
+                            style={{ fontSize: '10px', width: header.getSize() }}
+                            onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
+                          >
+                            <span className="flex items-center gap-0.5">
+                              {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                              {canSort && sorted === 'asc' && <ChevronUpSolidIcon className="size-3 text-primary-500" />}
+                              {canSort && sorted === 'desc' && <ChevronDownSolidIcon className="size-3 text-primary-500" />}
+                            </span>
+                          </th>
+                        )
+                      })}
+                    </tr>
+                  ))}
+                </thead>
+                <tbody>
+                  {table.getRowModel().rows.map((row) => {
+                    const ln = row.original.ln
+                    const isCommentOpen = expandedCommentRow === ln
+                    return (
+                      <React.Fragment key={row.id}>
+                        <tr
+                          className={classNames(
+                            row.getIsSelected() ? 'bg-primary-50' : 'hover:bg-gray-50',
+                            'border-b border-gray-100 transition-colors',
+                          )}
+                        >
+                          {row.getVisibleCells().map((cell) => (
+                            <td key={cell.id} className={classNames('px-2', compact ? 'py-1' : 'py-2.5')}>
+                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </td>
+                          ))}
+                        </tr>
+                        {isCommentOpen && (
+                          <tr className="border-b border-gray-100 bg-gray-50/50">
+                            <td colSpan={columns.length} className="px-4 py-2">
+                              <div className="flex items-start gap-2 max-w-lg">
+                                <ChatBubbleLeftRightIcon className="size-4 text-gray-400 mt-1.5 shrink-0" />
+                                <div className="flex-1">
+                                  <textarea
+                                    value={commentDraft}
+                                    onChange={(e) => setCommentDraft(e.target.value)}
+                                    placeholder="Add a comment for this line..."
+                                    rows={2}
+                                    className="w-full px-2.5 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-300 focus:border-primary-300 resize-none"
+                                  />
+                                  <div className="flex items-center gap-1.5 mt-1.5">
+                                    <button
+                                      onClick={() => { saveComment(ln, commentDraft); setExpandedCommentRow(null) }}
+                                      className="px-2.5 py-1 text-xs font-medium rounded-md text-white bg-primary-500 hover:bg-primary-400"
+                                    >
+                                      Save
+                                    </button>
+                                    <button
+                                      onClick={() => setExpandedCommentRow(null)}
+                                      className="px-2.5 py-1 text-xs font-medium rounded-md text-gray-600 bg-gray-100 hover:bg-gray-200"
+                                    >
+                                      Cancel
+                                    </button>
+                                    {lineComments[ln] && (
+                                      <button
+                                        onClick={() => { saveComment(ln, ''); setExpandedCommentRow(null) }}
+                                        className="px-2.5 py-1 text-xs font-medium rounded-md text-red-600 hover:bg-red-50 ml-auto"
+                                      >
+                                        Remove
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+
+        {/* ── Delivery Details Tab ── */}
+        {activeTab === 'delivery' && (
+          <div className="flex-1 overflow-auto p-5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Left column — Address & Contact */}
+              <div className="space-y-4">
+                {[
+                  { label: 'Delivery Date', value: '20/10/2025', type: 'date' },
+                  { label: 'Requested Time', value: '', type: 'select' },
+                  { label: 'Delivery Time', value: '00:00' },
+                  { label: 'Deliver To', value: 'PrePaid Deliveries' },
+                  { label: 'Address', value: '123 Hill Street' },
+                  { label: 'Suburb/City', value: 'NSW' },
+                  { label: 'State', value: 'ACT - Australian Capital Territory', type: 'select' },
+                  { label: 'Post Code', value: '' },
+                  { label: 'Country', value: 'AUSTRALIA' },
+                  { label: 'Instructions', value: '' },
+                  { label: 'Contact Name', value: '' },
+                  { label: 'Contact Phone', value: '0430000000' },
+                  { label: 'Contact Email', value: '' },
+                ].map((field) => (
+                  <div key={field.label} className="flex items-center gap-3">
+                    <label className="w-28 text-xs font-medium text-gray-500 text-right shrink-0">{field.label}</label>
+                    {field.type === 'select' ? (
+                      <select className="flex-1 px-2 py-1.5 text-xs border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-primary-300">
+                        <option>{field.value || '—'}</option>
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        defaultValue={field.value}
+                        className="flex-1 px-2 py-1.5 text-xs border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-300"
+                      />
+                    )}
+                  </div>
+                ))}
+                <div className="flex items-center gap-3 pt-1">
+                  <div className="w-28" />
+                  <button className="px-3 py-1.5 text-xs font-medium rounded-md text-white bg-primary-500 hover:bg-primary-400">
+                    Save Contact
+                  </button>
+                </div>
+              </div>
+
+              {/* Middle column — Delivery details */}
+              <div className="space-y-4">
+                {[
+                  { label: 'Type Of Load', value: '', type: 'select' },
+                  { label: 'Has Phoned', value: false, type: 'checkbox' },
+                  { label: 'Map Ref', value: '10D102' },
+                  { label: 'Map Xref', value: '332' },
+                  { label: 'Delivery Area', value: 'D102' },
+                  { label: 'Delivery Fee(Inc)', value: '10' },
+                ].map((field) => (
+                  <div key={field.label} className="flex items-center gap-3">
+                    <label className="w-28 text-xs font-medium text-gray-500 text-right shrink-0">{field.label}</label>
+                    {field.type === 'checkbox' ? (
+                      <input type="checkbox" defaultChecked={field.value as boolean} className="rounded border-gray-300" />
+                    ) : field.type === 'select' ? (
+                      <select className="flex-1 px-2 py-1.5 text-xs border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-primary-300">
+                        <option>{field.value || '—'}</option>
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        defaultValue={field.value as string}
+                        className="flex-1 px-2 py-1.5 text-xs border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-300"
+                      />
+                    )}
+                  </div>
+                ))}
+                <div className="mt-4 space-y-3">
+                  <div className="flex items-start gap-3">
+                    <label className="w-28 text-xs font-medium text-gray-500 text-right shrink-0 pt-1.5">Comments</label>
+                    <textarea rows={3} className="flex-1 px-2 py-1.5 text-xs border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-300 resize-none" />
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <label className="w-28 text-xs font-medium text-gray-500 text-right shrink-0 pt-1.5">Picking Comment</label>
+                    <textarea rows={3} className="flex-1 px-2 py-1.5 text-xs border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-300 resize-none bg-green-50/30" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Right column — Vehicle & Map */}
+              <div className="space-y-4">
+                {[
+                  { label: 'Vehicle', value: '' },
+                  { label: 'Run No.', value: '0' },
+                  { label: 'Drop No.', value: '0' },
+                ].map((field) => (
+                  <div key={field.label} className="flex items-center gap-3">
+                    <label className="w-20 text-xs font-medium text-gray-500 text-right shrink-0">{field.label}</label>
+                    <input
+                      type="text"
+                      defaultValue={field.value}
+                      className="w-24 px-2 py-1.5 text-xs border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-300"
+                    />
+                  </div>
+                ))}
+                {/* Map placeholder */}
+                <div className="mt-2 rounded-lg border border-gray-200 overflow-hidden">
+                  <div className="bg-gray-100 h-48 flex items-center justify-center">
+                    <div className="text-center">
+                      <MapPinIcon className="size-8 text-gray-300 mx-auto" />
+                      <p className="text-xs text-gray-400 mt-1">123 Hill St, Muswellbrook</p>
+                      <a href="#" className="text-xs text-primary-500 hover:underline">View larger map</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Header Tab ── */}
+        {activeTab === 'header' && (
+          <div className="flex-1 overflow-auto p-5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Left column — Order details */}
+              <div className="space-y-3 border border-gray-100 rounded-lg p-4">
+                {[
+                  { label: 'Ordered By', value: 'master' },
+                  { label: 'Operator', value: '10', extra: 'System Administrator' },
+                  { label: 'Order Taken By', value: 'Test', extra: 'test1111' },
+                  { label: 'Status', value: 'Waiting' },
+                  { label: 'Assignee', value: 'master' },
+                ].map((field) => (
+                  <div key={field.label} className="flex items-center gap-3">
+                    <label className="w-32 text-xs font-medium text-gray-500 text-right shrink-0">{field.label}</label>
+                    <span className="text-xs text-gray-800">{field.value}</span>
+                    {field.extra && <span className="text-xs text-gray-400 ml-2">{field.extra}</span>}
+                  </div>
+                ))}
+                <div className="flex items-center gap-3">
+                  <div className="w-32" />
+                  <button className="px-3 py-1.5 text-xs font-medium rounded-md text-white bg-primary-500 hover:bg-primary-400">
+                    Assign To Me
+                  </button>
+                </div>
+                <div className="border-t border-gray-100 my-2" />
+                {[
+                  { label: 'Date ordered', value: '20/11/2012' },
+                  { label: 'BO Created', value: '' },
+                  { label: 'Original Deliv Date', value: '' },
+                  { label: 'Linked Transfer', value: '' },
+                  { label: 'Pick List Print #', value: '10' },
+                ].map((field) => (
+                  <div key={field.label} className="flex items-center gap-3">
+                    <label className="w-32 text-xs font-medium text-gray-500 text-right shrink-0">{field.label}</label>
+                    <span className="text-xs text-gray-800">{field.value || '—'}</span>
+                  </div>
+                ))}
+                <div className="border-t border-gray-100 my-2" />
+                <div className="flex items-center gap-3">
+                  <label className="w-32 text-xs font-medium text-gray-500 text-right shrink-0">Hide Quote Line Pricing on Web</label>
+                  <input type="checkbox" className="rounded border-gray-300" />
+                </div>
+                <div className="flex items-center gap-3">
+                  <label className="w-32 text-xs font-medium text-gray-500 text-right shrink-0">Selling Branch</label>
+                  <span className="text-xs text-gray-800">10 - TEST BRANCH 010</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <label className="w-32 text-xs font-medium text-gray-500 text-right shrink-0">Supply Warehouse</label>
+                  <span className="text-xs text-gray-800">—</span>
+                </div>
+              </div>
+
+              {/* Middle column — Project, payment, descriptions */}
+              <div className="space-y-3 border border-gray-100 rounded-lg p-4">
+                <div className="flex items-center gap-3">
+                  <label className="w-32 text-xs font-medium text-gray-500 text-right shrink-0">Export Sale</label>
+                  <input type="checkbox" className="rounded border-gray-300" />
+                </div>
+                <div className="flex items-center gap-3">
+                  <label className="w-32 text-xs font-medium text-gray-500 text-right shrink-0">Online Sale</label>
+                  <input type="checkbox" className="rounded border-gray-300" />
+                </div>
+                {[
+                  { label: 'Project', value: '0' },
+                  { label: 'Job', value: '0' },
+                  { label: 'Section', value: '0' },
+                ].map((field) => (
+                  <div key={field.label} className="flex items-center gap-3">
+                    <label className="w-32 text-xs font-medium text-gray-500 text-right shrink-0">{field.label}</label>
+                    <input
+                      type="text"
+                      defaultValue={field.value}
+                      className="w-24 px-2 py-1.5 text-xs border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-300"
+                    />
+                  </div>
+                ))}
+                <div className="flex items-start gap-3">
+                  <label className="w-32 text-xs font-medium text-gray-500 text-right shrink-0 pt-1.5">Transaction Description</label>
+                  <textarea rows={2} className="flex-1 px-2 py-1.5 text-xs border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-300 resize-none" />
+                </div>
+                <div className="flex items-start gap-3">
+                  <label className="w-32 text-xs font-medium text-gray-500 text-right shrink-0 pt-1.5">Text Invoice</label>
+                  <textarea rows={2} className="flex-1 px-2 py-1.5 text-xs border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-300 resize-none" />
+                </div>
+                <div className="flex items-center gap-3">
+                  <label className="w-32 text-xs font-medium text-gray-500 text-right shrink-0">Payment Terms</label>
+                  <input
+                    type="text"
+                    defaultValue="30Days"
+                    className="w-24 px-2 py-1.5 text-xs border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-300"
+                  />
+                  <span className="text-xs text-gray-500">Nett 30 Days</span>
+                </div>
+              </div>
+
+              {/* Right column — Approvals */}
+              <div className="space-y-3 border border-gray-100 rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-medium text-gray-600">Checked by Sales Manager</label>
+                  <input type="checkbox" className="rounded border-gray-300" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-medium text-gray-600">Checked by Transport Manager</label>
+                  <input type="checkbox" className="rounded border-gray-300" />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Diary Notes Tab ── */}
+        {activeTab === 'diary' && (
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 overflow-auto">
+              <table className="w-full text-xs">
+                <thead className="sticky top-0 z-10">
+                  <tr className="bg-gray-50 border-b border-gray-200">
+                    {['Type', 'Date', 'Time', 'User', 'Perm.', 'Secure', 'Follow Up', 'Diary Note'].map((col) => (
+                      <th key={col} className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider" style={{ fontSize: '10px' }}>
+                        {col}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { type: 'order', date: '28/10/2025', time: '8:57 PM', user: 'mdebeer', perm: false, secure: false, followUp: false, note: 'Picking Slip 436, 00 Output as PDF. Value of transaction is $39.00' },
+                    { type: 'order', date: '28/05/2025', time: '2:20 PM', user: 'taskSched', perm: false, secure: false, followUp: false, note: 'orderModified Notification Sent To: sean Subject:Test: Order 436 modified Body: Trigger ID:b16878d8-52a5-8597-da14-335198f48e30' },
+                    { type: 'order', date: '06/03/2025', time: '10:43 AM', user: 'stevend', perm: false, secure: false, followUp: false, note: 'orderModified Notification Sent To: sean Subject:Test: Order 436 modified Body: Trigger ID:8fcdefa6-a436-ca81-d514-bf35a80e9cce' },
+                    { type: 'order', date: '06/03/2025', time: '10:42 AM', user: 'stevend', perm: false, secure: false, followUp: false, note: 'orderModified Notification Sent To: sean Subject:Test: Order 436 modified Body: Trigger ID:8fcdefa6-a436-ca81-d514-bb35b878a734' },
+                    { type: 'order', date: '06/03/2025', time: '10:41 AM', user: 'stevend', perm: false, secure: false, followUp: false, note: 'orderModified Notification Sent To: sean Subject:Test: Order 436 modified Body: Trigger ID:8fcdefa6-a436-ca81-d514-b83b5b8b42a55' },
+                    { type: 'order', date: '06/03/2025', time: '10:41 AM', user: 'stevend', perm: false, secure: false, followUp: false, note: 'orderModified Notification Sent To: sean Subject:Test: Order 436 modified Body: Trigger ID:8fcdefa6-a436-ca81-d514-b83558389d55' },
+                    { type: 'transport', date: '06/03/2025', time: '10:40 AM', user: 'master', perm: false, secure: false, followUp: false, note: 'Delivery Date Changed: 20/11/2012 to 06/03/2025' },
+                    { type: 'order', date: '06/03/2025', time: '10:40 AM', user: 'stevend', perm: false, secure: false, followUp: false, note: 'orderModified Notification Sent To: sean Subject:Test: Order 436 modified Body: Trigger ID:8fcdefa6-a436-ca81-d514-b735d02cbc89' },
+                  ].map((row, i) => (
+                    <tr key={i} className="border-b border-gray-100 hover:bg-gray-50">
+                      <td className="px-3 py-2 text-gray-700">{row.type}</td>
+                      <td className="px-3 py-2 text-gray-700 whitespace-nowrap">{row.date}</td>
+                      <td className="px-3 py-2 text-gray-500 whitespace-nowrap">{row.time}</td>
+                      <td className="px-3 py-2 text-gray-700">{row.user}</td>
+                      <td className="px-3 py-2"><input type="checkbox" defaultChecked={row.perm} className="rounded border-gray-300" disabled /></td>
+                      <td className="px-3 py-2"><input type="checkbox" defaultChecked={row.secure} className="rounded border-gray-300" disabled /></td>
+                      <td className="px-3 py-2"><input type="checkbox" defaultChecked={row.followUp} className="rounded border-gray-300" disabled /></td>
+                      <td className="px-3 py-2 text-gray-600 truncate max-w-md">{row.note}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="border-t border-gray-100 px-4 py-2.5 bg-gray-50/50">
+              <button className="px-3 py-1.5 text-xs font-medium rounded-md text-white bg-primary-500 hover:bg-primary-400">
+                Add Diary Note
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Messages Tab ── */}
+        {activeTab === 'messages' && (
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="px-3 py-2 border-b border-gray-100 bg-gray-50/50">
+              <button className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-gray-200 bg-white hover:bg-gray-50 text-gray-700">
+                <PlusIcon className="size-3.5" />
+                Add
+              </button>
+            </div>
+            <div className="flex-1 overflow-auto">
+              <table className="w-full text-xs">
+                <thead className="sticky top-0 z-10">
+                  <tr className="bg-gray-50 border-b border-gray-200">
+                    <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider" style={{ fontSize: '10px', width: 50 }}>Line</th>
+                    <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider" style={{ fontSize: '10px', width: 120 }}>Type</th>
+                    <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider" style={{ fontSize: '10px' }}>Message</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-gray-100 hover:bg-gray-50">
+                    <td className="px-3 py-2 text-gray-700 font-mono">0</td>
+                    <td className="px-3 py-2 text-gray-700">System Message</td>
+                    <td className="px-3 py-2 text-gray-600">Testing if the XML updates me Testing if the XML updates me Testing if the XML updates me Testing if the XML updates me</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ── Tasks Tab ── */}
+        {activeTab === 'tasks' && (
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 overflow-auto">
+              <table className="w-full text-xs">
+                <thead className="sticky top-0 z-10">
+                  <tr className="bg-gray-50 border-b border-gray-200">
+                    {['Code', 'Assignee', 'Status', 'Quantity', 'UOM', 'Date Due', 'Date Complete', 'Notes'].map((col) => (
+                      <th key={col} className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider" style={{ fontSize: '10px' }}>
+                        {col}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colSpan={8} className="px-3 py-16 text-center text-sm text-gray-400">
+                      No items to show.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Footer Totals — visible on all tabs */}
+        <div className="border-t border-gray-200 bg-gray-50 px-4 py-2.5 flex items-center gap-5 text-xs shrink-0 flex-wrap">
           {footerTotals.map(({ label, value, bold, warn }) => (
             <div key={label} className="flex items-center gap-1.5">
-              <span className="text-gray-400">{label}</span>
+              <span className="text-gray-400 uppercase" style={{ fontSize: '10px' }}>{label}</span>
               <span className={classNames(
                 warn ? 'text-red-600' : bold ? 'text-gray-900' : 'text-gray-700',
                 'font-mono font-semibold',
@@ -471,19 +1034,19 @@ export default function SalesOrdersPage() {
       </div>
 
       {/* ── AI Assistant Slide-Over Drawer ── */}
-      <Dialog open={aiOpen} onClose={setAiOpen} className="relative z-50">
+      <Dialog open={aiOpen} onClose={setAiOpen} className="relative z-[60]">
         <DialogBackdrop
           transition
-          className="fixed inset-0 bg-gray-500/75 transition-opacity duration-500 ease-in-out data-closed:opacity-0"
+          className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-all duration-300 ease-out data-closed:opacity-0 data-closed:backdrop-blur-none"
         />
         <div className="fixed inset-0 overflow-hidden">
           <div className="absolute inset-0 overflow-hidden">
             <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
               <DialogPanel
                 transition
-                className="pointer-events-auto w-screen max-w-md transform transition duration-500 ease-in-out data-closed:translate-x-full sm:duration-700"
+                className="pointer-events-auto w-screen max-w-md transform transition-transform duration-500 ease-out data-closed:translate-x-full data-closed:duration-300"
               >
-                <div className="flex h-full flex-col bg-white shadow-xl">
+                <div className="flex h-full flex-col bg-white shadow-2xl">
                   {/* Panel Header */}
                   <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
                     <div className="flex items-center gap-2">
@@ -659,20 +1222,20 @@ export default function SalesOrdersPage() {
 
                   {/* Input Area */}
                   <div className="p-3 border-t border-gray-100">
-                    <div className="flex items-end gap-2">
+                    <div className="flex items-stretch gap-2">
                       <div className="flex-1 relative">
                         <textarea
                           value={aiInput}
                           onChange={(e) => setAiInput(e.target.value)}
                           placeholder="Ask about this order..."
                           rows={1}
-                          className="w-full resize-none rounded-xl border border-gray-200 px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-tertiary-300 focus:border-transparent pr-10"
+                          className="w-full h-full resize-none rounded-xl border border-gray-200 px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-tertiary-300 focus:border-transparent pr-10"
                         />
-                        <button className="absolute right-2 bottom-2 p-1 rounded-lg hover:bg-gray-100">
+                        <button className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-gray-100">
                           <PaperClipIcon className="size-4 text-gray-400" />
                         </button>
                       </div>
-                      <button className="p-2.5 rounded-xl text-white bg-tertiary-500 hover:bg-tertiary-600 shrink-0">
+                      <button className="flex items-center justify-center px-2.5 rounded-xl text-white bg-tertiary-500 hover:bg-tertiary-600 shrink-0">
                         <PaperAirplaneIcon className="size-4" />
                       </button>
                     </div>

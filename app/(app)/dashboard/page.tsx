@@ -20,23 +20,23 @@ import {
 } from '@heroicons/react/24/outline'
 
 const dashboardStats = [
-  { id: 1, name: 'Revenue (MTD)', stat: '$284,391', icon: CurrencyDollarIcon, change: '12.5%', changeType: 'increase' as const, color: 'bg-primary-500' },
-  { id: 2, name: 'Sales Orders', stat: '1,247', icon: ShoppingCartIcon, change: '8.2%', changeType: 'increase' as const, color: 'bg-primary-400' },
-  { id: 3, name: 'Purchase Orders', stat: '342', icon: ClipboardDocumentListIcon, change: '3.1%', changeType: 'decrease' as const, color: 'bg-primary-300' },
-  { id: 4, name: 'Inventory Value', stat: '$1.2M', icon: CubeIcon, change: '2.4%', changeType: 'increase' as const, color: 'bg-primary-500' },
-  { id: 5, name: 'Outstanding AR', stat: '$127,450', icon: BanknotesIcon, change: '5.7%', changeType: 'decrease' as const, color: 'bg-primary-400' },
-  { id: 6, name: 'Dispatches Today', stat: '48', icon: TruckIcon, change: '15.3%', changeType: 'increase' as const, color: 'bg-primary-300' },
+  { id: 1, name: 'Revenue (MTD)', stat: '$284,391', icon: CurrencyDollarIcon, change: '12.5%', changeType: 'increase' as const },
+  { id: 2, name: 'Sales Orders', stat: '1,247', icon: ShoppingCartIcon, change: '8.2%', changeType: 'increase' as const },
+  { id: 3, name: 'Purchase Orders', stat: '342', icon: ClipboardDocumentListIcon, change: '3.1%', changeType: 'decrease' as const },
+  { id: 4, name: 'Inventory Value', stat: '$1.2M', icon: CubeIcon, change: '2.4%', changeType: 'increase' as const },
+  { id: 5, name: 'Outstanding AR', stat: '$127,450', icon: BanknotesIcon, change: '5.7%', changeType: 'decrease' as const },
+  { id: 6, name: 'Dispatches Today', stat: '48', icon: TruckIcon, change: '15.3%', changeType: 'increase' as const },
 ]
 
 const quickLinks = [
-  { name: 'New Sales Order', href: '#', description: 'Create a sales order', bgColor: 'bg-primary-500', icon: PlusCircleIcon },
-  { name: 'Customer Dashboard', href: '#', description: 'View customer accounts', bgColor: 'bg-primary-400', icon: UsersIcon },
-  { name: 'Invoice Entry', href: '#', description: 'Enter supplier invoices', bgColor: 'bg-primary-500', icon: DocumentTextIcon },
-  { name: 'Price Inquiry', href: '#', description: 'Check product pricing', bgColor: 'bg-primary-400', icon: ReceiptPercentIcon },
-  { name: 'Inventory Lookup', href: '#', description: 'Search stock levels', bgColor: 'bg-primary-500', icon: CubeIcon },
-  { name: 'Financial Reports', href: '#', description: 'Run financial reports', bgColor: 'bg-primary-400', icon: ChartBarIcon },
-  { name: 'Production Dashboard', href: '#', description: 'View production status', bgColor: 'bg-primary-500', icon: WrenchScrewdriverIcon },
-  { name: 'GL Journal Entry', href: '#', description: 'Post journal entries', bgColor: 'bg-primary-400', icon: CalculatorIcon },
+  { name: 'New Sales Order', href: '#', description: 'Create a sales order', icon: PlusCircleIcon },
+  { name: 'Customer Dashboard', href: '#', description: 'View customer accounts', icon: UsersIcon },
+  { name: 'Invoice Entry', href: '#', description: 'Enter supplier invoices', icon: DocumentTextIcon },
+  { name: 'Price Inquiry', href: '#', description: 'Check product pricing', icon: ReceiptPercentIcon },
+  { name: 'Inventory Lookup', href: '#', description: 'Search stock levels', icon: CubeIcon },
+  { name: 'Financial Reports', href: '#', description: 'Run financial reports', icon: ChartBarIcon },
+  { name: 'Production Dashboard', href: '#', description: 'View production status', icon: WrenchScrewdriverIcon },
+  { name: 'GL Journal Entry', href: '#', description: 'Post journal entries', icon: CalculatorIcon },
 ]
 
 const recentActivity = [
@@ -77,8 +77,8 @@ export default function DashboardPage() {
                   className="relative overflow-hidden rounded-lg bg-white px-4 pt-5 pb-12 shadow-sm sm:px-6 sm:pt-6"
                 >
                   <dt>
-                    <div className={classNames(item.color, 'absolute rounded-md p-3')}>
-                      <item.icon aria-hidden="true" className="size-6 text-white" />
+                    <div className="absolute rounded-md bg-primary-50 p-3">
+                      <item.icon aria-hidden="true" className="size-6 text-primary-500" />
                     </div>
                     <p className="ml-16 truncate text-sm font-medium text-gray-500">{item.name}</p>
                   </dt>
@@ -121,8 +121,8 @@ export default function DashboardPage() {
                     href={link.href}
                     className="group flex items-center gap-x-3 rounded-lg border border-gray-200 bg-white p-3 shadow-sm hover:border-primary-400 hover:shadow-md transition-all"
                   >
-                    <div className={classNames(link.bgColor, 'flex size-10 shrink-0 items-center justify-center rounded-lg')}>
-                      <link.icon aria-hidden="true" className="size-5 text-white" />
+                    <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-50">
+                      <link.icon aria-hidden="true" className="size-5 text-primary-500" />
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-gray-900 group-hover:text-primary-500">{link.name}</p>
