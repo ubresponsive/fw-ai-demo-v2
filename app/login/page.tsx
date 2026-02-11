@@ -118,9 +118,9 @@ export default function LoginPage() {
         </form>
 
         <p className="mt-10 text-center text-sm/6 text-gray-500">
-          Not a member?{' '}
+          Don&apos;t have an account?{' '}
           <a href="#" className="font-semibold text-primary-500 hover:text-primary-400">
-            Contact your administrator
+            Register
           </a>
         </p>
       </div>
