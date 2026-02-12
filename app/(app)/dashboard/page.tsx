@@ -2,7 +2,7 @@
 
 import { useAppShell } from '@/lib/app-shell-context'
 import { classNames } from '@/lib/utils'
-import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/20/solid'
+import { ArrowDownIcon, ArrowUpIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
 import {
   ShoppingCartIcon,
   CurrencyDollarIcon,
@@ -18,6 +18,10 @@ import {
   WrenchScrewdriverIcon,
   UsersIcon,
 } from '@heroicons/react/24/outline'
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, PieChart, Pie, Cell,
+} from 'recharts'
 
 const dashboardStats = [
   { id: 1, name: 'Revenue (MTD)', stat: '$284,391', icon: CurrencyDollarIcon, change: '12.5%', changeType: 'increase' as const },
@@ -50,6 +54,42 @@ const recentActivity = [
   { id: 8, action: 'Bank reconciliation completed', user: 'Finance Team', time: '4 hr ago', type: 'finance' },
 ]
 
+// Deterministic mock revenue data (30 days)
+const revenueData = [
+  { day: '1', revenue: 8200 }, { day: '2', revenue: 7800 }, { day: '3', revenue: 9100 },
+  { day: '4', revenue: 8600 }, { day: '5', revenue: 7400 }, { day: '6', revenue: 5200 },
+  { day: '7', revenue: 4800 }, { day: '8', revenue: 8900 }, { day: '9', revenue: 9400 },
+  { day: '10', revenue: 10200 }, { day: '11', revenue: 9800 }, { day: '12', revenue: 10800 },
+  { day: '13', revenue: 6100 }, { day: '14', revenue: 5600 }, { day: '15', revenue: 9200 },
+  { day: '16', revenue: 9700 }, { day: '17', revenue: 10400 }, { day: '18', revenue: 11200 },
+  { day: '19', revenue: 10600 }, { day: '20', revenue: 7800 }, { day: '21', revenue: 6200 },
+  { day: '22', revenue: 9800 }, { day: '23', revenue: 10100 }, { day: '24', revenue: 11400 },
+  { day: '25', revenue: 10900 }, { day: '26', revenue: 11800 }, { day: '27', revenue: 7200 },
+  { day: '28', revenue: 6800 }, { day: '29', revenue: 10500 }, { day: '30', revenue: 11100 },
+]
+
+const salesByCategory = [
+  { name: 'Timber', value: 84200, color: '#485DCA' },
+  { name: 'Hardware', value: 62100, color: '#3aa8d0' },
+  { name: 'Paint', value: 41800, color: '#14b8a6' },
+  { name: 'Plumbing', value: 38700, color: '#7281de' },
+  { name: 'Electrical', value: 32400, color: '#65c0de' },
+  { name: 'Other', value: 25191, color: '#9ca3af' },
+]
+
+const salesTotalValue = salesByCategory.reduce((sum, c) => sum + c.value, 0)
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function ChartTooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null
+  return (
+    <div className="rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-lg text-xs">
+      <p className="font-medium text-gray-900">Day {label}</p>
+      <p className="text-primary-600">${payload[0].value.toLocaleString()}</p>
+    </div>
+  )
+}
+
 export default function DashboardPage() {
   const { userName } = useAppShell()
 
@@ -72,17 +112,19 @@ export default function DashboardPage() {
             <h3 className="text-base font-semibold text-gray-900">Overview — Last 30 days</h3>
             <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {dashboardStats.map((item) => (
-                <div
+                <a
                   key={item.id}
-                  className="relative overflow-hidden rounded-lg bg-white px-4 pt-5 pb-12 shadow-sm sm:px-6 sm:pt-6"
+                  href="#"
+                  className="group relative overflow-hidden rounded-lg border border-gray-100 bg-white px-4 pt-5 pb-5 shadow-sm hover:shadow-md hover:border-primary-200 transition-all sm:px-6 sm:pt-6"
                 >
+                  <ChevronRightIcon className="absolute top-4 right-3 size-4 text-gray-300 group-hover:text-primary-400 transition-colors" />
                   <dt>
                     <div className="absolute rounded-md bg-secondary-100 p-3">
                       <item.icon aria-hidden="true" className="size-6 text-secondary-700" />
                     </div>
                     <p className="ml-16 truncate text-sm font-medium text-gray-500">{item.name}</p>
                   </dt>
-                  <dd className="ml-16 flex items-baseline pb-6 sm:pb-7">
+                  <dd className="ml-16 flex items-baseline">
                     <p className="text-2xl font-semibold text-gray-900">{item.stat}</p>
                     <p
                       className={classNames(
@@ -98,17 +140,98 @@ export default function DashboardPage() {
                       <span className="sr-only"> {item.changeType === 'increase' ? 'Increased' : 'Decreased'} by </span>
                       {item.change}
                     </p>
-                    <div className="absolute inset-x-0 bottom-0 bg-gray-50 px-4 py-4 sm:px-6">
-                      <div className="text-sm">
-                        <a href="#" className="font-medium text-primary-500 hover:text-primary-400">
-                          View details<span className="sr-only"> {item.name}</span>
-                        </a>
-                      </div>
-                    </div>
                   </dd>
-                </div>
+                </a>
               ))}
             </dl>
+          </div>
+
+          {/* Charts section */}
+          <div className="mt-8 grid grid-cols-1 lg:grid-cols-5 gap-5">
+            {/* Revenue Area Chart */}
+            <div className="lg:col-span-3 rounded-lg border border-gray-100 bg-white p-5 shadow-sm">
+              <div className="mb-4">
+                <h3 className="text-sm font-semibold text-gray-900">Revenue — Last 30 Days</h3>
+                <p className="text-xs text-gray-500 mt-0.5">Daily revenue trend</p>
+              </div>
+              <ResponsiveContainer width="100%" height={220}>
+                <AreaChart data={revenueData} margin={{ top: 4, right: 4, left: -10, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#485DCA" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#485DCA" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+                  <XAxis
+                    dataKey="day"
+                    tick={{ fontSize: 11, fill: '#9ca3af' }}
+                    tickLine={false}
+                    axisLine={{ stroke: '#e5e7eb' }}
+                    interval={4}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 11, fill: '#9ca3af' }}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                  />
+                  <Tooltip content={<ChartTooltip />} />
+                  <Area
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke="#485DCA"
+                    strokeWidth={2}
+                    fill="url(#revenueGradient)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Sales by Category Donut */}
+            <div className="lg:col-span-2 rounded-lg border border-gray-100 bg-white p-5 shadow-sm">
+              <div className="mb-2">
+                <h3 className="text-sm font-semibold text-gray-900">Sales by Category</h3>
+                <p className="text-xs text-gray-500 mt-0.5">Month to date breakdown</p>
+              </div>
+              <div className="relative">
+                <ResponsiveContainer width="100%" height={160}>
+                  <PieChart>
+                    <Pie
+                      data={salesByCategory}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={48}
+                      outerRadius={72}
+                      paddingAngle={2}
+                      dataKey="value"
+                      strokeWidth={0}
+                    >
+                      {salesByCategory.map((entry, i) => (
+                        <Cell key={i} fill={entry.color} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+                {/* Center label */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="text-center">
+                    <p className="text-lg font-bold text-gray-900">${(salesTotalValue / 1000).toFixed(0)}K</p>
+                    <p className="text-[10px] text-gray-400">Total</p>
+                  </div>
+                </div>
+              </div>
+              {/* Legend */}
+              <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1.5">
+                {salesByCategory.map((cat) => (
+                  <div key={cat.name} className="flex items-center gap-1.5 text-xs">
+                    <span className="size-2.5 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
+                    <span className="text-gray-600 truncate">{cat.name}</span>
+                    <span className="ml-auto text-gray-400">{Math.round(cat.value / salesTotalValue * 100)}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Quick Links section */}

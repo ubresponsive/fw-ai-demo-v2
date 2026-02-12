@@ -10,6 +10,10 @@ import {
   Disclosure,
   DisclosureButton,
   DisclosurePanel,
+  Listbox,
+  ListboxButton,
+  ListboxOption,
+  ListboxOptions,
   TransitionChild,
 } from '@headlessui/react'
 import {
@@ -29,8 +33,19 @@ import {
   CubeIcon,
   CurrencyDollarIcon,
   TrashIcon,
+  ClockIcon,
+  DocumentTextIcon,
+  ChartBarIcon,
+  CalculatorIcon,
+  BanknotesIcon,
+  ArrowLeftIcon,
+  ArrowTopRightOnSquareIcon,
+  ArrowsPointingOutIcon,
+  TagIcon,
+  ClipboardDocumentListIcon,
+  BookOpenIcon,
 } from '@heroicons/react/24/outline'
-import { ChevronRightIcon } from '@heroicons/react/20/solid'
+import { ChevronRightIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import { navigation, bottomNav, type NavItem } from '@/lib/navigation'
 import { classNames, getInitials } from '@/lib/utils'
 import { AppShellContext } from '@/lib/app-shell-context'
@@ -60,6 +75,165 @@ const notificationIconMap = {
   warning: { icon: ExclamationTriangleIcon, bg: 'bg-amber-50', text: 'text-amber-500' },
   success: { icon: CheckIcon, bg: 'bg-emerald-50', text: 'text-emerald-500' },
   order: { icon: ShoppingCartIcon, bg: 'bg-sky-50', text: 'text-sky-500' },
+}
+
+// ── Search quick navigation items ──
+const recentSearches = [
+  'Sales Order 4521',
+  'Acme Corp',
+  'Timber Pine DAR',
+]
+
+const searchQuickNav = [
+  { section: 'Sales', items: [
+    { name: 'New Sales Order', href: '#', icon: ShoppingCartIcon },
+    { name: 'Sales Orders', href: '/sales-orders', icon: ShoppingCartIcon },
+    { name: 'Customer Orders', href: '#', icon: ShoppingCartIcon },
+  ]},
+  { section: 'Inventory', items: [
+    { name: 'Product Lookup', href: '#', icon: CubeIcon },
+    { name: 'Inventory Adjustments', href: '#', icon: CubeIcon },
+    { name: 'Price Inquiry', href: '#', icon: TagIcon },
+  ]},
+  { section: 'Finance', items: [
+    { name: 'Financial Reports', href: '/financial-reports', icon: ChartBarIcon },
+    { name: 'Journal Entry', href: '#', icon: CalculatorIcon },
+    { name: 'Bank Reconciliation', href: '#', icon: BanknotesIcon },
+  ]},
+  { section: 'Reports', items: [
+    { name: 'AR Dashboard', href: '#', icon: CurrencyDollarIcon },
+    { name: 'Documents & Reports', href: '#', icon: DocumentTextIcon },
+  ]},
+]
+
+// ── Help articles & sections ──
+type HelpArticle = {
+  id: string
+  title: string
+  summary: string
+  tags: string[]
+  content: string[]  // paragraphs
+}
+
+const helpArticles: HelpArticle[] = [
+  {
+    id: 'dashboard-kpis',
+    title: 'Understanding Your Dashboard KPIs',
+    summary: 'Learn what each metric on your dashboard means and how to use them to monitor business performance.',
+    tags: ['Getting Started', 'Dashboard'],
+    content: [
+      'The Dashboard provides a real-time snapshot of your business health through six key performance indicators (KPIs): Revenue (MTD), Sales Orders, Purchase Orders, Inventory Value, Outstanding AR, and Dispatches Today.',
+      'Each KPI card shows the current value alongside a percentage change compared to the previous period. Green arrows indicate improvement, while red arrows highlight areas that may need attention.',
+      'The Revenue chart below the KPIs visualises daily revenue trends over the last 30 days, helping you identify patterns such as weekend dips or month-end peaks. The Sales by Category donut chart breaks down your revenue mix.',
+      'Click any KPI card to drill down into the detailed report for that metric.',
+    ],
+  },
+  {
+    id: 'sidebar-navigation',
+    title: 'Navigating the Sidebar Menu',
+    summary: 'How to use the sidebar to access all modules — collapse, expand, and find what you need quickly.',
+    tags: ['Getting Started', 'Navigation'],
+    content: [
+      'The sidebar organises all Frameworks modules into logical groups: Sales, Receivables, Payables, Inventory, Purchasing, Dispatch, Pricing, General Ledger, Production, and Reports.',
+      'Click any group heading to expand its sub-items. The sidebar remembers which groups you had open. Items with a teal dot beside them indicate pages that are currently available in this demo.',
+      'Use the collapse button (double chevron) at the top-right of the sidebar to switch to icon-only mode, giving you more screen real estate for your work. Hover over any icon to see a tooltip with the module name.',
+      'On mobile devices, tap the hamburger menu icon to open the sidebar as a slide-out panel.',
+    ],
+  },
+  {
+    id: 'sales-orders',
+    title: 'Creating & Managing Sales Orders',
+    summary: 'Step-by-step guide to creating, editing, and processing sales orders through their lifecycle.',
+    tags: ['Sales'],
+    content: [
+      'Navigate to Sales > Sales Orders to view all orders. The listing page shows key stats at the top — total orders, pending orders, completed value, and average order value.',
+      'Use the status filters (All, Draft, Confirmed, Processing, Completed, Cancelled) to narrow the list. The search bar searches across order numbers, customer names, and references.',
+      'Click any order row to open the detailed order view, which includes line items, delivery information, and the AI Assistant for contextual help.',
+      'The AI Assistant on the order detail page can answer questions about the order, suggest next actions, and help with common tasks like updating delivery dates or checking stock availability.',
+    ],
+  },
+  {
+    id: 'ai-assistant',
+    title: 'Using the AI Assistant',
+    summary: 'How to get the most out of the AI-powered features throughout Frameworks.',
+    tags: ['Sales', 'Reports'],
+    content: [
+      'Frameworks includes AI assistants on key pages to help you work more efficiently. Look for the teal button with a sparkle icon to open the AI panel.',
+      'On Sales Order detail pages, the AI Assistant can answer questions about order status, customer history, product availability, and suggest next actions based on the current context.',
+      'On the Financial Reports page, the AI Report Builder lets you describe the report you need in plain language. For example: "Show me aged debtors over $10K for the Sydney branch" or "Compare revenue by branch for this quarter."',
+      'The AI generates formatted results including charts, data tables, and key insights. You can export these directly or refine your request with follow-up prompts.',
+    ],
+  },
+  {
+    id: 'financial-reports',
+    title: 'Running Financial Reports',
+    summary: 'Access pre-built reports, use filters, and generate custom reports from the Financial Reporting dashboard.',
+    tags: ['Finance', 'Reports'],
+    content: [
+      'Navigate to Reports > Financial Reporting (or General Ledger > Financial Reporting) to access the reporting dashboard. The page shows KPI summary cards at the top followed by your report library.',
+      'Reports are organised into categories: Sales & Revenue, Profitability, Accounts Receivable, Accounts Payable, Inventory, and General Ledger. Use the category tabs or search bar to find specific reports.',
+      'Star your most-used reports to add them to the Favourites section at the top for quick access. Toggle between grid and list views depending on your preference.',
+      'Use the period filter and branch filter in the toolbar to set the reporting context before opening any report.',
+    ],
+  },
+  {
+    id: 'ai-report-builder',
+    title: 'Working with the AI Report Builder',
+    summary: 'Generate custom financial reports using natural language queries — no technical knowledge required.',
+    tags: ['Finance', 'Reports'],
+    content: [
+      'Open the AI Report Builder from the Financial Reports page by clicking the teal "AI Report Builder" button in the toolbar.',
+      'Type your report request in natural language. The AI understands business terms, date ranges, branch references, and customer/product filters. Examples: "Revenue by branch for January" or "Top 20 customers by outstanding balance."',
+      'The AI generates formatted results including inline charts, data tables, and key insights. Each result includes export options (PDF, Excel) and the ability to refine your query.',
+      'Use the suggested refinement chips below each result to drill deeper, such as "Break down by product category" or "Show trend over last 6 months."',
+    ],
+  },
+  {
+    id: 'notifications',
+    title: 'Managing Notifications',
+    summary: 'Stay on top of important updates with the notification centre — mark as read, dismiss, or clear all.',
+    tags: ['Getting Started'],
+    content: [
+      'The notification bell in the header shows a badge count of unread items. Click it to open the notifications drawer.',
+      'Notifications are colour-coded by type: green for approvals, amber for warnings (like low stock alerts), blue for information, and sky-blue for new orders.',
+      'Hover over any notification to reveal quick actions — "Mark read" to acknowledge it or the trash icon to dismiss it entirely. Use "Clear all" to remove everything at once.',
+      'Unread notifications have a subtle blue-tinted background and a blue dot indicator so you can quickly scan for new items.',
+    ],
+  },
+  {
+    id: 'branch-switching',
+    title: 'Switching Branches',
+    summary: 'Change your active branch context to view data and perform operations for different locations.',
+    tags: ['Navigation'],
+    content: [
+      'Your current branch is displayed in the header bar (e.g. "Branch: 10"). Click the branch selector to open a dropdown with all available branches (1–10).',
+      'Switching branches updates the data context for all pages — dashboard KPIs, sales orders, inventory levels, and reports will reflect the selected branch.',
+      'In a production environment, your available branches would be determined by your user permissions. The demo provides all 10 branches for exploration.',
+      'The branch selection persists during your session. If you need to compare data across branches, use the Financial Reports page which supports multi-branch reporting.',
+    ],
+  },
+]
+
+const helpTags = ['All', 'Getting Started', 'Sales', 'Finance', 'Reports', 'Navigation', 'Dashboard']
+
+const helpSections: Record<string, { title: string; description: string }> = {
+  '/dashboard': {
+    title: 'Dashboard Overview',
+    description: 'Your central hub for monitoring business metrics, recent activity, and quick navigation to key areas.',
+  },
+  '/sales-orders': {
+    title: 'Sales Orders',
+    description: 'View, search, and manage your sales orders. Click into any order for full details and the AI Assistant.',
+  },
+  '/financial-reports': {
+    title: 'Financial Reporting',
+    description: 'Browse pre-built reports, filter by category, and use the AI Report Builder for custom analysis.',
+  },
+}
+
+const defaultHelpSection = {
+  title: 'Getting Started',
+  description: 'Welcome to Frameworks — a modern ERP platform. Use the sidebar to navigate between modules.',
 }
 
 // ── Expanded sidebar nav with labels and disclosure ──
@@ -179,6 +353,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [userEmail, setUserEmail] = useState('')
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   const [notifications, setNotifications] = useState<Notification[]>([])
+  const [selectedBranch, setSelectedBranch] = useState(10)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [helpOpen, setHelpOpen] = useState(false)
+  const [helpTag, setHelpTag] = useState('All')
+  const [selectedArticle, setSelectedArticle] = useState<HelpArticle | null>(null)
 
   useEffect(() => {
     const isAuthenticated = sessionStorage.getItem('isAuthenticated')
@@ -251,6 +431,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const sidebarWidth = sidebarCollapsed ? 'lg:w-20' : 'lg:w-72'
   const contentPadding = sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-72'
   const headerLeft = sidebarCollapsed ? 'lg:left-20' : 'lg:left-72'
+
+  // Search filtering
+  const filteredQuickNav = searchQuery.trim()
+    ? searchQuickNav.map(group => ({
+        ...group,
+        items: group.items.filter(item =>
+          item.name.toLowerCase().includes(searchQuery.toLowerCase())
+        ),
+      })).filter(group => group.items.length > 0)
+    : searchQuickNav
+
+  // Help context
+  const currentHelpSection = helpSections[pathname] || defaultHelpSection
+  const filteredArticles = helpTag === 'All'
+    ? helpArticles
+    : helpArticles.filter(a => a.tags.includes(helpTag))
 
   return (
     <AppShellContext.Provider value={{ userName, userEmail, sidebarCollapsed }}>
@@ -422,14 +618,80 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="relative flex flex-1 max-w-md">
               <MagnifyingGlassIcon
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400"
+                className="pointer-events-none absolute inset-y-0 left-0 z-10 h-full w-5 text-gray-400"
               />
               <input
                 type="search"
                 name="search"
                 placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setSearchOpen(true)}
                 className="block w-full border-0 py-1.5 pl-8 pr-3 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm/6"
               />
+              {/* Search floating panel */}
+              {searchOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => { setSearchOpen(false); setSearchQuery('') }} />
+                  <div className="absolute top-full left-0 z-50 mt-2 w-full rounded-xl bg-white shadow-lg ring-1 ring-black/5 p-1.5">
+                    {/* Recent Searches */}
+                    {!searchQuery && (
+                      <div className="mb-1">
+                        <p className="px-2.5 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-gray-400">Recent</p>
+                        {recentSearches.map((term) => (
+                          <button
+                            key={term}
+                            className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                            onClick={() => setSearchOpen(false)}
+                          >
+                            <ClockIcon className="size-4 text-gray-400" />
+                            {term}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    {/* Quick Navigation */}
+                    <div>
+                      <p className="px-2.5 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                        {searchQuery ? 'Results' : 'Quick Navigation'}
+                      </p>
+                      {filteredQuickNav.length === 0 ? (
+                        <p className="px-2.5 py-3 text-xs text-gray-400">No results found</p>
+                      ) : (
+                        filteredQuickNav.map((group) => (
+                          <div key={group.section} className="mb-1">
+                            <p className="px-2.5 py-1 text-[10px] font-medium text-gray-300">{group.section}</p>
+                            {group.items.map((item) => (
+                              <a
+                                key={item.name}
+                                href={item.href}
+                                className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                                onClick={() => { setSearchOpen(false); setSearchQuery('') }}
+                              >
+                                <item.icon className="size-4 text-gray-400" />
+                                {item.name}
+                              </a>
+                            ))}
+                          </div>
+                        ))
+                      )}
+                    </div>
+                    {/* Footer */}
+                    <div className="border-t border-gray-100 mt-1 pt-2 px-2.5 pb-1.5 flex items-center justify-between">
+                      <p className="text-xs text-gray-400">
+                        {searchQuery ? (
+                          <span>Search all for &ldquo;<span className="text-primary-500">{searchQuery}</span>&rdquo;</span>
+                        ) : (
+                          'Type to search...'
+                        )}
+                      </p>
+                      <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[10px] font-medium text-gray-400">
+                        ⌘K
+                      </kbd>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -437,7 +699,28 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-x-4">
             <span className="text-sm font-semibold text-gray-900">TEST COMPANY 01</span>
             <div className="h-5 w-px bg-gray-200" aria-hidden="true" />
-            <span className="text-sm text-gray-600">Branch: 10</span>
+            <Listbox value={selectedBranch} onChange={setSelectedBranch}>
+              <div className="relative">
+                <ListboxButton className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 cursor-pointer rounded-md px-1.5 py-0.5 -mx-1.5 hover:bg-gray-50 transition-colors">
+                  Branch: {selectedBranch}
+                  <ChevronUpDownIcon className="size-4 text-gray-400" />
+                </ListboxButton>
+                <ListboxOptions
+                  transition
+                  className="absolute top-full right-0 z-50 mt-1 max-h-60 w-36 overflow-auto rounded-lg bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none text-sm transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
+                >
+                  {Array.from({ length: 10 }, (_, i) => i + 1).map((branch) => (
+                    <ListboxOption
+                      key={branch}
+                      value={branch}
+                      className="relative cursor-pointer select-none px-3 py-1.5 text-gray-700 data-[focus]:bg-primary-50 data-[focus]:text-primary-700 data-[selected]:font-semibold"
+                    >
+                      Branch {branch}
+                    </ListboxOption>
+                  ))}
+                </ListboxOptions>
+              </div>
+            </Listbox>
             <div className="h-5 w-px bg-gray-200" aria-hidden="true" />
             <span className="text-sm text-gray-600">Device: roam10</span>
             <div className="h-5 w-px bg-gray-200" aria-hidden="true" />
@@ -466,14 +749,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <span className="text-sm font-medium text-gray-900">{userName}</span>
             </div>
             <div className="h-5 w-px bg-gray-200" aria-hidden="true" />
-            <a
-              href="#"
+            <button
+              onClick={() => { setHelpOpen(true); setSelectedArticle(null); setHelpTag('All') }}
               title="Help documentation"
               className="rounded-md p-1 text-gray-400 hover:text-primary-500 hover:bg-gray-50"
             >
               <QuestionMarkCircleIcon aria-hidden="true" className="size-6" />
               <span className="sr-only">Help documentation</span>
-            </a>
+            </button>
           </div>
         </div>
 
@@ -588,6 +871,142 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         </ul>
                       )}
                     </div>
+                  </div>
+                </DialogPanel>
+              </div>
+            </div>
+          </div>
+        </Dialog>
+
+        {/* ── Help Drawer ── */}
+        <Dialog open={helpOpen} onClose={setHelpOpen} className="relative z-[60]">
+          <DialogBackdrop
+            transition
+            className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-all duration-500 ease-in-out data-[closed]:opacity-0 data-[closed]:backdrop-blur-none"
+          />
+          <div className="fixed inset-0 overflow-hidden">
+            <div className="absolute inset-0 overflow-hidden">
+              <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
+                <DialogPanel
+                  transition
+                  className="pointer-events-auto w-screen max-w-sm transform transition-transform duration-700 ease-in-out data-[closed]:translate-x-full data-[closed]:duration-500"
+                >
+                  <div className="flex h-full flex-col bg-white shadow-2xl">
+                    {/* Header */}
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 shrink-0">
+                      <div className="flex items-center gap-2">
+                        {selectedArticle ? (
+                          <button
+                            onClick={() => setSelectedArticle(null)}
+                            className="p-1 -ml-1 rounded-lg hover:bg-gray-100"
+                          >
+                            <ArrowLeftIcon className="size-4 text-gray-500" />
+                          </button>
+                        ) : (
+                          <div className="size-7 rounded-lg flex items-center justify-center bg-primary-50">
+                            <BookOpenIcon className="size-4 text-primary-500" />
+                          </div>
+                        )}
+                        <div>
+                          <DialogTitle className="text-sm font-semibold text-gray-800">
+                            {selectedArticle ? selectedArticle.title : 'Help'}
+                          </DialogTitle>
+                          {!selectedArticle && (
+                            <p className="text-xs text-gray-400">{currentHelpSection.title}</p>
+                          )}
+                        </div>
+                      </div>
+                      <button onClick={() => setHelpOpen(false)} className="p-1 rounded-lg hover:bg-gray-100">
+                        <XMarkIcon className="size-5 text-gray-400" />
+                      </button>
+                    </div>
+
+                    {selectedArticle ? (
+                      /* ── Article Detail View ── */
+                      <div className="flex-1 overflow-y-auto">
+                        <div className="px-4 py-4 space-y-3">
+                          {/* Tags */}
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            {selectedArticle.tags.map((tag) => (
+                              <span key={tag} className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-primary-50 text-primary-600">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                          {/* Summary */}
+                          <p className="text-xs font-medium text-gray-600 leading-relaxed">{selectedArticle.summary}</p>
+                          {/* Content paragraphs */}
+                          <div className="border-t border-gray-100 pt-3 space-y-3">
+                            {selectedArticle.content.map((paragraph, i) => (
+                              <p key={i} className="text-xs text-gray-600 leading-relaxed">{paragraph}</p>
+                            ))}
+                          </div>
+                        </div>
+                        {/* Bottom action bar */}
+                        <div className="sticky bottom-0 border-t border-gray-100 bg-white px-4 py-2.5 flex items-center gap-2">
+                          <button className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                            <ArrowsPointingOutIcon className="size-3.5" />
+                            Full Screen
+                          </button>
+                          <button className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                            <ArrowTopRightOnSquareIcon className="size-3.5" />
+                            Pop Out
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      /* ── Article List View ── */
+                      <div className="flex-1 overflow-y-auto">
+                        {/* Context section */}
+                        <div className="px-4 pt-4 pb-3">
+                          <h3 className="text-sm font-semibold text-gray-900">{currentHelpSection.title}</h3>
+                          <p className="mt-1 text-xs text-gray-500 leading-relaxed">{currentHelpSection.description}</p>
+                        </div>
+
+                        {/* Category tags */}
+                        <div className="px-4 pb-3 flex items-center gap-1.5 flex-wrap">
+                          {helpTags.map((tag) => (
+                            <button
+                              key={tag}
+                              onClick={() => setHelpTag(tag)}
+                              className={classNames(
+                                tag === helpTag
+                                  ? 'bg-primary-50 text-primary-700 ring-1 ring-primary-200'
+                                  : 'bg-gray-50 text-gray-600 hover:bg-gray-100',
+                                'px-2.5 py-1 text-[10px] font-medium rounded-full transition-colors',
+                              )}
+                            >
+                              {tag}
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Article list */}
+                        <div className="px-4 pb-4 space-y-2">
+                          {filteredArticles.length === 0 ? (
+                            <p className="py-6 text-center text-xs text-gray-400">No articles match this filter.</p>
+                          ) : (
+                            filteredArticles.map((article) => (
+                              <button
+                                key={article.id}
+                                onClick={() => setSelectedArticle(article)}
+                                className="w-full text-left p-3 rounded-lg border border-gray-100 hover:border-primary-200 hover:shadow-sm cursor-pointer transition-all"
+                              >
+                                <h4 className="text-sm font-medium text-gray-900">{article.title}</h4>
+                                <p className="text-xs text-gray-500 mt-1 line-clamp-2">{article.summary}</p>
+                                <div className="flex items-center gap-1.5 mt-2">
+                                  {article.tags.map((tag) => (
+                                    <span key={tag} className="px-1.5 py-0.5 text-[10px] rounded bg-gray-100 text-gray-500">
+                                      {tag}
+                                    </span>
+                                  ))}
+                                </div>
+                              </button>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </DialogPanel>
               </div>
