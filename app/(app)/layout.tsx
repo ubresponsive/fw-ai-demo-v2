@@ -44,6 +44,10 @@ import {
   TagIcon,
   ClipboardDocumentListIcon,
   BookOpenIcon,
+  SparklesIcon,
+  PaperAirplaneIcon,
+  PaperClipIcon,
+  LightBulbIcon,
 } from '@heroicons/react/24/outline'
 import { ChevronRightIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import { navigation, bottomNav, type NavItem } from '@/lib/navigation'
@@ -235,6 +239,27 @@ const helpSections: Record<string, { title: string; description: string }> = {
 const defaultHelpSection = {
   title: 'Getting Started',
   description: 'Welcome to Frameworks — a modern ERP platform. Use the sidebar to navigate between modules.',
+}
+
+// ── Help AI context — page-aware greetings & suggestions ──
+const helpAiContext: Record<string, { greeting: string; suggestions: string[] }> = {
+  '/dashboard': {
+    greeting: 'You\'re on the Dashboard. I can help you understand your KPIs, read the revenue chart, navigate to different modules, or explain any metric you see.',
+    suggestions: ['Explain my KPIs', 'Revenue chart help', 'How to use Quick Links', 'Navigate modules'],
+  },
+  '/sales-orders': {
+    greeting: 'You\'re in the Sales Orders module. I can help you create orders, understand statuses, filter and search, or explain the AI Assistant on order detail pages.',
+    suggestions: ['Create a sales order', 'Order statuses explained', 'Search & filter tips', 'AI Assistant guide'],
+  },
+  '/financial-reports': {
+    greeting: 'You\'re on Financial Reporting. I can help you run reports, use the AI Report Builder, export data, or filter by branch and period.',
+    suggestions: ['Run a report', 'Use AI Report Builder', 'Export to Excel', 'Filter by branch'],
+  },
+}
+
+const defaultHelpAiContext = {
+  greeting: 'Welcome to Frameworks Help! I can answer questions about any module, help you navigate the system, or explain features like the AI assistants and reporting tools.',
+  suggestions: ['Getting started', 'Navigate the sidebar', 'Use AI features', 'Switch branches'],
 }
 
 // ── Expanded sidebar nav with labels and disclosure ──
@@ -441,6 +466,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [helpOpen, setHelpOpen] = useState(false)
   const [helpTag, setHelpTag] = useState('All')
   const [selectedArticle, setSelectedArticle] = useState<HelpArticle | null>(null)
+  const [helpTab, setHelpTab] = useState<'articles' | 'ai'>('articles')
+  const [helpAiInput, setHelpAiInput] = useState('')
 
   useEffect(() => {
     const isAuthenticated = sessionStorage.getItem('isAuthenticated')
@@ -526,6 +553,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   // Help context
   const currentHelpSection = helpSections[pathname] || defaultHelpSection
+  const currentAiContext = helpAiContext[pathname] || defaultHelpAiContext
   const filteredArticles = helpTag === 'All'
     ? helpArticles
     : helpArticles.filter(a => a.tags.includes(helpTag))
@@ -835,7 +863,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
             <div className="h-5 w-px bg-gray-200 dark:bg-slate-700" aria-hidden="true" />
             <button
-              onClick={() => { setHelpOpen(true); setSelectedArticle(null); setHelpTag('All') }}
+              onClick={() => { setHelpOpen(true); setSelectedArticle(null); setHelpTag('All'); setHelpTab('articles') }}
               title="Help documentation"
               className="rounded-md p-1 text-gray-400 dark:text-slate-500 hover:text-primary-500 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-slate-800"
             >
@@ -978,117 +1006,272 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 >
                   <div className="flex h-full flex-col bg-white dark:bg-slate-800 shadow-2xl">
                     {/* Header */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-slate-700 shrink-0">
-                      <div className="flex items-center gap-2">
-                        {selectedArticle ? (
-                          <button
-                            onClick={() => setSelectedArticle(null)}
-                            className="p-1 -ml-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700"
-                          >
-                            <ArrowLeftIcon className="size-4 text-gray-500 dark:text-slate-400" />
-                          </button>
-                        ) : (
-                          <div className="size-7 rounded-lg flex items-center justify-center bg-primary-50 dark:bg-primary-900/20">
-                            <BookOpenIcon className="size-4 text-primary-500 dark:text-primary-400" />
-                          </div>
-                        )}
-                        <div>
-                          <DialogTitle className="text-sm font-semibold text-gray-800 dark:text-slate-100">
-                            {selectedArticle ? selectedArticle.title : 'Help'}
-                          </DialogTitle>
-                          {!selectedArticle && (
-                            <p className="text-xs text-gray-500 dark:text-slate-400">{currentHelpSection.title}</p>
+                    <div className="shrink-0">
+                      <div className="flex items-center justify-between px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          {helpTab === 'articles' && selectedArticle ? (
+                            <button
+                              onClick={() => setSelectedArticle(null)}
+                              className="p-1 -ml-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700"
+                            >
+                              <ArrowLeftIcon className="size-4 text-gray-500 dark:text-slate-400" />
+                            </button>
+                          ) : helpTab === 'ai' ? (
+                            <div className="size-7 rounded-lg flex items-center justify-center bg-gradient-to-br from-tertiary-400 to-primary-500">
+                              <SparklesIcon className="size-4 text-white animate-sparkle" />
+                            </div>
+                          ) : (
+                            <div className="size-7 rounded-lg flex items-center justify-center bg-primary-50 dark:bg-primary-900/20">
+                              <BookOpenIcon className="size-4 text-primary-500 dark:text-primary-400" />
+                            </div>
                           )}
+                          <div>
+                            <DialogTitle className="text-sm font-semibold text-gray-800 dark:text-slate-100">
+                              {helpTab === 'articles' && selectedArticle ? selectedArticle.title : helpTab === 'ai' ? 'AI Assistant' : 'Help'}
+                            </DialogTitle>
+                            {helpTab === 'articles' && !selectedArticle && (
+                              <p className="text-xs text-gray-500 dark:text-slate-400">{currentHelpSection.title}</p>
+                            )}
+                            {helpTab === 'ai' && (
+                              <p className="text-xs text-gray-500 dark:text-slate-400">Ask me anything</p>
+                            )}
+                          </div>
                         </div>
+                        <button onClick={() => setHelpOpen(false)} className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700">
+                          <XMarkIcon className="size-5 text-gray-400 dark:text-slate-500" />
+                        </button>
                       </div>
-                      <button onClick={() => setHelpOpen(false)} className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700">
-                        <XMarkIcon className="size-5 text-gray-400 dark:text-slate-500" />
-                      </button>
+                      {/* Tab bar */}
+                      <div className="flex border-b border-gray-200 dark:border-slate-700">
+                        <button
+                          onClick={() => setHelpTab('articles')}
+                          className={classNames(
+                            helpTab === 'articles'
+                              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                              : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 hover:border-gray-300 dark:hover:border-slate-500',
+                            'flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium border-b-2 transition-colors',
+                          )}
+                        >
+                          <BookOpenIcon className="size-4" />
+                          Articles
+                        </button>
+                        <button
+                          onClick={() => setHelpTab('ai')}
+                          className={classNames(
+                            helpTab === 'ai'
+                              ? 'border-tertiary-500 text-tertiary-600 dark:text-tertiary-400'
+                              : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 hover:border-gray-300 dark:hover:border-slate-500',
+                            'flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium border-b-2 transition-colors',
+                          )}
+                        >
+                          <SparklesIcon className={classNames(helpTab === 'ai' ? 'animate-sparkle' : '', 'size-4')} />
+                          AI Assistant
+                        </button>
+                      </div>
                     </div>
 
-                    {selectedArticle ? (
-                      /* ── Article Detail View ── */
-                      <div className="flex-1 overflow-y-auto">
-                        <div className="px-4 py-4 space-y-3">
-                          {/* Tags */}
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            {selectedArticle.tags.map((tag) => (
-                              <span key={tag} className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400">
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                          {/* Summary */}
-                          <p className="text-xs font-medium text-gray-600 dark:text-slate-400 leading-relaxed">{selectedArticle.summary}</p>
-                          {/* Content paragraphs */}
-                          <div className="border-t border-gray-200 dark:border-slate-700 pt-3 space-y-3">
-                            {selectedArticle.content.map((paragraph, i) => (
-                              <p key={i} className="text-xs text-gray-700 dark:text-slate-300 leading-relaxed">{paragraph}</p>
-                            ))}
-                          </div>
-                        </div>
-                        {/* Bottom action bar */}
-                        <div className="sticky bottom-0 border-t border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 flex items-center gap-2">
-                          <button className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-slate-300 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
-                            <ArrowsPointingOutIcon className="size-3.5" />
-                            Full Screen
-                          </button>
-                          <button className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-slate-300 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
-                            <ArrowTopRightOnSquareIcon className="size-3.5" />
-                            Pop Out
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      /* ── Article List View ── */
-                      <div className="flex-1 overflow-y-auto">
-                        {/* Context section */}
-                        <div className="px-4 pt-4 pb-3">
-                          <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">{currentHelpSection.title}</h3>
-                          <p className="mt-1 text-xs text-gray-500 dark:text-slate-400 leading-relaxed">{currentHelpSection.description}</p>
-                        </div>
-
-                        {/* Category tags */}
-                        <div className="px-4 pb-3 flex items-center gap-1.5 flex-wrap">
-                          {helpTags.map((tag) => (
-                            <button
-                              key={tag}
-                              onClick={() => setHelpTag(tag)}
-                              className={classNames(
-                                tag === helpTag
-                                  ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 ring-1 ring-primary-200 dark:ring-primary-700'
-                                  : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600',
-                                'px-2.5 py-1 text-[10px] font-medium rounded-full transition-colors',
-                              )}
-                            >
-                              {tag}
-                            </button>
-                          ))}
-                        </div>
-
-                        {/* Article list */}
-                        <div className="px-4 pb-4 space-y-2">
-                          {filteredArticles.length === 0 ? (
-                            <p className="py-6 text-center text-xs text-gray-400 dark:text-slate-500">No articles match this filter.</p>
-                          ) : (
-                            filteredArticles.map((article) => (
-                              <button
-                                key={article.id}
-                                onClick={() => setSelectedArticle(article)}
-                                className="w-full text-left p-3 rounded-lg border border-gray-100 dark:border-slate-700 hover:border-primary-200 dark:hover:border-primary-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 hover:shadow-sm cursor-pointer transition-all"
-                              >
-                                <h4 className="text-sm font-medium text-gray-900 dark:text-slate-100">{article.title}</h4>
-                                <p className="text-xs text-gray-600 dark:text-slate-400 mt-1 line-clamp-2">{article.summary}</p>
-                                <div className="flex items-center gap-1.5 mt-2">
-                                  {article.tags.map((tag) => (
-                                    <span key={tag} className="px-1.5 py-0.5 text-[10px] rounded bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400">
-                                      {tag}
-                                    </span>
-                                  ))}
-                                </div>
+                    {/* ── Articles Tab ── */}
+                    {helpTab === 'articles' && (
+                      <>
+                        {selectedArticle ? (
+                          /* ── Article Detail View ── */
+                          <div className="flex-1 overflow-y-auto">
+                            <div className="px-4 py-4 space-y-3">
+                              {/* Tags */}
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                {selectedArticle.tags.map((tag) => (
+                                  <span key={tag} className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400">
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                              {/* Summary */}
+                              <p className="text-xs font-medium text-gray-600 dark:text-slate-400 leading-relaxed">{selectedArticle.summary}</p>
+                              {/* Content paragraphs */}
+                              <div className="border-t border-gray-200 dark:border-slate-700 pt-3 space-y-3">
+                                {selectedArticle.content.map((paragraph, i) => (
+                                  <p key={i} className="text-xs text-gray-700 dark:text-slate-300 leading-relaxed">{paragraph}</p>
+                                ))}
+                              </div>
+                            </div>
+                            {/* Bottom action bar */}
+                            <div className="sticky bottom-0 border-t border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 flex items-center gap-2">
+                              <button className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-slate-300 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
+                                <ArrowsPointingOutIcon className="size-3.5" />
+                                Full Screen
                               </button>
-                            ))
-                          )}
+                              <button className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-slate-300 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
+                                <ArrowTopRightOnSquareIcon className="size-3.5" />
+                                Pop Out
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          /* ── Article List View ── */
+                          <div className="flex-1 overflow-y-auto">
+                            {/* Context section */}
+                            <div className="px-4 pt-4 pb-3">
+                              <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">{currentHelpSection.title}</h3>
+                              <p className="mt-1 text-xs text-gray-500 dark:text-slate-400 leading-relaxed">{currentHelpSection.description}</p>
+                            </div>
+
+                            {/* Category tags */}
+                            <div className="px-4 pb-3 flex items-center gap-1.5 flex-wrap">
+                              {helpTags.map((tag) => (
+                                <button
+                                  key={tag}
+                                  onClick={() => setHelpTag(tag)}
+                                  className={classNames(
+                                    tag === helpTag
+                                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 ring-1 ring-primary-200 dark:ring-primary-700'
+                                      : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600',
+                                    'px-2.5 py-1 text-[10px] font-medium rounded-full transition-colors',
+                                  )}
+                                >
+                                  {tag}
+                                </button>
+                              ))}
+                            </div>
+
+                            {/* Article list */}
+                            <div className="px-4 pb-4 space-y-2">
+                              {filteredArticles.length === 0 ? (
+                                <p className="py-6 text-center text-xs text-gray-400 dark:text-slate-500">No articles match this filter.</p>
+                              ) : (
+                                filteredArticles.map((article) => (
+                                  <button
+                                    key={article.id}
+                                    onClick={() => setSelectedArticle(article)}
+                                    className="w-full text-left p-3 rounded-lg border border-gray-100 dark:border-slate-700 hover:border-primary-200 dark:hover:border-primary-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 hover:shadow-sm cursor-pointer transition-all"
+                                  >
+                                    <h4 className="text-sm font-medium text-gray-900 dark:text-slate-100">{article.title}</h4>
+                                    <p className="text-xs text-gray-600 dark:text-slate-400 mt-1 line-clamp-2">{article.summary}</p>
+                                    <div className="flex items-center gap-1.5 mt-2">
+                                      {article.tags.map((tag) => (
+                                        <span key={tag} className="px-1.5 py-0.5 text-[10px] rounded bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400">
+                                          {tag}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </button>
+                                ))
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                    {/* ── AI Assistant Tab ── */}
+                    {helpTab === 'ai' && (
+                      <div className="flex flex-1 flex-col overflow-hidden">
+                        {/* Quick Suggestions */}
+                        <div className="px-3 py-2.5 border-b border-gray-100 dark:border-slate-700 shrink-0">
+                          <p className="text-[10px] font-medium text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-2">Suggestions</p>
+                          <div className="grid grid-cols-2 gap-1.5">
+                            {currentAiContext.suggestions.map((suggestion) => (
+                              <button
+                                key={suggestion}
+                                className="flex items-center gap-2 px-2.5 py-2 rounded-lg border border-gray-100 dark:border-slate-700 hover:border-gray-200 dark:hover:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700 transition-all text-left"
+                              >
+                                <LightBulbIcon className="size-4 shrink-0 text-tertiary-500 dark:text-tertiary-400" />
+                                <span className="text-xs text-gray-600 dark:text-slate-300">{suggestion}</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Chat Messages */}
+                        <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
+                          {/* AI Welcome */}
+                          <div className="flex gap-2.5">
+                            <div className="size-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-tertiary-50 dark:bg-tertiary-500/20">
+                              <SparklesIcon className="size-3.5 text-tertiary-500 dark:text-tertiary-400 animate-sparkle" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="bg-gray-50 dark:bg-slate-900 rounded-xl rounded-tl-sm px-3 py-2.5 text-xs text-gray-700 dark:text-slate-300 leading-relaxed">
+                                <p>{currentAiContext.greeting}</p>
+                              </div>
+                              <div className="mt-2 flex flex-wrap gap-1.5">
+                                {['How do I create a sales order?', 'Explain the AI features', 'Help with reports'].map((s) => (
+                                  <button key={s} className="px-2.5 py-1 text-xs rounded-full border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 hover:border-gray-300 dark:hover:border-slate-500 transition-colors">
+                                    {s}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* User Message */}
+                          <div className="flex gap-2.5 justify-end">
+                            <div className="bg-primary-50 dark:bg-primary-500/20 border border-primary-100 dark:border-primary-500/30 rounded-xl rounded-tr-sm px-3 py-2 text-xs text-gray-700 dark:text-slate-300 max-w-72">
+                              How do I create a sales order?
+                            </div>
+                          </div>
+
+                          {/* AI Response */}
+                          <div className="flex gap-2.5">
+                            <div className="size-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-tertiary-50 dark:bg-tertiary-500/20">
+                              <SparklesIcon className="size-3.5 text-tertiary-500 dark:text-tertiary-400 animate-sparkle" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="bg-gray-50 dark:bg-slate-900 rounded-xl rounded-tl-sm px-3 py-2.5 text-xs text-gray-700 dark:text-slate-300 leading-relaxed space-y-2">
+                                <p>Here&apos;s how to create a sales order in Frameworks:</p>
+                                <ol className="list-decimal list-inside space-y-1.5 text-xs">
+                                  <li>Navigate to <strong>Sales &gt; Sales Orders</strong> from the sidebar</li>
+                                  <li>Click the <strong>&quot;New Sales Order&quot;</strong> button in the toolbar</li>
+                                  <li>Select a <strong>customer</strong> from the dropdown or search by name/code</li>
+                                  <li>Add <strong>line items</strong> by searching for products — quantities and pricing auto-populate</li>
+                                  <li>Review totals and click <strong>&quot;Save&quot;</strong> to create as Draft, or <strong>&quot;Confirm&quot;</strong> to submit</li>
+                                </ol>
+                                <div className="mt-2 p-2 rounded-lg bg-tertiary-50 dark:bg-tertiary-500/10 border border-tertiary-100 dark:border-tertiary-500/20">
+                                  <p className="flex items-center gap-1 text-tertiary-700 dark:text-tertiary-400 font-medium">
+                                    <LightBulbIcon className="size-3.5" />
+                                    Tip
+                                  </p>
+                                  <p className="mt-1 text-tertiary-600 dark:text-tertiary-400/80">Use the <strong>AI Assistant</strong> on the order detail page to reprice lines, check stock, or analyse margins.</p>
+                                </div>
+                                <button
+                                  onClick={() => { setHelpTab('articles'); setSelectedArticle(helpArticles.find(a => a.id === 'sales-orders') || null) }}
+                                  className="mt-1 inline-flex items-center gap-1 text-primary-500 dark:text-primary-400 hover:text-primary-600 dark:hover:text-primary-300 text-xs font-medium"
+                                >
+                                  <BookOpenIcon className="size-3.5" />
+                                  Read full article: Creating & Managing Sales Orders
+                                </button>
+                              </div>
+                              <div className="mt-2 flex flex-wrap gap-1.5">
+                                {['Tell me about order statuses', 'How do I add line items?', 'What about credit memos?'].map((s) => (
+                                  <button key={s} className="px-2.5 py-1 text-xs rounded-full border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 hover:border-gray-300 dark:hover:border-slate-500 transition-colors">
+                                    {s}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Input Area */}
+                        <div className="p-3 border-t border-gray-100 dark:border-slate-700 shrink-0">
+                          <div className="flex items-stretch gap-2">
+                            <div className="flex-1 relative">
+                              <textarea
+                                value={helpAiInput}
+                                onChange={(e) => setHelpAiInput(e.target.value)}
+                                placeholder="Ask a question..."
+                                rows={1}
+                                className="w-full h-full resize-none rounded-xl border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-tertiary-300 dark:focus:ring-tertiary-500 focus:border-transparent pr-10 placeholder:text-gray-400 dark:placeholder:text-slate-500"
+                              />
+                              <button className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-600">
+                                <PaperClipIcon className="size-4 text-gray-400 dark:text-slate-500" />
+                              </button>
+                            </div>
+                            <button className="flex items-center justify-center px-2.5 rounded-xl text-white bg-tertiary-500 hover:bg-tertiary-600 dark:bg-tertiary-600 dark:hover:bg-tertiary-500 shrink-0">
+                              <PaperAirplaneIcon className="size-4" />
+                            </button>
+                          </div>
+                          <p className="text-center text-[10px] text-gray-300 dark:text-slate-600 mt-1.5">
+                            AI responses are generated — always verify important information
+                          </p>
                         </div>
                       </div>
                     )}
