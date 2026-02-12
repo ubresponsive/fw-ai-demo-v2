@@ -1,3 +1,73 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light mode (default) */
+    --color-bg-primary: 255 255 255;        /* white */
+    --color-bg-secondary: 249 250 251;      /* gray-50 */
+    --color-bg-tertiary: 243 244 246;       /* gray-100 */
+    --color-bg-elevated: 255 255 255;       /* white (cards/panels) */
+
+    --color-text-primary: 17 24 39;         /* gray-900 */
+    --color-text-secondary: 55 65 81;       /* gray-700 */
+    --color-text-tertiary: 107 114 128;     /* gray-600 */
+    --color-text-muted: 156 163 175;        /* gray-400 */
+
+    --color-border-primary: 229 231 235;    /* gray-200 */
+    --color-border-secondary: 243 244 246;  /* gray-100 */
+
+    --color-overlay: 17 24 39 / 0.5;        /* gray-900/50 */
+    --color-overlay-heavy: 17 24 39 / 0.8;  /* gray-900/80 */
+  }
+
+  .dark {
+    /* Dark mode */
+    --color-bg-primary: 15 23 42;           /* slate-900 */
+    --color-bg-secondary: 30 41 59;         /* slate-800 */
+    --color-bg-tertiary: 51 65 85;          /* slate-700 */
+    --color-bg-elevated: 30 41 59;          /* slate-800 */
+
+    --color-text-primary: 241 245 249;      /* slate-100 */
+    --color-text-secondary: 203 213 225;    /* slate-300 */
+    --color-text-tertiary: 148 163 184;     /* slate-400 */
+    --color-text-muted: 100 116 139;        /* slate-500 */
+
+    --color-border-primary: 71 85 105;      /* slate-600 */
+    --color-border-secondary: 51 65 85;     /* slate-700 */
+
+    --color-overlay: 0 0 0 / 0.7;           /* black/70 */
+    --color-overlay-heavy: 0 0 0 / 0.85;    /* black/85 */
+  }
+}
+
+@layer utilities {
+  /* Semantic utility classes that auto-switch with dark mode */
+  .bg-base {
+    background-color: rgb(var(--color-bg-primary));
+  }
+  .bg-surface {
+    background-color: rgb(var(--color-bg-secondary));
+  }
+  .bg-elevated {
+    background-color: rgb(var(--color-bg-elevated));
+  }
+
+  .text-base {
+    color: rgb(var(--color-text-primary));
+  }
+  .text-secondary {
+    color: rgb(var(--color-text-secondary));
+  }
+  .text-muted {
+    color: rgb(var(--color-text-muted));
+  }
+
+  .border-base {
+    border-color: rgb(var(--color-border-primary));
+  }
+  .border-surface {
+    border-color: rgb(var(--color-border-secondary));
+  }
+}

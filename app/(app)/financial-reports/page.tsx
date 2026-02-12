@@ -7,6 +7,7 @@ import {
   DialogPanel,
   DialogTitle,
 } from '@headlessui/react'
+import { getChartColors } from '@/lib/chart-colors'
 import {
   MagnifyingGlassIcon,
   XMarkIcon,
@@ -96,15 +97,15 @@ const gpByCategoryData = [
 ]
 
 // ── Chart Tooltip ──
-function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string }>; label?: string }) {
+function ChartTooltip({ active, payload, label, isDark }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string }>; label?: string; isDark?: boolean }) {
   if (!active || !payload?.length) return null
   return (
-    <div className="rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-lg">
-      <p className="text-xs font-medium text-gray-700 mb-1">{label}</p>
+    <div className="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 shadow-lg">
+      <p className="text-xs font-medium text-gray-700 dark:text-slate-300 mb-1">{label}</p>
       {payload.map((entry) => (
-        <p key={entry.name} className="text-xs text-gray-500">
+        <p key={entry.name} className="text-xs text-gray-500 dark:text-slate-400">
           <span className="inline-block size-2 rounded-full mr-1.5" style={{ backgroundColor: entry.color }} />
-          {entry.name}: <span className="font-medium text-gray-700">${entry.value.toLocaleString()}K</span>
+          {entry.name}: <span className="font-medium text-gray-700 dark:text-slate-100">${entry.value.toLocaleString()}K</span>
         </p>
       ))}
     </div>
@@ -113,12 +114,12 @@ function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: 
 
 // ── KPI Data ──
 const kpiCards = [
-  { label: 'Revenue MTD', value: '$1.24M', change: '+8.3%', up: true, icon: CurrencyDollarIcon, colorClass: 'text-emerald-600', bgClass: 'bg-emerald-50', sparkData: [30,45,35,60,55,70,65,80,75,90] },
-  { label: 'Gross Profit', value: '$412K', change: '+3.1%', up: true, icon: ArrowTrendingUpIcon, colorClass: 'text-tertiary-600', bgClass: 'bg-tertiary-50', sparkData: [40,38,45,42,48,44,50,52,49,55] },
-  { label: 'Accounts Receivable', value: '$287K', change: '-2.4%', up: false, icon: ReceiptPercentIcon, colorClass: 'text-primary-600', bgClass: 'bg-primary-50', sparkData: [60,58,55,57,52,54,50,48,51,47] },
-  { label: 'Accounts Payable', value: '$198K', change: '+5.7%', up: true, icon: CreditCardIcon, colorClass: 'text-amber-600', bgClass: 'bg-amber-50', sparkData: [30,32,35,33,38,36,40,42,39,44] },
-  { label: 'Cash Position', value: '$534K', change: '+12.1%', up: true, icon: WalletIcon, colorClass: 'text-purple-600', bgClass: 'bg-purple-50', sparkData: [20,28,25,35,40,38,48,52,50,60] },
-  { label: 'GP Margin', value: '33.2%', change: '-0.8%', up: false, icon: ChartPieIcon, colorClass: 'text-rose-600', bgClass: 'bg-rose-50', sparkData: [35,34,36,35,34,33,35,34,33,33] },
+  { label: 'Revenue MTD', value: '$1.24M', change: '+8.3%', up: true, icon: CurrencyDollarIcon, colorClass: 'text-emerald-600 dark:text-emerald-400', bgClass: 'bg-emerald-50 dark:bg-emerald-900/20', sparkData: [30,45,35,60,55,70,65,80,75,90] },
+  { label: 'Gross Profit', value: '$412K', change: '+3.1%', up: true, icon: ArrowTrendingUpIcon, colorClass: 'text-tertiary-600 dark:text-tertiary-400', bgClass: 'bg-tertiary-50 dark:bg-tertiary-900/20', sparkData: [40,38,45,42,48,44,50,52,49,55] },
+  { label: 'Accounts Receivable', value: '$287K', change: '-2.4%', up: false, icon: ReceiptPercentIcon, colorClass: 'text-primary-600 dark:text-primary-400', bgClass: 'bg-primary-50 dark:bg-primary-900/20', sparkData: [60,58,55,57,52,54,50,48,51,47] },
+  { label: 'Accounts Payable', value: '$198K', change: '+5.7%', up: true, icon: CreditCardIcon, colorClass: 'text-amber-600 dark:text-amber-400', bgClass: 'bg-amber-50 dark:bg-amber-900/20', sparkData: [30,32,35,33,38,36,40,42,39,44] },
+  { label: 'Cash Position', value: '$534K', change: '+12.1%', up: true, icon: WalletIcon, colorClass: 'text-purple-600 dark:text-purple-400', bgClass: 'bg-purple-50 dark:bg-purple-900/20', sparkData: [20,28,25,35,40,38,48,52,50,60] },
+  { label: 'GP Margin', value: '33.2%', change: '-0.8%', up: false, icon: ChartPieIcon, colorClass: 'text-rose-600 dark:text-rose-400', bgClass: 'bg-rose-50 dark:bg-rose-900/20', sparkData: [35,34,36,35,34,33,35,34,33,33] },
 ]
 
 // ── Report Categories ──
@@ -234,12 +235,25 @@ export default function FinancialReportsPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [aiInput, setAiInput] = useState('')
   const chatEndRef = useRef<HTMLDivElement>(null)
+  const [isDark, setIsDark] = useState(false)
 
   useEffect(() => {
     if (aiOpen && chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: 'smooth' })
     }
   }, [aiOpen])
+
+  useEffect(() => {
+    const checkDark = () => setIsDark(document.documentElement.classList.contains('dark'))
+    checkDark()
+
+    const observer = new MutationObserver(checkDark)
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+
+    return () => observer.disconnect()
+  }, [])
+
+  const colors = getChartColors(isDark)
 
   const filteredCategories = activeCategory === 'all'
     ? reportCategories
@@ -260,14 +274,14 @@ export default function FinancialReportsPage() {
   return (
     <div className="min-h-full">
       {/* ── Breadcrumb ── */}
-      <div className="border-b border-gray-200 bg-white px-4 py-3 sm:px-6 lg:px-8">
-        <nav className="flex items-center gap-1.5 text-sm text-gray-500">
-          <a href="/dashboard" className="flex items-center gap-1 hover:text-gray-700">
+      <div className="border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 sm:px-6 lg:px-8">
+        <nav className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-slate-400">
+          <a href="/dashboard" className="flex items-center gap-1 hover:text-gray-700 dark:hover:text-slate-300">
             <HomeIcon className="size-4" />
             <span>Home</span>
           </a>
-          <ChevronRightIcon className="size-4 text-gray-400" />
-          <span className="font-medium text-gray-800">Financial Reports</span>
+          <ChevronRightIcon className="size-4 text-gray-400 dark:text-slate-500" />
+          <span className="font-medium text-gray-800 dark:text-slate-200">Financial Reports</span>
         </nav>
       </div>
 
@@ -275,21 +289,21 @@ export default function FinancialReportsPage() {
         {/* ── Page Header ── */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">Financial Reports</h1>
-            <p className="text-sm text-gray-500 mt-0.5">Run standard reports or use AI to generate custom analysis</p>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-slate-100">Financial Reports</h1>
+            <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">Run standard reports or use AI to generate custom analysis</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-xs text-gray-600 cursor-pointer hover:border-gray-300">
-              <CalendarIcon className="size-3.5 text-gray-400" />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg text-xs text-gray-600 dark:text-slate-300 cursor-pointer hover:border-gray-300 dark:hover:border-slate-600">
+              <CalendarIcon className="size-3.5 text-gray-400 dark:text-slate-500" />
               This Month
             </div>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-xs text-gray-600 cursor-pointer hover:border-gray-300">
-              <BuildingOfficeIcon className="size-3.5 text-gray-400" />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg text-xs text-gray-600 dark:text-slate-300 cursor-pointer hover:border-gray-300 dark:hover:border-slate-600">
+              <BuildingOfficeIcon className="size-3.5 text-gray-400 dark:text-slate-500" />
               All Branches
             </div>
             <button
               onClick={() => setAiOpen(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 text-gray-600 bg-white hover:bg-gray-50 transition-all"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 transition-all"
             >
               <SparklesIcon className="size-3.5 text-tertiary-500 animate-sparkle-3" />
               AI Report Builder
@@ -300,16 +314,16 @@ export default function FinancialReportsPage() {
         {/* ── KPI Row ── */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
           {kpiCards.map((item) => (
-            <div key={item.label} className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md hover:border-gray-300 transition-all cursor-pointer group">
+            <div key={item.label} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all cursor-pointer group">
               <div className="flex items-start justify-between mb-3">
                 <div className={classNames(item.bgClass, 'size-9 rounded-lg flex items-center justify-center')}>
                   <item.icon className={classNames(item.colorClass, 'size-4.5')} />
                 </div>
                 <MiniSparkline data={item.sparkData} colorClass={item.colorClass} />
               </div>
-              <p className="text-xs text-gray-500 mb-0.5">{item.label}</p>
+              <p className="text-xs text-gray-600 dark:text-slate-400 mb-0.5">{item.label}</p>
               <div className="flex items-end justify-between">
-                <span className="text-xl font-bold text-gray-900">{item.value}</span>
+                <span className="text-xl font-bold text-gray-900 dark:text-slate-100">{item.value}</span>
                 <span className={classNames(
                   item.up ? 'text-emerald-600' : 'text-red-500',
                   'inline-flex items-center gap-0.5 text-xs font-medium',
@@ -328,13 +342,13 @@ export default function FinancialReportsPage() {
         {/* ── Charts Section ── */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6">
           {/* Revenue & Margin Trend */}
-          <div className="lg:col-span-3 bg-white rounded-xl border border-gray-200 p-4">
+          <div className="lg:col-span-3 bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-4">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-sm font-semibold text-gray-800">Revenue & Margin Trend</h3>
-                <p className="text-xs text-gray-400 mt-0.5">Last 12 months ($K)</p>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">Revenue & Margin Trend</h3>
+                <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">Last 12 months ($K)</p>
               </div>
-              <div className="flex items-center gap-3 text-xs">
+              <div className="flex items-center gap-3 text-xs text-gray-600 dark:text-slate-400">
                 <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-primary-400" />Revenue</span>
                 <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-tertiary-400" />Cost</span>
               </div>
@@ -343,20 +357,20 @@ export default function FinancialReportsPage() {
               <AreaChart data={revenueMonthlyData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="revGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#485DCA" stopOpacity={0.15} />
-                    <stop offset="95%" stopColor="#485DCA" stopOpacity={0} />
+                    <stop offset="5%" stopColor={colors.primary} stopOpacity={isDark ? 0.3 : 0.15} />
+                    <stop offset="95%" stopColor={colors.primary} stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="costGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.1} />
-                    <stop offset="95%" stopColor="#14b8a6" stopOpacity={0} />
+                    <stop offset="5%" stopColor={colors.secondary} stopOpacity={isDark ? 0.3 : 0.1} />
+                    <stop offset="95%" stopColor={colors.secondary} stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-                <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#9ca3af' }} tickLine={false} axisLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} tickLine={false} axisLine={false} tickFormatter={(v: number) => `$${v}`} />
-                <Tooltip content={<ChartTooltip />} />
-                <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#485DCA" strokeWidth={2} fill="url(#revGradient)" />
-                <Area type="monotone" dataKey="cost" name="Cost" stroke="#14b8a6" strokeWidth={2} fill="url(#costGradient)" />
+                <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
+                <XAxis dataKey="month" tick={{ fontSize: 11, fill: colors.axis }} tickLine={false} axisLine={{ stroke: colors.axisLine }} />
+                <YAxis tick={{ fontSize: 11, fill: colors.axis }} tickLine={false} axisLine={{ stroke: colors.axisLine }} tickFormatter={(v: number) => `$${v}`} />
+                <Tooltip content={<ChartTooltip isDark={isDark} />} />
+                <Area type="monotone" dataKey="revenue" name="Revenue" stroke={colors.primary} strokeWidth={2} fill="url(#revGradient)" />
+                <Area type="monotone" dataKey="cost" name="Cost" stroke={colors.secondary} strokeWidth={2} fill="url(#costGradient)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -364,9 +378,9 @@ export default function FinancialReportsPage() {
           {/* Right column — AR Aging + GP by Category stacked */}
           <div className="lg:col-span-2 space-y-4">
             {/* AR Aging Donut */}
-            <div className="bg-white rounded-xl border border-gray-200 p-4">
-              <h3 className="text-sm font-semibold text-gray-800 mb-1">Receivables Aging</h3>
-              <p className="text-xs text-gray-400 mb-3">Outstanding balance by period</p>
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-4">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100 mb-1">Receivables Aging</h3>
+              <p className="text-xs text-gray-500 dark:text-slate-400 mb-3">Outstanding balance by period</p>
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <ResponsiveContainer width={130} height={130}>
@@ -382,24 +396,24 @@ export default function FinancialReportsPage() {
                         strokeWidth={0}
                       >
                         {arAgingData.map((entry, index) => (
-                          <Cell key={index} fill={entry.color} />
+                          <Cell key={index} fill={index === 0 ? colors.success : index === 1 ? colors.warning : index === 2 ? '#ea580c' : colors.danger} />
                         ))}
                       </Pie>
                     </PieChart>
                   </ResponsiveContainer>
                   <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <span className="text-sm font-bold text-gray-800">${(arTotal / 1000).toFixed(0)}K</span>
-                    <span className="text-[10px] text-gray-400">Total</span>
+                    <span className="text-sm font-bold text-gray-900 dark:text-slate-100">${(arTotal / 1000).toFixed(0)}K</span>
+                    <span className="text-[10px] text-gray-500 dark:text-slate-400">Total</span>
                   </div>
                 </div>
                 <div className="flex-1 space-y-2">
-                  {arAgingData.map((entry) => (
+                  {arAgingData.map((entry, index) => (
                     <div key={entry.name} className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-1.5">
-                        <span className="size-2 rounded-full" style={{ backgroundColor: entry.color }} />
-                        <span className="text-gray-600">{entry.name}</span>
+                        <span className="size-2 rounded-full" style={{ backgroundColor: index === 0 ? colors.success : index === 1 ? colors.warning : index === 2 ? '#ea580c' : colors.danger }} />
+                        <span className="text-gray-600 dark:text-slate-400">{entry.name}</span>
                       </div>
-                      <span className="font-medium text-gray-700 font-mono">${(entry.value / 1000).toFixed(0)}K</span>
+                      <span className="font-medium text-gray-700 dark:text-slate-300 font-mono">${(entry.value / 1000).toFixed(0)}K</span>
                     </div>
                   ))}
                 </div>
@@ -407,21 +421,21 @@ export default function FinancialReportsPage() {
             </div>
 
             {/* GP% by Category */}
-            <div className="bg-white rounded-xl border border-gray-200 p-4">
-              <h3 className="text-sm font-semibold text-gray-800 mb-1">GP% by Category</h3>
-              <p className="text-xs text-gray-400 mb-3">Current month performance</p>
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-4">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100 mb-1">GP% by Category</h3>
+              <p className="text-xs text-gray-500 dark:text-slate-400 mb-3">Current month performance</p>
               <ResponsiveContainer width="100%" height={160}>
                 <BarChart data={gpByCategoryData} layout="vertical" margin={{ top: 0, right: 5, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" horizontal={false} />
-                  <XAxis type="number" tick={{ fontSize: 10, fill: '#9ca3af' }} tickLine={false} axisLine={false} domain={[0, 50]} tickFormatter={(v: number) => `${v}%`} />
-                  <YAxis type="category" dataKey="category" tick={{ fontSize: 11, fill: '#6b7280' }} tickLine={false} axisLine={false} width={65} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} horizontal={false} />
+                  <XAxis type="number" tick={{ fontSize: 10, fill: colors.axis }} tickLine={false} axisLine={{ stroke: colors.axisLine }} domain={[0, 50]} tickFormatter={(v: number) => `${v}%`} />
+                  <YAxis type="category" dataKey="category" tick={{ fontSize: 11, fill: colors.axis }} tickLine={false} axisLine={{ stroke: colors.axisLine }} width={65} />
                   <Tooltip
                     formatter={(value: number | undefined) => [value != null ? `${Number(value).toFixed(1)}%` : '—', 'GP%']}
-                    contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e5e7eb' }}
+                    contentStyle={{ fontSize: 12, borderRadius: 8, border: `1px solid ${isDark ? '#475569' : '#e5e7eb'}`, backgroundColor: isDark ? '#1e293b' : '#ffffff', color: isDark ? '#f1f5f9' : '#111827' }}
                   />
                   <Bar dataKey="gp" radius={[0, 4, 4, 0]} barSize={14}>
                     {gpByCategoryData.map((entry, index) => (
-                      <Cell key={index} fill={entry.gp >= 30 ? '#059669' : entry.gp >= 20 ? '#d97706' : '#dc2626'} />
+                      <Cell key={index} fill={entry.gp >= 30 ? colors.success : entry.gp >= 20 ? colors.warning : colors.danger} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -434,20 +448,20 @@ export default function FinancialReportsPage() {
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
             <StarIconSolid className="size-4 text-amber-400" />
-            <h2 className="text-sm font-semibold text-gray-800">Favourites</h2>
-            <span className="text-xs text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full">{starredReports.length}</span>
+            <h2 className="text-sm font-semibold text-gray-900 dark:text-slate-100">Favourites</h2>
+            <span className="text-xs text-gray-500 dark:text-slate-400 bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded-full">{starredReports.length}</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
             {starredReports.map((r, i) => (
-              <button key={i} className="group flex items-center gap-3 bg-white rounded-xl border border-gray-200 px-3.5 py-3 hover:shadow-md hover:border-gray-300 transition-all text-left">
+              <button key={i} className="group flex items-center gap-3 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 px-3.5 py-3 hover:shadow-md hover:border-gray-300 dark:hover:border-slate-600 transition-all text-left">
                 <div className={classNames(r.bgClass, 'size-8 rounded-lg flex items-center justify-center shrink-0')}>
                   <r.catIcon className={classNames(r.colorClass, 'size-4')} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-gray-700 truncate group-hover:text-gray-900">{r.name}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">{r.category}</p>
+                  <p className="text-xs font-medium text-gray-700 dark:text-slate-300 truncate group-hover:text-gray-900 dark:group-hover:text-slate-100">{r.name}</p>
+                  <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">{r.category}</p>
                 </div>
-                <PlayIcon className="size-3.5 text-gray-300 group-hover:text-gray-500 shrink-0" />
+                <PlayIcon className="size-3.5 text-gray-300 dark:text-slate-600 group-hover:text-gray-500 dark:group-hover:text-slate-400 shrink-0" />
               </button>
             ))}
           </div>
@@ -460,8 +474,8 @@ export default function FinancialReportsPage() {
               onClick={() => setActiveCategory('all')}
               className={classNames(
                 activeCategory === 'all'
-                  ? 'bg-gray-800 text-white'
-                  : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50',
+                  ? 'bg-gray-800 dark:bg-slate-700 text-white'
+                  : 'bg-gray-100 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600',
                 'px-3 py-1.5 text-xs font-medium rounded-lg transition-colors',
               )}
             >
@@ -473,8 +487,8 @@ export default function FinancialReportsPage() {
                 onClick={() => setActiveCategory(activeCategory === cat.id ? 'all' : cat.id)}
                 className={classNames(
                   activeCategory === cat.id
-                    ? 'bg-primary-500 text-white'
-                    : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50',
+                    ? 'bg-primary-500 dark:bg-primary-600 text-white'
+                    : 'bg-gray-100 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600',
                   'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors',
                 )}
               >
@@ -485,19 +499,19 @@ export default function FinancialReportsPage() {
           </div>
           <div className="flex items-center gap-2">
             <div className="relative">
-              <MagnifyingGlassIcon className="size-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+              <MagnifyingGlassIcon className="size-3.5 text-gray-400 dark:text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
               <input
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search reports..."
-                className="pl-8 pr-3 py-1.5 text-xs bg-white border border-gray-200 rounded-lg w-52 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-300"
+                className="pl-8 pr-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg w-52 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-600 focus:border-primary-300 dark:focus:border-primary-500 text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
               />
             </div>
-            <div className="flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <div className="flex items-center bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
               <button
                 onClick={() => setViewMode('grid')}
                 className={classNames(
-                  viewMode === 'grid' ? 'bg-gray-100 text-gray-700' : 'text-gray-400 hover:text-gray-600',
+                  viewMode === 'grid' ? 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-300' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400',
                   'p-1.5',
                 )}
               >
@@ -506,7 +520,7 @@ export default function FinancialReportsPage() {
               <button
                 onClick={() => setViewMode('list')}
                 className={classNames(
-                  viewMode === 'list' ? 'bg-gray-100 text-gray-700' : 'text-gray-400 hover:text-gray-600',
+                  viewMode === 'list' ? 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-300' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400',
                   'p-1.5',
                 )}
               >
@@ -522,41 +536,41 @@ export default function FinancialReportsPage() {
           'grid gap-4',
         )}>
           {searchedCategories.map(cat => (
-            <div key={cat.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div key={cat.id} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
               {/* Category Header */}
-              <div className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100">
+              <div className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100 dark:border-slate-700">
                 <div className={classNames(cat.bgClass, 'size-8 rounded-lg flex items-center justify-center')}>
                   <cat.icon className={classNames(cat.colorClass, 'size-4')} />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-sm font-semibold text-gray-800">{cat.label}</h3>
-                  <p className="text-xs text-gray-400">{cat.reports.length} reports</p>
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">{cat.label}</h3>
+                  <p className="text-xs text-gray-500 dark:text-slate-400">{cat.reports.length} reports</p>
                 </div>
-                <button className="text-xs font-medium text-primary-500 hover:underline">View All</button>
+                <button className="text-xs font-medium text-primary-500 dark:text-primary-400 hover:underline">View All</button>
               </div>
               {/* Report List */}
               <div className="py-1">
                 {cat.reports.map((report, i) => (
-                  <div key={i} className="group flex items-center gap-3 px-3 py-2 rounded-lg mx-1 hover:bg-gray-50 transition-colors cursor-pointer">
-                    <div className="size-7 rounded-md flex items-center justify-center bg-gray-50 group-hover:bg-white border border-gray-100">
+                  <div key={i} className="group flex items-center gap-3 px-3 py-2 rounded-lg mx-1 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors cursor-pointer">
+                    <div className="size-7 rounded-md flex items-center justify-center bg-gray-50 dark:bg-slate-700 group-hover:bg-white dark:group-hover:bg-slate-600 border border-gray-100 dark:border-slate-600">
                       {report.type === 'chart'
-                        ? <ChartBarIcon className="size-3.5 text-gray-400" />
-                        : <TableCellsIcon className="size-3.5 text-gray-400" />
+                        ? <ChartBarIcon className="size-3.5 text-gray-400 dark:text-slate-500" />
+                        : <TableCellsIcon className="size-3.5 text-gray-400 dark:text-slate-500" />
                       }
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-700 group-hover:text-gray-900 truncate">{report.name}</p>
-                      <p className="text-xs text-gray-400 flex items-center gap-1.5 mt-0.5">
+                      <p className="text-sm text-gray-700 dark:text-slate-300 group-hover:text-gray-900 dark:group-hover:text-slate-100 truncate">{report.name}</p>
+                      <p className="text-xs text-gray-400 dark:text-slate-500 flex items-center gap-1.5 mt-0.5">
                         <ClockIcon className="size-3" /> {report.lastRun}
                       </p>
                     </div>
                     {report.starred && <StarIconSolid className="size-3.5 text-amber-400 shrink-0" />}
                     <div className="hidden group-hover:flex items-center gap-1 shrink-0">
-                      <button className="p-1 rounded hover:bg-gray-200" title="Run"><PlayIcon className="size-3.5 text-gray-400" /></button>
-                      <button className="p-1 rounded hover:bg-gray-200" title="Download"><ArrowDownTrayIcon className="size-3.5 text-gray-400" /></button>
-                      <button className="p-1 rounded hover:bg-gray-200" title="Schedule"><ClockIcon className="size-3.5 text-gray-400" /></button>
+                      <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-slate-500" title="Run"><PlayIcon className="size-3.5 text-gray-400 dark:text-slate-400" /></button>
+                      <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-slate-500" title="Download"><ArrowDownTrayIcon className="size-3.5 text-gray-400 dark:text-slate-400" /></button>
+                      <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-slate-500" title="Schedule"><ClockIcon className="size-3.5 text-gray-400 dark:text-slate-400" /></button>
                     </div>
-                    <ArrowRightIcon className="size-3.5 text-gray-300 group-hover:text-gray-500 shrink-0 transition-colors" />
+                    <ArrowRightIcon className="size-3.5 text-gray-300 dark:text-slate-600 group-hover:text-gray-500 dark:group-hover:text-slate-400 shrink-0 transition-colors" />
                   </div>
                 ))}
               </div>
@@ -566,9 +580,9 @@ export default function FinancialReportsPage() {
 
         {searchedCategories.length === 0 && (
           <div className="text-center py-12">
-            <MagnifyingGlassIcon className="size-8 text-gray-300 mx-auto mb-3" />
-            <p className="text-sm font-medium text-gray-500">No reports found</p>
-            <p className="text-xs text-gray-400 mt-1">Try adjusting your search or category filter</p>
+            <MagnifyingGlassIcon className="size-8 text-gray-300 dark:text-slate-600 mx-auto mb-3" />
+            <p className="text-sm font-medium text-gray-500 dark:text-slate-400">No reports found</p>
+            <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Try adjusting your search or category filter</p>
           </div>
         )}
       </div>
@@ -577,7 +591,7 @@ export default function FinancialReportsPage() {
       <Dialog open={aiOpen} onClose={setAiOpen} className="relative z-[60]">
         <DialogBackdrop
           transition
-          className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-all duration-500 ease-in-out data-[closed]:opacity-0 data-[closed]:backdrop-blur-none"
+          className="fixed inset-0 bg-gray-900/50 dark:bg-black/70 backdrop-blur-sm transition-all duration-500 ease-in-out data-[closed]:opacity-0 data-[closed]:backdrop-blur-none"
         />
         <div className="fixed inset-0 overflow-hidden">
           <div className="absolute inset-0 overflow-hidden">
@@ -586,34 +600,34 @@ export default function FinancialReportsPage() {
                 transition
                 className="pointer-events-auto w-screen max-w-md transform transition-transform duration-700 ease-in-out data-[closed]:translate-x-full data-[closed]:duration-500"
               >
-                <div className="flex h-full flex-col bg-white shadow-2xl">
+                <div className="flex h-full flex-col bg-white dark:bg-slate-800 shadow-2xl">
                   {/* Drawer Header */}
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 shrink-0">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-slate-700 shrink-0">
                     <div className="flex items-center gap-2.5">
                       <div className="size-8 rounded-xl flex items-center justify-center bg-gradient-to-br from-tertiary-400 to-primary-500">
                         <SparklesIcon className="size-4 text-white animate-sparkle" />
                       </div>
                       <div>
-                        <DialogTitle className="text-sm font-semibold text-gray-800">AI Report Builder</DialogTitle>
-                        <p className="text-xs text-gray-400">Generate custom reports with natural language</p>
+                        <DialogTitle className="text-sm font-semibold text-gray-900 dark:text-slate-100">AI Report Builder</DialogTitle>
+                        <p className="text-xs text-gray-500 dark:text-slate-400">Generate custom reports with natural language</p>
                       </div>
                     </div>
-                    <button onClick={() => setAiOpen(false)} className="p-1.5 rounded-lg hover:bg-gray-100">
-                      <XMarkIcon className="size-5 text-gray-400" />
+                    <button onClick={() => setAiOpen(false)} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700">
+                      <XMarkIcon className="size-5 text-gray-400 dark:text-slate-500" />
                     </button>
                   </div>
 
                   {/* Quick Starters */}
-                  <div className="px-4 py-3 border-b border-gray-100 shrink-0">
-                    <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider mb-2">Quick Reports</p>
+                  <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-700 shrink-0">
+                    <p className="text-[10px] font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2">Quick Reports</p>
                     <div className="grid grid-cols-2 gap-1.5">
                       {aiQuickActions.map(({ icon: Icon, label, colorClass }) => (
                         <button
                           key={label}
-                          className="group flex items-start gap-2 px-2.5 py-2 rounded-lg border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-all text-left"
+                          className="group flex items-start gap-2 px-2.5 py-2 rounded-lg border border-gray-100 dark:border-slate-700 hover:border-gray-200 dark:hover:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700 transition-all text-left"
                         >
                           <Icon className={classNames(colorClass, 'size-3.5 shrink-0 mt-0.5')} />
-                          <span className="text-xs text-gray-600 leading-tight">{label}</span>
+                          <span className="text-xs text-gray-600 dark:text-slate-300 leading-tight">{label}</span>
                         </button>
                       ))}
                     </div>
@@ -623,40 +637,40 @@ export default function FinancialReportsPage() {
                   <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
                     {/* AI Welcome */}
                     <div className="flex gap-2.5">
-                      <div className="size-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-tertiary-50">
+                      <div className="size-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-tertiary-50 dark:bg-tertiary-900/20">
                         <SparklesIcon className="size-3.5 text-tertiary-500 animate-sparkle" />
                       </div>
                       <div className="flex-1">
-                        <div className="bg-gray-50 rounded-xl rounded-tl-sm px-3 py-2.5 text-xs text-gray-700 leading-relaxed">
+                        <div className="bg-gray-100 dark:bg-slate-700 rounded-xl rounded-tl-sm px-3 py-2.5 text-xs text-gray-900 dark:text-slate-100 leading-relaxed">
                           <p>Describe the report you need in plain language and I&apos;ll generate it. You can ask for any combination of data, time periods, branches, customers, and products.</p>
-                          <p className="mt-1.5 text-gray-500">Try: <em>&ldquo;Show me aged debtors over $10K for the Sydney branch&rdquo;</em></p>
+                          <p className="mt-1.5 text-gray-500 dark:text-slate-400">Try: <em>&ldquo;Show me aged debtors over $10K for the Sydney branch&rdquo;</em></p>
                         </div>
                       </div>
                     </div>
 
                     {/* User Message */}
                     <div className="flex justify-end">
-                      <div className="bg-primary-50 border border-primary-100 rounded-xl rounded-tr-sm px-3 py-2 text-xs text-gray-700 max-w-80">
+                      <div className="bg-primary-500 dark:bg-primary-600 rounded-xl rounded-tr-sm px-3 py-2 text-xs text-white max-w-80">
                         Show me revenue by branch for January 2026
                       </div>
                     </div>
 
                     {/* AI Generated Report */}
                     <div className="flex gap-2.5">
-                      <div className="size-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-tertiary-50">
+                      <div className="size-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-tertiary-50 dark:bg-tertiary-900/20">
                         <SparklesIcon className="size-3.5 text-tertiary-500 animate-sparkle" />
                       </div>
                       <div className="flex-1">
-                        <div className="bg-gray-50 rounded-xl rounded-tl-sm px-3 py-2.5 text-xs text-gray-700 leading-relaxed">
+                        <div className="bg-gray-100 dark:bg-slate-700 rounded-xl rounded-tl-sm px-3 py-2.5 text-xs text-gray-900 dark:text-slate-100 leading-relaxed">
                           <div className="flex items-center justify-between mb-2">
-                            <p className="font-semibold text-gray-800">Revenue by Branch — Jan 2026</p>
+                            <p className="font-semibold text-gray-900 dark:text-slate-100">Revenue by Branch — Jan 2026</p>
                             <div className="flex items-center gap-1">
-                              <button className="p-1 rounded hover:bg-gray-200" title="Export"><ArrowDownTrayIcon className="size-3 text-gray-400" /></button>
+                              <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-slate-600" title="Export"><ArrowDownTrayIcon className="size-3 text-gray-400 dark:text-slate-400" /></button>
                             </div>
                           </div>
 
                           {/* Inline bar chart */}
-                          <div className="bg-white rounded-lg border border-gray-100 p-3 mb-2.5">
+                          <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-100 dark:border-slate-600 p-3 mb-2.5">
                             {[
                               { branch: 'Sydney Metro', value: 342180, pct: 100 },
                               { branch: 'Melbourne', value: 298450, pct: 87 },
@@ -665,10 +679,10 @@ export default function FinancialReportsPage() {
                               { branch: 'Perth', value: 98760, pct: 29 },
                             ].map((row, i) => (
                               <div key={i} className="flex items-center gap-2 mb-2 last:mb-0">
-                                <span className="w-24 text-xs text-gray-500 truncate text-right">{row.branch}</span>
-                                <div className="flex-1 h-5 bg-gray-50 rounded-full overflow-hidden">
+                                <span className="w-24 text-xs text-gray-500 dark:text-slate-400 truncate text-right">{row.branch}</span>
+                                <div className="flex-1 h-5 bg-gray-50 dark:bg-slate-700 rounded-full overflow-hidden">
                                   <div
-                                    className="h-full rounded-full transition-all flex items-center justify-end pr-2 bg-primary-400"
+                                    className="h-full rounded-full transition-all flex items-center justify-end pr-2 bg-primary-400 dark:bg-primary-500"
                                     style={{
                                       width: `${row.pct}%`,
                                       opacity: 1 - (i * 0.15),
@@ -682,21 +696,21 @@ export default function FinancialReportsPage() {
                                   </div>
                                 </div>
                                 {row.pct <= 40 && (
-                                  <span className="text-xs text-gray-500 font-mono w-12">${(row.value / 1000).toFixed(0)}K</span>
+                                  <span className="text-xs text-gray-500 dark:text-slate-400 font-mono w-12">${(row.value / 1000).toFixed(0)}K</span>
                                 )}
                               </div>
                             ))}
                           </div>
 
                           {/* Data Table */}
-                          <div className="bg-white rounded-lg border border-gray-100 overflow-hidden mb-2.5">
+                          <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-100 dark:border-slate-600 overflow-hidden mb-2.5">
                             <table className="w-full text-xs">
                               <thead>
-                                <tr className="bg-gray-50">
-                                  <th className="px-2.5 py-1.5 text-left font-medium text-gray-500">Branch</th>
-                                  <th className="px-2.5 py-1.5 text-right font-medium text-gray-500">Revenue</th>
-                                  <th className="px-2.5 py-1.5 text-right font-medium text-gray-500">Orders</th>
-                                  <th className="px-2.5 py-1.5 text-right font-medium text-gray-500">GP%</th>
+                                <tr className="bg-gray-50 dark:bg-slate-700">
+                                  <th className="px-2.5 py-1.5 text-left font-medium text-gray-500 dark:text-slate-400">Branch</th>
+                                  <th className="px-2.5 py-1.5 text-right font-medium text-gray-500 dark:text-slate-400">Revenue</th>
+                                  <th className="px-2.5 py-1.5 text-right font-medium text-gray-500 dark:text-slate-400">Orders</th>
+                                  <th className="px-2.5 py-1.5 text-right font-medium text-gray-500 dark:text-slate-400">GP%</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -707,10 +721,10 @@ export default function FinancialReportsPage() {
                                   { branch: '40 — Adelaide', revenue: '$124,890', orders: '189', gp: '29.4%', up: true },
                                   { branch: '50 — Perth', revenue: '$98,760', orders: '156', gp: '32.7%', up: false },
                                 ].map((row, i) => (
-                                  <tr key={i} className="border-t border-gray-50">
-                                    <td className="px-2.5 py-1.5 text-gray-700">{row.branch}</td>
-                                    <td className="px-2.5 py-1.5 text-right font-mono text-gray-700">{row.revenue}</td>
-                                    <td className="px-2.5 py-1.5 text-right font-mono text-gray-500">{row.orders}</td>
+                                  <tr key={i} className="border-t border-gray-50 dark:border-slate-700">
+                                    <td className="px-2.5 py-1.5 text-gray-700 dark:text-slate-300">{row.branch}</td>
+                                    <td className="px-2.5 py-1.5 text-right font-mono text-gray-700 dark:text-slate-300">{row.revenue}</td>
+                                    <td className="px-2.5 py-1.5 text-right font-mono text-gray-500 dark:text-slate-400">{row.orders}</td>
                                     <td className="px-2.5 py-1.5 text-right">
                                       <span className="inline-flex items-center gap-0.5">
                                         {row.up
@@ -722,18 +736,18 @@ export default function FinancialReportsPage() {
                                     </td>
                                   </tr>
                                 ))}
-                                <tr className="border-t-2 border-gray-200 bg-gray-50">
-                                  <td className="px-2.5 py-1.5 font-semibold text-gray-800">Total</td>
-                                  <td className="px-2.5 py-1.5 text-right font-mono font-semibold text-gray-800">$1,051,600</td>
-                                  <td className="px-2.5 py-1.5 text-right font-mono font-semibold text-gray-700">1,542</td>
-                                  <td className="px-2.5 py-1.5 text-right font-mono font-semibold text-gray-700">32.8%</td>
+                                <tr className="border-t-2 border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700">
+                                  <td className="px-2.5 py-1.5 font-semibold text-gray-800 dark:text-slate-200">Total</td>
+                                  <td className="px-2.5 py-1.5 text-right font-mono font-semibold text-gray-800 dark:text-slate-200">$1,051,600</td>
+                                  <td className="px-2.5 py-1.5 text-right font-mono font-semibold text-gray-700 dark:text-slate-300">1,542</td>
+                                  <td className="px-2.5 py-1.5 text-right font-mono font-semibold text-gray-700 dark:text-slate-300">32.8%</td>
                                 </tr>
                               </tbody>
                             </table>
                           </div>
 
                           {/* Key Insights */}
-                          <div className="bg-emerald-50 border border-emerald-100 rounded-lg p-2.5 text-xs text-emerald-800 leading-relaxed">
+                          <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 rounded-lg p-2.5 text-xs text-emerald-800 dark:text-emerald-300 leading-relaxed">
                             <p className="flex items-center gap-1.5 font-medium mb-1">
                               <BoltIcon className="size-3" /> Key Insights
                             </p>
@@ -743,16 +757,16 @@ export default function FinancialReportsPage() {
 
                         {/* Report Actions */}
                         <div className="mt-2 flex items-center gap-1.5 flex-wrap">
-                          <button className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
+                          <button className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-600">
                             <ArrowDownTrayIcon className="size-3" /> Export CSV
                           </button>
-                          <button className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
+                          <button className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-600">
                             <DocumentArrowDownIcon className="size-3" /> Export Excel
                           </button>
-                          <button className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
+                          <button className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-600">
                             <PrinterIcon className="size-3" /> Print
                           </button>
-                          <button className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
+                          <button className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-600">
                             <BookmarkIcon className="size-3" /> Save Report
                           </button>
                         </div>
@@ -767,7 +781,7 @@ export default function FinancialReportsPage() {
                           ].map(s => (
                             <button
                               key={s}
-                              className="px-2.5 py-1 text-xs rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50 hover:border-gray-300 transition-colors"
+                              className="px-2.5 py-1 text-xs rounded-full border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600 hover:border-gray-300 dark:hover:border-slate-500 transition-colors"
                             >
                               {s}
                             </button>
@@ -780,7 +794,7 @@ export default function FinancialReportsPage() {
                   </div>
 
                   {/* Input Area */}
-                  <div className="p-3 border-t border-gray-100 shrink-0">
+                  <div className="p-3 border-t border-gray-200 dark:border-slate-700 shrink-0 bg-white dark:bg-slate-900">
                     <div className="flex items-stretch gap-2">
                       <div className="flex-1 relative">
                         <textarea
@@ -788,17 +802,17 @@ export default function FinancialReportsPage() {
                           onChange={e => setAiInput(e.target.value)}
                           placeholder="Describe the report you need..."
                           rows={1}
-                          className="w-full h-full resize-none rounded-xl border border-gray-200 px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-tertiary-300 focus:border-transparent pr-10"
+                          className="w-full h-full resize-none rounded-xl border border-gray-200 dark:border-slate-700 px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-tertiary-300 dark:focus:ring-tertiary-500 focus:border-transparent pr-10 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
                         />
-                        <button className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-gray-100">
-                          <PaperClipIcon className="size-4 text-gray-400" />
+                        <button className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700">
+                          <PaperClipIcon className="size-4 text-gray-400 dark:text-slate-500" />
                         </button>
                       </div>
-                      <button className="flex items-center justify-center px-2.5 rounded-xl text-white bg-tertiary-500 hover:bg-tertiary-600 shrink-0">
+                      <button className="flex items-center justify-center px-2.5 rounded-xl text-white bg-primary-500 dark:bg-primary-600 hover:bg-primary-600 dark:hover:bg-primary-700 shrink-0">
                         <PaperAirplaneIcon className="size-4" />
                       </button>
                     </div>
-                    <p className="text-center text-[10px] text-gray-300 mt-1.5">
+                    <p className="text-center text-[10px] text-gray-400 dark:text-slate-500 mt-1.5">
                       AI-generated reports should be verified against source data
                     </p>
                   </div>

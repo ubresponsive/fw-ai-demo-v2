@@ -34,7 +34,7 @@ export default function DashboardWithSidebar() {
   return (
     <>
       <div className="min-h-full">
-        <Disclosure as="nav" className="border-b border-gray-200 bg-white">
+        <Disclosure as="nav" className="border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex h-16 justify-between">
               <div className="flex">
@@ -53,8 +53,8 @@ export default function DashboardWithSidebar() {
                       aria-current={item.current ? "page" : undefined}
                       className={classNames(
                         item.current
-                          ? "border-indigo-600 text-gray-900"
-                          : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700",
+                          ? "border-primary-500 dark:border-primary-400 text-gray-900 dark:text-slate-100"
+                          : "border-transparent text-gray-500 dark:text-slate-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800",
                         "inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium"
                       )}
                     >
@@ -66,7 +66,7 @@ export default function DashboardWithSidebar() {
               <div className="hidden sm:ml-6 sm:flex sm:items-center">
                 <button
                   type="button"
-                  className="relative rounded-full p-1 text-gray-400 hover:text-gray-500 focus:outline-2 focus:outline-offset-2 focus:outline-indigo-600"
+                  className="relative rounded-full p-1 text-gray-400 dark:text-slate-500 hover:text-gray-500 dark:hover:text-slate-300 focus:outline-2 focus:outline-offset-2 focus:outline-indigo-600"
                 >
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">View notifications</span>
@@ -87,13 +87,13 @@ export default function DashboardWithSidebar() {
 
                   <MenuItems
                     transition
-                    className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg outline outline-black/5 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-200 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                    className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-slate-800 py-1 shadow-lg outline outline-black/5 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-200 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
                   >
                     {userNavigation.map((item) => (
                       <MenuItem key={item.name}>
                         <a
                           href={item.href}
-                          className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
+                          className="block px-4 py-2 text-sm text-gray-700 dark:text-slate-300 data-focus:bg-gray-100 dark:data-focus:bg-slate-700 data-focus:outline-hidden"
                         >
                           {item.name}
                         </a>
@@ -104,7 +104,7 @@ export default function DashboardWithSidebar() {
               </div>
               <div className="-mr-2 flex items-center sm:hidden">
                 {/* Mobile menu button */}
-                <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-2 focus:outline-offset-2 focus:outline-indigo-600">
+                <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md bg-white dark:bg-slate-900 p-2 text-gray-400 dark:text-slate-500 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-500 dark:hover:text-slate-300 focus:outline-2 focus:outline-offset-2 focus:outline-indigo-600">
                   <span className="absolute -inset-0.5" />
                   <span className="sr-only">Open main menu</span>
                   <Bars3Icon
@@ -130,8 +130,8 @@ export default function DashboardWithSidebar() {
                   aria-current={item.current ? "page" : undefined}
                   className={classNames(
                     item.current
-                      ? "border-indigo-600 bg-indigo-50 text-indigo-700"
-                      : "border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800",
+                      ? "border-indigo-600 bg-indigo-50 dark:bg-slate-800 text-indigo-700"
+                      : "border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-gray-800",
                     "block border-l-4 py-2 pr-4 pl-3 text-base font-medium"
                   )}
                 >
@@ -139,7 +139,7 @@ export default function DashboardWithSidebar() {
                 </DisclosureButton>
               ))}
             </div>
-            <div className="border-t border-gray-200 pt-4 pb-3">
+            <div className="border-t border-gray-200 dark:border-slate-700 pt-4 pb-3">
               <div className="flex items-center px-4">
                 <div className="shrink-0">
                   <img
@@ -149,16 +149,16 @@ export default function DashboardWithSidebar() {
                   />
                 </div>
                 <div className="ml-3">
-                  <div className="text-base font-medium text-gray-800">
+                  <div className="text-base font-medium text-gray-800 dark:text-slate-200">
                     {user.name}
                   </div>
-                  <div className="text-sm font-medium text-gray-500">
+                  <div className="text-sm font-medium text-gray-500 dark:text-slate-400">
                     {user.email}
                   </div>
                 </div>
                 <button
                   type="button"
-                  className="relative ml-auto shrink-0 rounded-full p-1 text-gray-400 hover:text-gray-500 focus:outline-2 focus:outline-offset-2 focus:outline-indigo-600"
+                  className="relative ml-auto shrink-0 rounded-full p-1 text-gray-400 dark:text-slate-500 hover:text-gray-500 dark:hover:text-slate-300 focus:outline-2 focus:outline-offset-2 focus:outline-indigo-600"
                 >
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">View notifications</span>
@@ -171,7 +171,7 @@ export default function DashboardWithSidebar() {
                     key={item.name}
                     as="a"
                     href={item.href}
-                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                    className="block px-4 py-2 text-base font-medium text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700 hover:text-gray-800 dark:hover:text-slate-200"
                   >
                     {item.name}
                   </DisclosureButton>
@@ -184,7 +184,7 @@ export default function DashboardWithSidebar() {
         <div className="py-10">
           <header>
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+              <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-slate-100">
                 Dashboard
               </h1>
             </div>

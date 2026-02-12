@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class', // Enable class-based dark mode
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -49,6 +50,19 @@ module.exports = {
           800: '#115e59',
           900: '#134e4a',
           950: '#042f2e',
+        },
+        // Dark mode semantic colors (Dracula-inspired with slate)
+        dark: {
+          bg: '#0f172a',      // slate-900 - main dark background
+          surface: '#1e293b', // slate-800 - elevated surfaces (cards, panels)
+          elevated: '#334155', // slate-700 - highly elevated (modals, popovers)
+          border: '#475569',  // slate-600 - borders in dark mode
+        },
+        'dark-text': {
+          primary: '#f1f5f9',   // slate-100 - high contrast text
+          secondary: '#cbd5e1', // slate-300 - medium contrast text
+          tertiary: '#94a3b8',  // slate-400 - lower contrast text
+          muted: '#64748b',     // slate-500 - very muted text
         },
       },
       keyframes: {

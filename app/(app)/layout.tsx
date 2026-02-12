@@ -49,6 +49,7 @@ import { ChevronRightIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import { navigation, bottomNav, type NavItem } from '@/lib/navigation'
 import { classNames, getInitials } from '@/lib/utils'
 import { AppShellContext } from '@/lib/app-shell-context'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 // ── Notification types & sample data ──
 type Notification = {
@@ -71,10 +72,10 @@ const defaultNotifications: Notification[] = [
 ]
 
 const notificationIconMap = {
-  info: { icon: InformationCircleIcon, bg: 'bg-primary-50', text: 'text-primary-500' },
-  warning: { icon: ExclamationTriangleIcon, bg: 'bg-amber-50', text: 'text-amber-500' },
-  success: { icon: CheckIcon, bg: 'bg-emerald-50', text: 'text-emerald-500' },
-  order: { icon: ShoppingCartIcon, bg: 'bg-sky-50', text: 'text-sky-500' },
+  info: { icon: InformationCircleIcon, bg: 'bg-primary-50 dark:bg-primary-900/20', text: 'text-primary-500 dark:text-primary-400' },
+  warning: { icon: ExclamationTriangleIcon, bg: 'bg-amber-50 dark:bg-amber-900/20', text: 'text-amber-500 dark:text-amber-400' },
+  success: { icon: CheckIcon, bg: 'bg-emerald-50 dark:bg-emerald-900/20', text: 'text-emerald-500 dark:text-emerald-400' },
+  order: { icon: ShoppingCartIcon, bg: 'bg-sky-50 dark:bg-sky-900/20', text: 'text-sky-500 dark:text-sky-400' },
 }
 
 // ── Search quick navigation items ──
@@ -247,15 +248,15 @@ function SidebarNavExpanded({ items }: { items: NavItem[] }) {
               href={item.href}
               className={classNames(
                 item.current
-                  ? 'bg-gray-50 text-primary-500'
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary-500',
+                  ? 'bg-gray-50 dark:bg-slate-800 text-primary-500 dark:text-primary-400'
+                  : 'text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary-500 dark:hover:text-primary-400',
                 'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold',
               )}
             >
               <item.icon
                 aria-hidden="true"
                 className={classNames(
-                  item.current ? 'text-primary-500' : 'text-gray-400 group-hover:text-primary-500',
+                  item.current ? 'text-primary-500 dark:text-primary-400' : 'text-gray-400 dark:text-slate-500 group-hover:text-primary-500 dark:group-hover:text-primary-400',
                   'size-6 shrink-0',
                 )}
               />
@@ -268,21 +269,21 @@ function SidebarNavExpanded({ items }: { items: NavItem[] }) {
             <Disclosure as="div" defaultOpen={item.current}>
               <DisclosureButton
                 className={classNames(
-                  item.current ? 'bg-gray-50 text-primary-500' : 'text-gray-700 hover:bg-gray-50 hover:text-primary-500',
+                  item.current ? 'bg-gray-50 dark:bg-slate-800 text-primary-500 dark:text-primary-400' : 'text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary-500 dark:hover:text-primary-400',
                   'group flex w-full items-center gap-x-3 rounded-md p-2 text-left text-sm/6 font-semibold',
                 )}
               >
                 <item.icon
                   aria-hidden="true"
                   className={classNames(
-                    item.current ? 'text-primary-500' : 'text-gray-400 group-hover:text-primary-500',
+                    item.current ? 'text-primary-500 dark:text-primary-400' : 'text-gray-400 dark:text-slate-500 group-hover:text-primary-500 dark:group-hover:text-primary-400',
                     'size-6 shrink-0',
                   )}
                 />
                 {item.name}
                 <ChevronRightIcon
                   aria-hidden="true"
-                  className="ml-auto size-5 shrink-0 text-gray-400 group-data-[open]:rotate-90 group-data-[open]:text-gray-500"
+                  className="ml-auto size-5 shrink-0 text-gray-400 dark:text-slate-500 group-data-[open]:rotate-90 group-data-[open]:text-gray-500 dark:group-data-[open]:text-slate-400"
                 />
               </DisclosureButton>
               <DisclosurePanel as="ul" className="mt-1 px-2">
@@ -292,8 +293,8 @@ function SidebarNavExpanded({ items }: { items: NavItem[] }) {
                       href={subItem.href}
                       className={classNames(
                         subItem.current
-                          ? 'bg-gray-50 text-primary-500 font-semibold'
-                          : 'text-gray-700 hover:bg-gray-50 hover:text-primary-500',
+                          ? 'bg-gray-50 dark:bg-slate-800 text-primary-500 dark:text-primary-400 font-semibold'
+                          : 'text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary-500 dark:hover:text-primary-400',
                         'flex items-center gap-1.5 rounded-md py-2 pr-2 pl-11 text-sm/6',
                       )}
                     >
@@ -324,15 +325,15 @@ function SidebarNavCollapsed({ items }: { items: NavItem[] }) {
             title={item.name}
             className={classNames(
               item.current
-                ? 'bg-gray-50 text-primary-500'
-                : 'text-gray-700 hover:bg-gray-50 hover:text-primary-500',
+                ? 'bg-gray-50 dark:bg-slate-800 text-primary-500 dark:text-primary-400'
+                : 'text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary-500 dark:hover:text-primary-400',
               'group flex rounded-md p-3 text-sm/6 font-semibold',
             )}
           >
             <item.icon
               aria-hidden="true"
               className={classNames(
-                item.current ? 'text-primary-500' : 'text-gray-400 group-hover:text-primary-500',
+                item.current ? 'text-primary-500 dark:text-primary-400' : 'text-gray-400 dark:text-slate-500 group-hover:text-primary-500 dark:group-hover:text-primary-400',
                 'size-6 shrink-0',
               )}
             />
@@ -455,7 +456,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
           <DialogBackdrop
             transition
-            className="fixed inset-0 bg-gray-900/80 transition-opacity duration-300 ease-linear data-[closed]:opacity-0"
+            className="fixed inset-0 bg-gray-900/80 dark:bg-black/90 transition-opacity duration-300 ease-linear data-[closed]:opacity-0"
           />
           <div className="fixed inset-0 flex">
             <DialogPanel
@@ -466,12 +467,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <div className="absolute top-0 left-full flex w-16 justify-center pt-5 duration-300 ease-in-out data-[closed]:opacity-0">
                   <button type="button" onClick={() => setSidebarOpen(false)} className="-m-2.5 p-2.5">
                     <span className="sr-only">Close sidebar</span>
-                    <XMarkIcon aria-hidden="true" className="size-6 text-white" />
+                    <XMarkIcon aria-hidden="true" className="size-6 text-gray-400 dark:text-slate-500 hover:text-gray-500 dark:hover:text-slate-300" />
                   </button>
                 </div>
               </TransitionChild>
 
-              <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
+              <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white dark:bg-slate-900 px-6 pb-4">
                 <div className="flex h-16 shrink-0 items-center">
                   <img alt="Frameworks" src="/frameworks-logo.svg" className="h-8 w-auto" />
                 </div>
@@ -504,7 +505,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         {/* Desktop sidebar */}
         <div className={`hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:flex-col transition-all duration-300 ${sidebarWidth}`}>
-          <div className="flex grow flex-col overflow-y-auto border-r border-gray-200 bg-white">
+          <div className="flex grow flex-col overflow-y-auto border-r border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900">
             {sidebarCollapsed ? (
               <>
                 <div className="flex h-16 shrink-0 items-center justify-center">
@@ -512,7 +513,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </div>
                 <nav className="mt-2 flex flex-1 flex-col items-center">
                   <SidebarNavCollapsed items={navWithCurrent} />
-                  <div className="mt-6 w-8 border-t border-gray-200" />
+                  <div className="mt-6 w-8 border-t border-gray-200 dark:border-slate-700" />
                   <div className="mt-6">
                     <SidebarNavCollapsed items={bottomNav} />
                   </div>
@@ -520,17 +521,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     <button
                       onClick={handleLogout}
                       title="Logout"
-                      className="group flex rounded-md p-3 text-gray-700 hover:bg-gray-50 hover:text-primary-500"
+                      className="group flex rounded-md p-3 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary-500 dark:hover:text-primary-400"
                     >
-                      <ArrowRightStartOnRectangleIcon aria-hidden="true" className="size-6 shrink-0 text-gray-400 group-hover:text-primary-500" />
+                      <ArrowRightStartOnRectangleIcon aria-hidden="true" className="size-6 shrink-0 text-gray-400 dark:text-slate-500 group-hover:text-primary-500 dark:group-hover:text-primary-400" />
                       <span className="sr-only">Logout</span>
                     </button>
                     <button
                       onClick={() => setSidebarCollapsed(false)}
                       title="Expand sidebar"
-                      className="group flex rounded-md p-3 text-gray-700 hover:bg-gray-50 hover:text-primary-500"
+                      className="group flex rounded-md p-3 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary-500 dark:hover:text-primary-400"
                     >
-                      <ChevronDoubleRightIcon aria-hidden="true" className="size-5 text-gray-400 group-hover:text-primary-500" />
+                      <ChevronDoubleRightIcon aria-hidden="true" className="size-5 text-gray-400 dark:text-slate-500 group-hover:text-primary-500 dark:group-hover:text-primary-400" />
                       <span className="sr-only">Expand sidebar</span>
                     </button>
                   </div>
@@ -543,7 +544,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   <button
                     onClick={() => setSidebarCollapsed(true)}
                     title="Collapse sidebar"
-                    className="group rounded-md p-1 text-gray-400 hover:bg-gray-50 hover:text-primary-500"
+                    className="group rounded-md p-1 text-gray-400 dark:text-slate-500 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary-500 dark:hover:text-primary-400"
                   >
                     <ChevronDoubleLeftIcon aria-hidden="true" className="size-5" />
                     <span className="sr-only">Collapse sidebar</span>
@@ -555,7 +556,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       <SidebarNavExpanded items={navWithCurrent} />
                     </li>
                     <li>
-                      <div className="text-xs/6 font-semibold text-gray-400">System</div>
+                      <div className="text-xs/6 font-semibold text-gray-400 dark:text-slate-500">System</div>
                       <div className="mt-2">
                         <SidebarNavExpanded items={bottomNav} />
                       </div>
@@ -563,9 +564,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     <li className="-mx-2 mt-auto mb-4">
                       <button
                         onClick={handleLogout}
-                        className="group flex w-full gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-primary-500"
+                        className="group flex w-full gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary-500 dark:hover:text-primary-400"
                       >
-                        <ArrowRightStartOnRectangleIcon aria-hidden="true" className="size-6 shrink-0 text-gray-400 group-hover:text-primary-500" />
+                        <ArrowRightStartOnRectangleIcon aria-hidden="true" className="size-6 shrink-0 text-gray-400 dark:text-slate-500 group-hover:text-primary-500 dark:group-hover:text-primary-400" />
                         Logout
                       </button>
                     </li>
@@ -612,13 +613,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Desktop header bar */}
-        <div className={`hidden lg:fixed lg:right-0 lg:top-0 lg:z-40 lg:flex lg:h-16 lg:items-center lg:border-b lg:border-gray-200 lg:bg-white lg:px-8 transition-all duration-300 ${headerLeft}`}>
+        <div className={`hidden lg:fixed lg:right-0 lg:top-0 lg:z-40 lg:flex lg:h-16 lg:items-center lg:border-b lg:border-gray-200 dark:border-slate-700 lg:bg-white dark:bg-slate-900 lg:px-8 transition-all duration-300 ${headerLeft}`}>
           {/* Left side — search */}
           <div className="flex flex-1 items-center">
             <div className="relative flex flex-1 max-w-md">
               <MagnifyingGlassIcon
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 left-2 z-10 h-full w-5 text-gray-400"
+                className="pointer-events-none absolute inset-y-0 left-2 z-10 h-full w-5 text-gray-400 dark:text-slate-500"
               />
               <input
                 type="text"
@@ -628,24 +629,24 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setSearchOpen(true)}
-                className="block w-full border-0 py-1.5 pl-10 pr-3 text-gray-900 placeholder:text-gray-400 focus:ring-0 focus:outline-none sm:text-sm/6"
+                className="block w-full border-0 py-1.5 pl-10 pr-3 text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 bg-white dark:bg-slate-800 focus:ring-0 focus:outline-none sm:text-sm/6"
               />
               {/* Search floating panel */}
               {searchOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => { setSearchOpen(false); setSearchQuery('') }} />
-                  <div className="absolute top-full left-0 z-50 mt-2 w-full rounded-xl bg-white shadow-lg ring-1 ring-black/5 p-1.5">
+                  <div className="absolute top-full left-0 z-50 mt-2 w-full rounded-xl bg-white dark:bg-slate-800 shadow-lg ring-1 ring-black/5 p-1.5">
                     {/* Recent Searches */}
                     {!searchQuery && (
                       <div className="mb-1">
-                        <p className="px-2.5 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-gray-400">Recent</p>
+                        <p className="px-2.5 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-slate-500">Recent</p>
                         {recentSearches.map((term) => (
                           <button
                             key={term}
-                            className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                            className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700 hover:text-gray-900 dark:hover:text-slate-100"
                             onClick={() => setSearchOpen(false)}
                           >
-                            <ClockIcon className="size-4 text-gray-400" />
+                            <ClockIcon className="size-4 text-gray-400 dark:text-slate-500" />
                             {term}
                           </button>
                         ))}
@@ -653,23 +654,23 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     )}
                     {/* Quick Navigation */}
                     <div>
-                      <p className="px-2.5 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                      <p className="px-2.5 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-slate-500">
                         {searchQuery ? 'Results' : 'Quick Navigation'}
                       </p>
                       {filteredQuickNav.length === 0 ? (
-                        <p className="px-2.5 py-3 text-xs text-gray-400">No results found</p>
+                        <p className="px-2.5 py-3 text-xs text-gray-400 dark:text-slate-500">No results found</p>
                       ) : (
                         filteredQuickNav.map((group) => (
                           <div key={group.section} className="mb-1">
-                            <p className="px-2.5 py-1 text-[10px] font-medium text-gray-300">{group.section}</p>
+                            <p className="px-2.5 py-1 text-[10px] font-medium text-gray-300 dark:text-slate-600">{group.section}</p>
                             {group.items.map((item) => (
                               <a
                                 key={item.name}
                                 href={item.href}
-                                className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                                className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700 hover:text-gray-900 dark:hover:text-slate-100"
                                 onClick={() => { setSearchOpen(false); setSearchQuery('') }}
                               >
-                                <item.icon className="size-4 text-gray-400" />
+                                <item.icon className="size-4 text-gray-400 dark:text-slate-500" />
                                 {item.name}
                               </a>
                             ))}
@@ -678,15 +679,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       )}
                     </div>
                     {/* Footer */}
-                    <div className="border-t border-gray-100 mt-1 pt-2 px-2.5 pb-1.5 flex items-center justify-between">
-                      <p className="text-xs text-gray-400">
+                    <div className="border-t border-gray-100 dark:border-slate-700 mt-1 pt-2 px-2.5 pb-1.5 flex items-center justify-between">
+                      <p className="text-xs text-gray-400 dark:text-slate-500">
                         {searchQuery ? (
-                          <span>Search all for &ldquo;<span className="text-primary-500">{searchQuery}</span>&rdquo;</span>
+                          <span>Search all for &ldquo;<span className="text-primary-500 dark:text-primary-400">{searchQuery}</span>&rdquo;</span>
                         ) : (
                           'Type to search...'
                         )}
                       </p>
-                      <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[10px] font-medium text-gray-400">
+                      <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 px-1.5 py-0.5 text-[10px] font-medium text-gray-400 dark:text-slate-500">
                         ⌘K
                       </kbd>
                     </div>
@@ -698,23 +699,23 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
           {/* Right side — company, branch, device, notifications, user, help */}
           <div className="flex items-center gap-x-4">
-            <span className="text-sm font-semibold text-gray-900">TEST COMPANY 01</span>
-            <div className="h-5 w-px bg-gray-200" aria-hidden="true" />
+            <span className="text-sm font-semibold text-gray-900 dark:text-slate-100">TEST COMPANY 01</span>
+            <div className="h-5 w-px bg-gray-200 dark:border-slate-700" aria-hidden="true" />
             <Listbox value={selectedBranch} onChange={setSelectedBranch}>
               <div className="relative">
-                <ListboxButton className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 cursor-pointer rounded-md px-1.5 py-0.5 -mx-1.5 hover:bg-gray-50 transition-colors">
+                <ListboxButton className="flex items-center gap-1 text-sm text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-100 cursor-pointer rounded-md px-1.5 py-0.5 -mx-1.5 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
                   Branch: {selectedBranch}
-                  <ChevronUpDownIcon className="size-4 text-gray-400" />
+                  <ChevronUpDownIcon className="size-4 text-gray-400 dark:text-slate-500" />
                 </ListboxButton>
                 <ListboxOptions
                   transition
-                  className="absolute top-full right-0 z-50 mt-1 max-h-60 w-36 overflow-auto rounded-lg bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none text-sm transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
+                  className="absolute top-full right-0 z-50 mt-1 max-h-60 w-36 overflow-auto rounded-lg bg-white dark:bg-slate-800 py-1 shadow-lg ring-1 ring-black/5 focus:outline-none text-sm transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
                 >
                   {Array.from({ length: 10 }, (_, i) => i + 1).map((branch) => (
                     <ListboxOption
                       key={branch}
                       value={branch}
-                      className="relative cursor-pointer select-none px-3 py-1.5 text-gray-700 data-[focus]:bg-primary-50 data-[focus]:text-primary-700 data-[selected]:font-semibold"
+                      className="relative cursor-pointer select-none px-3 py-1.5 text-gray-700 dark:text-slate-300 data-[focus]:bg-primary-50 dark:data-[focus]:bg-slate-700 data-[focus]:text-primary-700 dark:data-[focus]:text-primary-300 data-[selected]:font-semibold"
                     >
                       Branch {branch}
                     </ListboxOption>
@@ -722,17 +723,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </ListboxOptions>
               </div>
             </Listbox>
-            <div className="h-5 w-px bg-gray-200" aria-hidden="true" />
-            <span className="text-sm text-gray-600">Device: roam10</span>
-            <div className="h-5 w-px bg-gray-200" aria-hidden="true" />
+            <div className="h-5 w-px bg-gray-200 dark:bg-slate-700" aria-hidden="true" />
+            <span className="text-sm text-gray-600 dark:text-slate-400">Device: roam10</span>
+            <div className="h-5 w-px bg-gray-200 dark:bg-slate-700" aria-hidden="true" />
+            <ThemeToggle />
+            <div className="h-5 w-px bg-gray-200 dark:bg-slate-700" aria-hidden="true" />
             <button
               type="button"
               onClick={() => setNotificationsOpen(true)}
-              className="relative -m-1.5 p-1.5 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-50"
+              className="relative -m-1.5 p-1.5 rounded-md text-gray-400 dark:text-slate-500 hover:text-gray-500 dark:hover:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800"
             >
               <span className="sr-only">View notifications</span>
               {unreadCount > 0 ? (
-                <BellAlertIcon aria-hidden="true" className="size-6 text-primary-500 animate-bell-ring" />
+                <BellAlertIcon aria-hidden="true" className="size-6 text-primary-500 dark:text-primary-400 animate-bell-ring" />
               ) : (
                 <BellIcon aria-hidden="true" className="size-6" />
               )}
@@ -742,18 +745,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </span>
               )}
             </button>
-            <div className="h-5 w-px bg-gray-200" aria-hidden="true" />
+            <div className="h-5 w-px bg-gray-200 dark:bg-slate-700" aria-hidden="true" />
             <div className="flex items-center gap-x-2">
               <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary-500 text-sm font-medium text-white">
                 {initials}
               </span>
-              <span className="text-sm font-medium text-gray-900">{userName}</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-slate-100">{userName}</span>
             </div>
-            <div className="h-5 w-px bg-gray-200" aria-hidden="true" />
+            <div className="h-5 w-px bg-gray-200 dark:bg-slate-700" aria-hidden="true" />
             <button
               onClick={() => { setHelpOpen(true); setSelectedArticle(null); setHelpTag('All') }}
               title="Help documentation"
-              className="rounded-md p-1 text-gray-400 hover:text-primary-500 hover:bg-gray-50"
+              className="rounded-md p-1 text-gray-400 dark:text-slate-500 hover:text-primary-500 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-slate-800"
             >
               <QuestionMarkCircleIcon aria-hidden="true" className="size-6" />
               <span className="sr-only">Help documentation</span>
@@ -770,7 +773,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <Dialog open={notificationsOpen} onClose={setNotificationsOpen} className="relative z-[60]">
           <DialogBackdrop
             transition
-            className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-all duration-500 ease-in-out data-[closed]:opacity-0 data-[closed]:backdrop-blur-none"
+            className="fixed inset-0 bg-gray-900/50 dark:bg-black/70 backdrop-blur-sm transition-all duration-500 ease-in-out data-[closed]:opacity-0 data-[closed]:backdrop-blur-none"
           />
           <div className="fixed inset-0 overflow-hidden">
             <div className="absolute inset-0 overflow-hidden">
@@ -779,17 +782,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   transition
                   className="pointer-events-auto w-screen max-w-sm transform transition-transform duration-700 ease-in-out data-[closed]:translate-x-full data-[closed]:duration-500"
                 >
-                  <div className="flex h-full flex-col bg-white shadow-2xl">
+                  <div className="flex h-full flex-col bg-white dark:bg-slate-800 shadow-2xl">
                     {/* Header */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-slate-700">
                       <div className="flex items-center gap-2">
-                        <div className="size-7 rounded-lg flex items-center justify-center bg-primary-50">
-                          <BellIcon className="size-4 text-primary-500" />
+                        <div className="size-7 rounded-lg flex items-center justify-center bg-primary-50 dark:bg-primary-900/20">
+                          <BellIcon className="size-4 text-primary-500 dark:text-primary-400" />
                         </div>
                         <div>
-                          <DialogTitle className="text-sm font-semibold text-gray-800">Notifications</DialogTitle>
+                          <DialogTitle className="text-sm font-semibold text-gray-800 dark:text-slate-100">Notifications</DialogTitle>
                           {unreadCount > 0 && (
-                            <p className="text-xs text-gray-400">{unreadCount} unread</p>
+                            <p className="text-xs text-gray-400 dark:text-slate-500">{unreadCount} unread</p>
                           )}
                         </div>
                       </div>
@@ -797,13 +800,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         {notifications.length > 0 && (
                           <button
                             onClick={clearAllNotifications}
-                            className="px-2 py-1 text-xs text-gray-400 hover:text-red-500 rounded-md hover:bg-gray-50"
+                            className="px-2 py-1 text-xs text-gray-500 dark:text-slate-400 hover:text-red-500 rounded-md hover:bg-gray-50 dark:hover:bg-slate-700"
                           >
                             Clear all
                           </button>
                         )}
-                        <button onClick={() => setNotificationsOpen(false)} className="p-1 rounded-lg hover:bg-gray-100">
-                          <XMarkIcon className="size-5 text-gray-400" />
+                        <button onClick={() => setNotificationsOpen(false)} className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700">
+                          <XMarkIcon className="size-5 text-gray-400 dark:text-slate-500" />
                         </button>
                       </div>
                     </div>
@@ -813,21 +816,21 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       {notifications.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-full text-center px-6">
                           <div className="size-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
-                            <BellIcon className="size-6 text-gray-300" />
+                            <BellIcon className="size-6 text-gray-300 dark:text-slate-600" />
                           </div>
-                          <p className="text-sm font-medium text-gray-500">All caught up</p>
-                          <p className="text-xs text-gray-400 mt-1">No notifications to show.</p>
+                          <p className="text-sm font-medium text-gray-500 dark:text-slate-400">All caught up</p>
+                          <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">No notifications to show.</p>
                         </div>
                       ) : (
-                        <ul role="list" className="divide-y divide-gray-100">
+                        <ul role="list" className="divide-y divide-gray-100 dark:divide-slate-700">
                           {notifications.map((n) => {
                             const { icon: NIcon, bg, text } = notificationIconMap[n.type]
                             return (
                               <li
                                 key={n.id}
                                 className={classNames(
-                                  !n.read ? 'bg-primary-50/30' : '',
-                                  'relative px-4 py-3 hover:bg-gray-50 transition-colors group',
+                                  !n.read ? 'bg-primary-50/30 dark:bg-slate-700/50' : '',
+                                  'relative px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors group',
                                 )}
                               >
                                 <div className="flex gap-3">
@@ -836,28 +839,28 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                                   </div>
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-start justify-between gap-2">
-                                      <p className={classNames(!n.read ? 'font-semibold' : 'font-medium', 'text-sm text-gray-900')}>
+                                      <p className={classNames(!n.read ? 'font-semibold' : 'font-medium', 'text-sm text-gray-900 dark:text-slate-100')}>
                                         {n.title}
                                       </p>
                                       {!n.read && (
                                         <span className="mt-1.5 size-2 shrink-0 rounded-full bg-primary-500" />
                                       )}
                                     </div>
-                                    <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{n.message}</p>
+                                    <p className="text-xs text-gray-600 dark:text-slate-400 mt-0.5 leading-relaxed">{n.message}</p>
                                     <div className="flex items-center gap-2 mt-1.5">
-                                      <span className="text-[10px] text-gray-400">{n.time}</span>
+                                      <span className="text-[10px] text-gray-400 dark:text-slate-500">{n.time}</span>
                                       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                         {!n.read && (
                                           <button
                                             onClick={() => markAsRead(n.id)}
-                                            className="px-1.5 py-0.5 text-[10px] font-medium text-primary-500 hover:bg-primary-50 rounded"
+                                            className="px-1.5 py-0.5 text-[10px] font-medium text-primary-500 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded"
                                           >
                                             Mark read
                                           </button>
                                         )}
                                         <button
                                           onClick={() => dismissNotification(n.id)}
-                                          className="p-0.5 text-gray-400 hover:text-red-500 rounded hover:bg-gray-100"
+                                          className="p-0.5 text-gray-400 dark:text-slate-500 hover:text-red-500 rounded hover:bg-gray-100 dark:hover:bg-slate-600"
                                           title="Dismiss"
                                         >
                                           <TrashIcon className="size-3.5" />
@@ -883,7 +886,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <Dialog open={helpOpen} onClose={setHelpOpen} className="relative z-[60]">
           <DialogBackdrop
             transition
-            className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-all duration-500 ease-in-out data-[closed]:opacity-0 data-[closed]:backdrop-blur-none"
+            className="fixed inset-0 bg-gray-900/50 dark:bg-black/70 backdrop-blur-sm transition-all duration-500 ease-in-out data-[closed]:opacity-0 data-[closed]:backdrop-blur-none"
           />
           <div className="fixed inset-0 overflow-hidden">
             <div className="absolute inset-0 overflow-hidden">
@@ -892,33 +895,33 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   transition
                   className="pointer-events-auto w-screen max-w-sm transform transition-transform duration-700 ease-in-out data-[closed]:translate-x-full data-[closed]:duration-500"
                 >
-                  <div className="flex h-full flex-col bg-white shadow-2xl">
+                  <div className="flex h-full flex-col bg-white dark:bg-slate-800 shadow-2xl">
                     {/* Header */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 shrink-0">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-slate-700 shrink-0">
                       <div className="flex items-center gap-2">
                         {selectedArticle ? (
                           <button
                             onClick={() => setSelectedArticle(null)}
-                            className="p-1 -ml-1 rounded-lg hover:bg-gray-100"
+                            className="p-1 -ml-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700"
                           >
-                            <ArrowLeftIcon className="size-4 text-gray-500" />
+                            <ArrowLeftIcon className="size-4 text-gray-500 dark:text-slate-400" />
                           </button>
                         ) : (
-                          <div className="size-7 rounded-lg flex items-center justify-center bg-primary-50">
-                            <BookOpenIcon className="size-4 text-primary-500" />
+                          <div className="size-7 rounded-lg flex items-center justify-center bg-primary-50 dark:bg-primary-900/20">
+                            <BookOpenIcon className="size-4 text-primary-500 dark:text-primary-400" />
                           </div>
                         )}
                         <div>
-                          <DialogTitle className="text-sm font-semibold text-gray-800">
+                          <DialogTitle className="text-sm font-semibold text-gray-800 dark:text-slate-100">
                             {selectedArticle ? selectedArticle.title : 'Help'}
                           </DialogTitle>
                           {!selectedArticle && (
-                            <p className="text-xs text-gray-400">{currentHelpSection.title}</p>
+                            <p className="text-xs text-gray-500 dark:text-slate-400">{currentHelpSection.title}</p>
                           )}
                         </div>
                       </div>
-                      <button onClick={() => setHelpOpen(false)} className="p-1 rounded-lg hover:bg-gray-100">
-                        <XMarkIcon className="size-5 text-gray-400" />
+                      <button onClick={() => setHelpOpen(false)} className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700">
+                        <XMarkIcon className="size-5 text-gray-400 dark:text-slate-500" />
                       </button>
                     </div>
 
@@ -929,27 +932,27 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                           {/* Tags */}
                           <div className="flex items-center gap-1.5 flex-wrap">
                             {selectedArticle.tags.map((tag) => (
-                              <span key={tag} className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-primary-50 text-primary-600">
+                              <span key={tag} className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400">
                                 {tag}
                               </span>
                             ))}
                           </div>
                           {/* Summary */}
-                          <p className="text-xs font-medium text-gray-600 leading-relaxed">{selectedArticle.summary}</p>
+                          <p className="text-xs font-medium text-gray-600 dark:text-slate-400 leading-relaxed">{selectedArticle.summary}</p>
                           {/* Content paragraphs */}
-                          <div className="border-t border-gray-100 pt-3 space-y-3">
+                          <div className="border-t border-gray-200 dark:border-slate-700 pt-3 space-y-3">
                             {selectedArticle.content.map((paragraph, i) => (
-                              <p key={i} className="text-xs text-gray-600 leading-relaxed">{paragraph}</p>
+                              <p key={i} className="text-xs text-gray-700 dark:text-slate-300 leading-relaxed">{paragraph}</p>
                             ))}
                           </div>
                         </div>
                         {/* Bottom action bar */}
-                        <div className="sticky bottom-0 border-t border-gray-100 bg-white px-4 py-2.5 flex items-center gap-2">
-                          <button className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <div className="sticky bottom-0 border-t border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 flex items-center gap-2">
+                          <button className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-slate-300 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
                             <ArrowsPointingOutIcon className="size-3.5" />
                             Full Screen
                           </button>
-                          <button className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                          <button className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-slate-300 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
                             <ArrowTopRightOnSquareIcon className="size-3.5" />
                             Pop Out
                           </button>
@@ -960,8 +963,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       <div className="flex-1 overflow-y-auto">
                         {/* Context section */}
                         <div className="px-4 pt-4 pb-3">
-                          <h3 className="text-sm font-semibold text-gray-900">{currentHelpSection.title}</h3>
-                          <p className="mt-1 text-xs text-gray-500 leading-relaxed">{currentHelpSection.description}</p>
+                          <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">{currentHelpSection.title}</h3>
+                          <p className="mt-1 text-xs text-gray-500 dark:text-slate-400 leading-relaxed">{currentHelpSection.description}</p>
                         </div>
 
                         {/* Category tags */}
@@ -972,8 +975,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                               onClick={() => setHelpTag(tag)}
                               className={classNames(
                                 tag === helpTag
-                                  ? 'bg-primary-50 text-primary-700 ring-1 ring-primary-200'
-                                  : 'bg-gray-50 text-gray-600 hover:bg-gray-100',
+                                  ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 ring-1 ring-primary-200 dark:ring-primary-700'
+                                  : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600',
                                 'px-2.5 py-1 text-[10px] font-medium rounded-full transition-colors',
                               )}
                             >
@@ -985,19 +988,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         {/* Article list */}
                         <div className="px-4 pb-4 space-y-2">
                           {filteredArticles.length === 0 ? (
-                            <p className="py-6 text-center text-xs text-gray-400">No articles match this filter.</p>
+                            <p className="py-6 text-center text-xs text-gray-400 dark:text-slate-500">No articles match this filter.</p>
                           ) : (
                             filteredArticles.map((article) => (
                               <button
                                 key={article.id}
                                 onClick={() => setSelectedArticle(article)}
-                                className="w-full text-left p-3 rounded-lg border border-gray-100 hover:border-primary-200 hover:shadow-sm cursor-pointer transition-all"
+                                className="w-full text-left p-3 rounded-lg border border-gray-100 dark:border-slate-700 hover:border-primary-200 dark:hover:border-primary-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 hover:shadow-sm cursor-pointer transition-all"
                               >
-                                <h4 className="text-sm font-medium text-gray-900">{article.title}</h4>
-                                <p className="text-xs text-gray-500 mt-1 line-clamp-2">{article.summary}</p>
+                                <h4 className="text-sm font-medium text-gray-900 dark:text-slate-100">{article.title}</h4>
+                                <p className="text-xs text-gray-600 dark:text-slate-400 mt-1 line-clamp-2">{article.summary}</p>
                                 <div className="flex items-center gap-1.5 mt-2">
                                   {article.tags.map((tag) => (
-                                    <span key={tag} className="px-1.5 py-0.5 text-[10px] rounded bg-gray-100 text-gray-500">
+                                    <span key={tag} className="px-1.5 py-0.5 text-[10px] rounded bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400">
                                       {tag}
                                     </span>
                                   ))}

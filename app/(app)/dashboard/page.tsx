@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAppShell } from '@/lib/app-shell-context'
 import { classNames } from '@/lib/utils'
-import { ArrowDownIcon, ArrowUpIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
+import { getChartColors } from '@/lib/chart-colors'
+import { ArrowDownIcon, ArrowUpIcon, ChevronRightIcon, ChevronLeftIcon } from '@heroicons/react/20/solid'
 import {
   ShoppingCartIcon,
   CurrencyDollarIcon,
@@ -69,24 +70,24 @@ const revenueData = [
   { day: '28', revenue: 6800 }, { day: '29', revenue: 10500 }, { day: '30', revenue: 11100 },
 ]
 
-const salesByCategory = [
-  { name: 'Timber', value: 84200, color: '#485DCA' },
-  { name: 'Hardware', value: 62100, color: '#3aa8d0' },
-  { name: 'Paint', value: 41800, color: '#14b8a6' },
-  { name: 'Plumbing', value: 38700, color: '#7281de' },
-  { name: 'Electrical', value: 32400, color: '#65c0de' },
-  { name: 'Other', value: 25191, color: '#9ca3af' },
+const salesByCategoryData = [
+  { name: 'Timber', value: 84200 },
+  { name: 'Hardware', value: 62100 },
+  { name: 'Paint', value: 41800 },
+  { name: 'Plumbing', value: 38700 },
+  { name: 'Electrical', value: 32400 },
+  { name: 'Other', value: 25191 },
 ]
 
-const salesTotalValue = salesByCategory.reduce((sum, c) => sum + c.value, 0)
+const salesTotalValue = salesByCategoryData.reduce((sum, c) => sum + c.value, 0)
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function ChartTooltip({ active, payload, label }: any) {
+function ChartTooltip({ active, payload, label, isDark }: any) {
   if (!active || !payload?.length) return null
   return (
-    <div className="rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-lg text-xs">
-      <p className="font-medium text-gray-900">Day {label}</p>
-      <p className="text-primary-600">${payload[0].value.toLocaleString()}</p>
+    <div className="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 shadow-lg text-xs">
+      <p className="font-medium text-gray-900 dark:text-slate-100">Day {label}</p>
+      <p className="text-primary-600 dark:text-primary-400">${payload[0].value.toLocaleString()}</p>
     </div>
   )
 }
@@ -96,17 +97,34 @@ const periodOptions = ['Today', 'Last 7 Days', 'Last 30 Days', 'This Month', 'Th
 export default function DashboardPage() {
   const { userName } = useAppShell()
   const [period, setPeriod] = useState('Last 30 Days')
+  const [isDark, setIsDark] = useState(false)
+  const [showRecentActivity, setShowRecentActivity] = useState(true)
+
+  useEffect(() => {
+    const checkDark = () => setIsDark(document.documentElement.classList.contains('dark'))
+    checkDark()
+
+    const observer = new MutationObserver(checkDark)
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+
+    return () => observer.disconnect()
+  }, [])
+
+  const colors = getChartColors(isDark)
 
   return (
     <>
-      <div className="xl:pr-96">
+      <div className={classNames(
+        showRecentActivity ? 'xl:pr-96' : '',
+        'transition-all duration-300'
+      )}>
         <div className="px-4 py-10 sm:px-6 lg:px-8 lg:py-6">
           {/* Page heading */}
           <div className="mb-8">
-            <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            <h2 className="text-2xl font-bold leading-7 text-gray-900 dark:text-slate-100 sm:truncate sm:text-3xl sm:tracking-tight">
               Dashboard
             </h2>
-            <p className="mt-2 text-sm text-gray-700">
+            <p className="mt-2 text-sm text-gray-700 dark:text-slate-300">
               Welcome back, {userName}
             </p>
           </div>
@@ -114,16 +132,16 @@ export default function DashboardPage() {
           {/* Stats section */}
           <div>
             <div className="flex items-center justify-between gap-4">
-              <h3 className="text-base font-semibold text-gray-900">Overview</h3>
-              <div className="flex items-center gap-1 rounded-lg bg-gray-100 p-0.5">
+              <h3 className="text-base font-semibold text-gray-900 dark:text-slate-100">Overview</h3>
+              <div className="flex items-center gap-1 rounded-lg bg-gray-100 dark:bg-slate-800 p-0.5">
                 {periodOptions.map((opt) => (
                   <button
                     key={opt}
                     onClick={() => setPeriod(opt)}
                     className={classNames(
                       opt === period
-                        ? 'bg-white text-gray-900 shadow-sm'
-                        : 'text-gray-500 hover:text-gray-700',
+                        ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 shadow-sm'
+                        : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300',
                       'rounded-md px-2.5 py-1 text-xs font-medium transition-all',
                     )}
                   >
@@ -137,17 +155,17 @@ export default function DashboardPage() {
                 <a
                   key={item.id}
                   href="#"
-                  className="group relative overflow-hidden rounded-lg border border-gray-100 bg-white px-4 pt-5 pb-5 shadow-sm hover:shadow-md hover:border-primary-200 transition-all sm:px-6 sm:pt-6"
+                  className="group relative overflow-hidden rounded-lg border border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 pt-5 pb-5 shadow-sm hover:shadow-md hover:border-primary-200 dark:hover:border-primary-700 transition-all sm:px-6 sm:pt-6"
                 >
-                  <ChevronRightIcon className="absolute top-4 right-3 size-4 text-gray-300 group-hover:text-primary-400 transition-colors" />
+                  <ChevronRightIcon className="absolute top-4 right-3 size-4 text-gray-300 dark:text-slate-600 group-hover:text-primary-400 dark:group-hover:text-primary-400 transition-colors" />
                   <dt>
-                    <div className="absolute rounded-md bg-secondary-100 p-3">
-                      <item.icon aria-hidden="true" className="size-6 text-secondary-700" />
+                    <div className="absolute rounded-md bg-secondary-100 dark:bg-secondary-900/20 p-3">
+                      <item.icon aria-hidden="true" className="size-6 text-secondary-700 dark:text-secondary-400" />
                     </div>
-                    <p className="ml-16 truncate text-sm font-medium text-gray-500">{item.name}</p>
+                    <p className="ml-16 truncate text-sm font-medium text-gray-500 dark:text-slate-400">{item.name}</p>
                   </dt>
                   <dd className="ml-16 flex items-baseline">
-                    <p className="text-2xl font-semibold text-gray-900">{item.stat}</p>
+                    <p className="text-2xl font-semibold text-gray-900 dark:text-slate-100">{item.stat}</p>
                     <p
                       className={classNames(
                         item.changeType === 'increase' ? 'text-green-600' : 'text-red-600',
@@ -171,38 +189,38 @@ export default function DashboardPage() {
           {/* Charts section */}
           <div className="mt-8 grid grid-cols-1 lg:grid-cols-5 gap-5">
             {/* Revenue Area Chart */}
-            <div className="lg:col-span-3 rounded-lg border border-gray-100 bg-white p-5 shadow-sm">
+            <div className="lg:col-span-3 rounded-lg border border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">
               <div className="mb-4">
-                <h3 className="text-sm font-semibold text-gray-900">Revenue — Last 30 Days</h3>
-                <p className="text-xs text-gray-500 mt-0.5">Daily revenue trend</p>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">Revenue — Last 30 Days</h3>
+                <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">Daily revenue trend</p>
               </div>
               <ResponsiveContainer width="100%" height={220}>
                 <AreaChart data={revenueData} margin={{ top: 4, right: 4, left: -10, bottom: 0 }}>
                   <defs>
                     <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#485DCA" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#485DCA" stopOpacity={0} />
+                      <stop offset="5%" stopColor={colors.primary} stopOpacity={isDark ? 0.3 : 0.2} />
+                      <stop offset="95%" stopColor={colors.primary} stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+                  <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
                   <XAxis
                     dataKey="day"
-                    tick={{ fontSize: 11, fill: '#9ca3af' }}
+                    tick={{ fontSize: 11, fill: colors.axis }}
                     tickLine={false}
-                    axisLine={{ stroke: '#e5e7eb' }}
+                    axisLine={{ stroke: colors.axisLine }}
                     interval={4}
                   />
                   <YAxis
-                    tick={{ fontSize: 11, fill: '#9ca3af' }}
+                    tick={{ fontSize: 11, fill: colors.axis }}
                     tickLine={false}
                     axisLine={false}
                     tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
                   />
-                  <Tooltip content={<ChartTooltip />} />
+                  <Tooltip content={<ChartTooltip isDark={isDark} />} />
                   <Area
                     type="monotone"
                     dataKey="revenue"
-                    stroke="#485DCA"
+                    stroke={colors.primary}
                     strokeWidth={2}
                     fill="url(#revenueGradient)"
                   />
@@ -211,16 +229,16 @@ export default function DashboardPage() {
             </div>
 
             {/* Sales by Category Donut */}
-            <div className="lg:col-span-2 rounded-lg border border-gray-100 bg-white p-5 shadow-sm">
+            <div className="lg:col-span-2 rounded-lg border border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">
               <div className="mb-2">
-                <h3 className="text-sm font-semibold text-gray-900">Sales by Category</h3>
-                <p className="text-xs text-gray-500 mt-0.5">Month to date breakdown</p>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">Sales by Category</h3>
+                <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">Month to date breakdown</p>
               </div>
               <div className="relative">
                 <ResponsiveContainer width="100%" height={160}>
                   <PieChart>
                     <Pie
-                      data={salesByCategory}
+                      data={salesByCategoryData}
                       cx="50%"
                       cy="50%"
                       innerRadius={48}
@@ -229,8 +247,8 @@ export default function DashboardPage() {
                       dataKey="value"
                       strokeWidth={0}
                     >
-                      {salesByCategory.map((entry, i) => (
-                        <Cell key={i} fill={entry.color} />
+                      {salesByCategoryData.map((entry, i) => (
+                        <Cell key={i} fill={colors.categories[i]} />
                       ))}
                     </Pie>
                   </PieChart>
@@ -238,18 +256,18 @@ export default function DashboardPage() {
                 {/* Center label */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div className="text-center">
-                    <p className="text-lg font-bold text-gray-900">${(salesTotalValue / 1000).toFixed(0)}K</p>
-                    <p className="text-[10px] text-gray-400">Total</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-slate-100">${(salesTotalValue / 1000).toFixed(0)}K</p>
+                    <p className="text-[10px] text-gray-400 dark:text-slate-500">Total</p>
                   </div>
                 </div>
               </div>
               {/* Legend */}
               <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1.5">
-                {salesByCategory.map((cat) => (
+                {salesByCategoryData.map((cat, i) => (
                   <div key={cat.name} className="flex items-center gap-1.5 text-xs">
-                    <span className="size-2.5 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
-                    <span className="text-gray-600 truncate">{cat.name}</span>
-                    <span className="ml-auto text-gray-400">{Math.round(cat.value / salesTotalValue * 100)}%</span>
+                    <span className="size-2.5 rounded-full shrink-0" style={{ backgroundColor: colors.categories[i] }} />
+                    <span className="text-gray-600 dark:text-slate-400 truncate">{cat.name}</span>
+                    <span className="ml-auto text-gray-400 dark:text-slate-500">{Math.round(cat.value / salesTotalValue * 100)}%</span>
                   </div>
                 ))}
               </div>
@@ -258,20 +276,20 @@ export default function DashboardPage() {
 
           {/* Quick Links section */}
           <div className="mt-10">
-            <h3 className="text-base font-semibold text-gray-900">Quick Links</h3>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-slate-100">Quick Links</h3>
             <ul role="list" className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {quickLinks.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.href}
-                    className="group flex items-center gap-x-3 rounded-lg border border-gray-200 bg-white p-3 shadow-sm hover:border-primary-400 hover:shadow-md transition-all"
+                    className="group flex items-center gap-x-3 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-3 shadow-sm hover:border-primary-400 dark:hover:border-primary-600 hover:shadow-md transition-all"
                   >
-                    <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-50">
-                      <link.icon aria-hidden="true" className="size-5 text-primary-500" />
+                    <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-50 dark:bg-primary-900/20">
+                      <link.icon aria-hidden="true" className="size-5 text-primary-500 dark:text-primary-400" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-gray-900 group-hover:text-primary-500">{link.name}</p>
-                      <p className="truncate text-xs text-gray-500">{link.description}</p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-slate-100 group-hover:text-primary-500 dark:group-hover:text-primary-400">{link.name}</p>
+                      <p className="truncate text-xs text-gray-500 dark:text-slate-400">{link.description}</p>
                     </div>
                   </a>
                 </li>
@@ -282,15 +300,31 @@ export default function DashboardPage() {
       </div>
 
       {/* Secondary column on right */}
-      <aside className="fixed top-16 bottom-0 right-0 hidden w-96 overflow-y-auto border-l border-gray-200 px-4 py-6 sm:px-6 lg:px-8 xl:block">
-        <h3 className="text-sm font-semibold text-gray-900">Recent Activity</h3>
-        <div className="mt-4 flow-root">
+      <aside className={classNames(
+        showRecentActivity ? 'xl:block' : 'xl:hidden',
+        'fixed top-16 bottom-0 right-0 hidden w-96 overflow-y-auto border-l border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-6 sm:px-6 lg:px-8'
+      )}>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">Recent Activity</h3>
+          <button
+            onClick={() => setShowRecentActivity(!showRecentActivity)}
+            className="text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors"
+            title={showRecentActivity ? 'Hide recent activity' : 'Show recent activity'}
+          >
+            {showRecentActivity ? (
+              <ChevronRightIcon className="size-5" />
+            ) : (
+              <ChevronLeftIcon className="size-5" />
+            )}
+          </button>
+        </div>
+        <div className="flow-root">
           <ul role="list" className="-mb-8">
             {recentActivity.map((item, idx) => (
               <li key={item.id}>
                 <div className="relative pb-8">
                   {idx !== recentActivity.length - 1 && (
-                    <span aria-hidden="true" className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" />
+                    <span aria-hidden="true" className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200 dark:bg-slate-700" />
                   )}
                   <div className="relative flex space-x-3">
                     <div>
@@ -302,7 +336,7 @@ export default function DashboardPage() {
                         item.type === 'customer' ? 'bg-primary-400' :
                         item.type === 'dispatch' ? 'bg-primary-300' :
                         'bg-primary-400',
-                        'flex size-8 items-center justify-center rounded-full ring-8 ring-white',
+                        'flex size-8 items-center justify-center rounded-full ring-8 ring-white dark:ring-slate-900',
                       )}>
                         {item.type === 'sales' && <ShoppingCartIcon className="size-4 text-white" />}
                         {item.type === 'payment' && <BanknotesIcon className="size-4 text-white" />}
@@ -315,10 +349,10 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex min-w-0 flex-1 justify-between space-x-4">
                       <div>
-                        <p className="text-sm text-gray-900">{item.action}</p>
-                        <p className="text-xs text-gray-500">{item.user}</p>
+                        <p className="text-sm text-gray-900 dark:text-slate-100">{item.action}</p>
+                        <p className="text-xs text-gray-500 dark:text-slate-400">{item.user}</p>
                       </div>
-                      <div className="whitespace-nowrap text-right text-xs text-gray-500">
+                      <div className="whitespace-nowrap text-right text-xs text-gray-500 dark:text-slate-400">
                         {item.time}
                       </div>
                     </div>
@@ -329,6 +363,17 @@ export default function DashboardPage() {
           </ul>
         </div>
       </aside>
+
+      {/* Floating toggle button when Recent Activity is hidden */}
+      {!showRecentActivity && (
+        <button
+          onClick={() => setShowRecentActivity(true)}
+          className="fixed top-20 right-4 z-10 hidden xl:flex items-center gap-2 rounded-lg bg-white dark:bg-slate-800 px-3 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 shadow-lg border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+        >
+          <ChevronLeftIcon className="size-4" />
+          Recent Activity
+        </button>
+      )}
     </>
   )
 }

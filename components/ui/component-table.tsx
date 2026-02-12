@@ -36,7 +36,7 @@ export default function ComponentTable() {
         accessorKey: "displayName",
         header: "Component Name",
         cell: (info) => (
-          <div className="font-medium text-gray-900">{info.getValue() as string}</div>
+          <div className="font-medium text-gray-900 dark:text-slate-100">{info.getValue() as string}</div>
         ),
       },
       {
@@ -49,7 +49,7 @@ export default function ComponentTable() {
             .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
             .join(" ");
           return (
-            <span className="inline-flex items-center rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 ring-1 ring-indigo-700/10 ring-inset">
+            <span className="inline-flex items-center rounded-md bg-indigo-50 dark:bg-indigo-900/20 px-2 py-1 text-xs font-medium text-indigo-700 dark:text-indigo-400 ring-1 ring-indigo-700/10 dark:ring-indigo-400/20 ring-inset">
               {formatted}
             </span>
           );
@@ -64,7 +64,7 @@ export default function ComponentTable() {
             .split("-")
             .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
             .join(" ");
-          return <div className="text-sm text-gray-600">{formatted}</div>;
+          return <div className="text-sm text-gray-600 dark:text-slate-400">{formatted}</div>;
         },
       },
       {
@@ -72,12 +72,12 @@ export default function ComponentTable() {
         header: "Section",
         cell: (info) => {
           const value = info.getValue() as string;
-          if (!value) return <span className="text-gray-400">—</span>;
+          if (!value) return <span className="text-gray-400 dark:text-slate-500">—</span>;
           const formatted = value
             .split("-")
             .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
             .join(" ");
-          return <div className="text-sm text-gray-600">{formatted}</div>;
+          return <div className="text-sm text-gray-600 dark:text-slate-400">{formatted}</div>;
         },
       },
       {
@@ -88,7 +88,7 @@ export default function ComponentTable() {
           const path = info.getValue() as string;
           const importPath = `@/components/${path.replace(".jsx", "")}`;
           return (
-            <code className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded">
+            <code className="text-xs text-gray-500 dark:text-slate-400 bg-gray-50 dark:bg-slate-900 px-2 py-1 rounded">
               {importPath}
             </code>
           );
@@ -125,28 +125,28 @@ export default function ComponentTable() {
       {/* Search */}
       <div className="relative">
         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-          <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+          <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 dark:text-slate-500" aria-hidden="true" />
         </div>
         <input
           type="text"
           value={globalFilter ?? ""}
           onChange={(e) => setGlobalFilter(e.target.value)}
-          className="block w-full rounded-md bg-white pl-10 pr-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+          className="block w-full rounded-md bg-white dark:bg-slate-900 pl-10 pr-3 py-2 text-base text-gray-900 dark:text-slate-100 outline-1 -outline-offset-1 outline-gray-300 dark:outline-slate-600 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
           placeholder="Search components..."
         />
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-lg">
-        <table className="min-w-full divide-y divide-gray-300">
-          <thead className="bg-gray-50">
+      <div className="overflow-hidden bg-white dark:bg-slate-800 shadow-sm ring-1 ring-gray-900/5 sm:rounded-lg">
+        <table className="min-w-full divide-y divide-gray-300 dark:divide-slate-700">
+          <thead className="bg-gray-50 dark:bg-slate-900">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
                     scope="col"
-                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-slate-100"
                   >
                     {header.isPlaceholder ? null : (
                       <div
@@ -172,13 +172,13 @@ export default function ComponentTable() {
               </tr>
             ))}
           </thead>
-          <tbody className="divide-y divide-gray-200 bg-white">
+          <tbody className="divide-y divide-gray-200 dark:divide-slate-700 bg-white dark:bg-slate-800">
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="hover:bg-gray-50">
+              <tr key={row.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50">
                 {row.getVisibleCells().map((cell) => (
                   <td
                     key={cell.id}
-                    className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                    className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-slate-400"
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
@@ -190,26 +190,26 @@ export default function ComponentTable() {
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+      <div className="flex items-center justify-between border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 sm:px-6">
         <div className="flex flex-1 justify-between sm:hidden">
           <button
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
-            className="relative inline-flex items-center rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="relative inline-flex items-center rounded-md bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 ring-1 ring-gray-300 dark:ring-slate-600 ring-inset hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Previous
           </button>
           <button
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
-            className="relative ml-3 inline-flex items-center rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="relative ml-3 inline-flex items-center rounded-md bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 ring-1 ring-gray-300 dark:ring-slate-600 ring-inset hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next
           </button>
         </div>
         <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm text-gray-700">
+            <p className="text-sm text-gray-700 dark:text-slate-300">
               Showing{" "}
               <span className="font-medium">
                 {table.getState().pagination.pageIndex *
@@ -239,19 +239,19 @@ export default function ComponentTable() {
               <button
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
-                className="relative inline-flex items-center rounded-l-md bg-white px-2 py-2 text-gray-400 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="relative inline-flex items-center rounded-l-md bg-white dark:bg-slate-800 px-2 py-2 text-gray-400 dark:text-slate-500 ring-1 ring-gray-300 dark:ring-slate-600 ring-inset hover:bg-gray-50 dark:hover:bg-slate-700 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="sr-only">Previous</span>
                 <ChevronLeftIcon aria-hidden="true" className="size-5" />
               </button>
-              <span className="relative inline-flex items-center bg-white px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-gray-300 ring-inset">
+              <span className="relative inline-flex items-center bg-white dark:bg-slate-800 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-slate-300 ring-1 ring-gray-300 dark:ring-slate-600 ring-inset">
                 Page {table.getState().pagination.pageIndex + 1} of{" "}
                 {table.getPageCount()}
               </span>
               <button
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
-                className="relative inline-flex items-center rounded-r-md bg-white px-2 py-2 text-gray-400 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="relative inline-flex items-center rounded-r-md bg-white dark:bg-slate-800 px-2 py-2 text-gray-400 dark:text-slate-500 ring-1 ring-gray-300 dark:ring-slate-600 ring-inset hover:bg-gray-50 dark:hover:bg-slate-700 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="sr-only">Next</span>
                 <ChevronRightIcon aria-hidden="true" className="size-5" />
