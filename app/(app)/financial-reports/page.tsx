@@ -47,6 +47,69 @@ import {
 } from '@heroicons/react/24/outline'
 import { StarIcon as StarIconSolid } from '@heroicons/react/20/solid'
 import { classNames } from '@/lib/utils'
+import {
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts'
+
+// ── Chart Data ──
+const revenueMonthlyData = [
+  { month: 'Feb', revenue: 890, cost: 598 },
+  { month: 'Mar', revenue: 920, cost: 612 },
+  { month: 'Apr', revenue: 1010, cost: 665 },
+  { month: 'May', revenue: 980, cost: 648 },
+  { month: 'Jun', revenue: 1050, cost: 688 },
+  { month: 'Jul', revenue: 1120, cost: 725 },
+  { month: 'Aug', revenue: 1080, cost: 710 },
+  { month: 'Sep', revenue: 1150, cost: 742 },
+  { month: 'Oct', revenue: 1200, cost: 768 },
+  { month: 'Nov', revenue: 1180, cost: 762 },
+  { month: 'Dec', revenue: 1310, cost: 838 },
+  { month: 'Jan', revenue: 1240, cost: 828 },
+]
+
+const arAgingData = [
+  { name: 'Current', value: 142000, color: '#059669' },
+  { name: '30 Days', value: 68000, color: '#d97706' },
+  { name: '60 Days', value: 47000, color: '#ea580c' },
+  { name: '90+ Days', value: 30000, color: '#dc2626' },
+]
+const arTotal = arAgingData.reduce((sum, d) => sum + d.value, 0)
+
+const gpByCategoryData = [
+  { category: 'Timber', gp: 34.2, fill: '#059669' },
+  { category: 'Hardware', gp: 28.5, fill: '#d97706' },
+  { category: 'Plumbing', gp: 36.8, fill: '#059669' },
+  { category: 'Electrical', gp: 22.1, fill: '#d97706' },
+  { category: 'Paint', gp: 41.3, fill: '#059669' },
+  { category: 'Concrete', gp: 18.4, fill: '#dc2626' },
+]
+
+// ── Chart Tooltip ──
+function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string }>; label?: string }) {
+  if (!active || !payload?.length) return null
+  return (
+    <div className="rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-lg">
+      <p className="text-xs font-medium text-gray-700 mb-1">{label}</p>
+      {payload.map((entry) => (
+        <p key={entry.name} className="text-xs text-gray-500">
+          <span className="inline-block size-2 rounded-full mr-1.5" style={{ backgroundColor: entry.color }} />
+          {entry.name}: <span className="font-medium text-gray-700">${entry.value.toLocaleString()}K</span>
+        </p>
+      ))}
+    </div>
+  )
+}
 
 // ── KPI Data ──
 const kpiCards = [
@@ -196,17 +259,6 @@ export default function FinancialReportsPage() {
 
   return (
     <div className="min-h-full">
-      {/* SVG gradient defs for sparkle icons */}
-      <svg className="absolute size-0" aria-hidden="true">
-        <defs>
-          <linearGradient id="sparkle-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fbbf24" />
-            <stop offset="50%" stopColor="#f9a8d4" />
-            <stop offset="100%" stopColor="#c084fc" />
-          </linearGradient>
-        </defs>
-      </svg>
-
       {/* ── Breadcrumb ── */}
       <div className="border-b border-gray-200 bg-white px-4 py-3 sm:px-6 lg:px-8">
         <nav className="flex items-center gap-1.5 text-sm text-gray-500">
@@ -237,9 +289,9 @@ export default function FinancialReportsPage() {
             </div>
             <button
               onClick={() => setAiOpen(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold rounded-lg text-white bg-tertiary-500 hover:bg-tertiary-600 transition-all shadow-sm"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 text-gray-600 bg-white hover:bg-gray-50 transition-all"
             >
-              <SparklesIcon className="size-3.5 animate-sparkle-3" style={{ stroke: 'url(#sparkle-gradient)' }} />
+              <SparklesIcon className="size-3.5 text-tertiary-500 animate-sparkle-3" />
               AI Report Builder
             </button>
           </div>
@@ -271,6 +323,111 @@ export default function FinancialReportsPage() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* ── Charts Section ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6">
+          {/* Revenue & Margin Trend */}
+          <div className="lg:col-span-3 bg-white rounded-xl border border-gray-200 p-4">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-sm font-semibold text-gray-800">Revenue & Margin Trend</h3>
+                <p className="text-xs text-gray-400 mt-0.5">Last 12 months ($K)</p>
+              </div>
+              <div className="flex items-center gap-3 text-xs">
+                <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-primary-400" />Revenue</span>
+                <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-tertiary-400" />Cost</span>
+              </div>
+            </div>
+            <ResponsiveContainer width="100%" height={220}>
+              <AreaChart data={revenueMonthlyData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="revGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#485DCA" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="#485DCA" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="costGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.1} />
+                    <stop offset="95%" stopColor="#14b8a6" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+                <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#9ca3af' }} tickLine={false} axisLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} tickLine={false} axisLine={false} tickFormatter={(v: number) => `$${v}`} />
+                <Tooltip content={<ChartTooltip />} />
+                <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#485DCA" strokeWidth={2} fill="url(#revGradient)" />
+                <Area type="monotone" dataKey="cost" name="Cost" stroke="#14b8a6" strokeWidth={2} fill="url(#costGradient)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Right column — AR Aging + GP by Category stacked */}
+          <div className="lg:col-span-2 space-y-4">
+            {/* AR Aging Donut */}
+            <div className="bg-white rounded-xl border border-gray-200 p-4">
+              <h3 className="text-sm font-semibold text-gray-800 mb-1">Receivables Aging</h3>
+              <p className="text-xs text-gray-400 mb-3">Outstanding balance by period</p>
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <ResponsiveContainer width={130} height={130}>
+                    <PieChart>
+                      <Pie
+                        data={arAgingData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={40}
+                        outerRadius={60}
+                        paddingAngle={2}
+                        dataKey="value"
+                        strokeWidth={0}
+                      >
+                        {arAgingData.map((entry, index) => (
+                          <Cell key={index} fill={entry.color} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <span className="text-sm font-bold text-gray-800">${(arTotal / 1000).toFixed(0)}K</span>
+                    <span className="text-[10px] text-gray-400">Total</span>
+                  </div>
+                </div>
+                <div className="flex-1 space-y-2">
+                  {arAgingData.map((entry) => (
+                    <div key={entry.name} className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-1.5">
+                        <span className="size-2 rounded-full" style={{ backgroundColor: entry.color }} />
+                        <span className="text-gray-600">{entry.name}</span>
+                      </div>
+                      <span className="font-medium text-gray-700 font-mono">${(entry.value / 1000).toFixed(0)}K</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* GP% by Category */}
+            <div className="bg-white rounded-xl border border-gray-200 p-4">
+              <h3 className="text-sm font-semibold text-gray-800 mb-1">GP% by Category</h3>
+              <p className="text-xs text-gray-400 mb-3">Current month performance</p>
+              <ResponsiveContainer width="100%" height={160}>
+                <BarChart data={gpByCategoryData} layout="vertical" margin={{ top: 0, right: 5, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" horizontal={false} />
+                  <XAxis type="number" tick={{ fontSize: 10, fill: '#9ca3af' }} tickLine={false} axisLine={false} domain={[0, 50]} tickFormatter={(v: number) => `${v}%`} />
+                  <YAxis type="category" dataKey="category" tick={{ fontSize: 11, fill: '#6b7280' }} tickLine={false} axisLine={false} width={65} />
+                  <Tooltip
+                    formatter={(value: number | undefined) => [value != null ? `${Number(value).toFixed(1)}%` : '—', 'GP%']}
+                    contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e5e7eb' }}
+                  />
+                  <Bar dataKey="gp" radius={[0, 4, 4, 0]} barSize={14}>
+                    {gpByCategoryData.map((entry, index) => (
+                      <Cell key={index} fill={entry.gp >= 30 ? '#059669' : entry.gp >= 20 ? '#d97706' : '#dc2626'} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
 
         {/* ── Favourites ── */}

@@ -618,16 +618,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="relative flex flex-1 max-w-md">
               <MagnifyingGlassIcon
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 left-0 z-10 h-full w-5 text-gray-400"
+                className="pointer-events-none absolute inset-y-0 left-2 z-10 h-full w-5 text-gray-400"
               />
               <input
-                type="search"
+                type="text"
                 name="search"
                 placeholder="Search..."
+                autoComplete="off"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setSearchOpen(true)}
-                className="block w-full border-0 py-1.5 pl-8 pr-3 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm/6"
+                className="block w-full border-0 py-1.5 pl-10 pr-3 text-gray-900 placeholder:text-gray-400 focus:ring-0 focus:outline-none sm:text-sm/6"
               />
               {/* Search floating panel */}
               {searchOpen && (

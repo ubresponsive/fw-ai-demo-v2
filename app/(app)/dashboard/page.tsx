@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useAppShell } from '@/lib/app-shell-context'
 import { classNames } from '@/lib/utils'
 import { ArrowDownIcon, ArrowUpIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
@@ -90,8 +91,11 @@ function ChartTooltip({ active, payload, label }: any) {
   )
 }
 
+const periodOptions = ['Today', 'Last 7 Days', 'Last 30 Days', 'This Month', 'This Quarter', 'This Year']
+
 export default function DashboardPage() {
   const { userName } = useAppShell()
+  const [period, setPeriod] = useState('Last 30 Days')
 
   return (
     <>
@@ -109,7 +113,25 @@ export default function DashboardPage() {
 
           {/* Stats section */}
           <div>
-            <h3 className="text-base font-semibold text-gray-900">Overview — Last 30 days</h3>
+            <div className="flex items-center justify-between gap-4">
+              <h3 className="text-base font-semibold text-gray-900">Overview</h3>
+              <div className="flex items-center gap-1 rounded-lg bg-gray-100 p-0.5">
+                {periodOptions.map((opt) => (
+                  <button
+                    key={opt}
+                    onClick={() => setPeriod(opt)}
+                    className={classNames(
+                      opt === period
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-500 hover:text-gray-700',
+                      'rounded-md px-2.5 py-1 text-xs font-medium transition-all',
+                    )}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            </div>
             <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {dashboardStats.map((item) => (
                 <a

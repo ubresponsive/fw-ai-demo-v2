@@ -384,17 +384,6 @@ export default function SalesOrderDetailPage() {
 
   return (
     <div className="flex h-[calc(100vh-4rem)] flex-col bg-gray-50">
-      {/* SVG gradient defs for sparkle icons */}
-      <svg className="absolute size-0" aria-hidden="true">
-        <defs>
-          <linearGradient id="sparkle-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fbbf24" />
-            <stop offset="50%" stopColor="#f9a8d4" />
-            <stop offset="100%" stopColor="#c084fc" />
-          </linearGradient>
-        </defs>
-      </svg>
-
       {/* Breadcrumb */}
       <div className="flex items-center gap-1.5 px-4 py-2 text-sm text-gray-500 border-b border-gray-200 bg-white">
         <a href="/dashboard" className="flex items-center gap-1 hover:text-gray-700">
@@ -428,7 +417,7 @@ export default function SalesOrderDetailPage() {
                 'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all border group',
               )}
             >
-              <SparklesIcon className="size-4 animate-sparkle-3" style={{ stroke: 'url(#sparkle-gradient)' }} />
+              <SparklesIcon className="size-4 text-tertiary-500 animate-sparkle-3" />
               AI Assistant
             </button>
 
@@ -1060,9 +1049,9 @@ export default function SalesOrderDetailPage() {
                 <div className="flex h-full flex-col bg-white shadow-2xl">
                   {/* Panel Header */}
                   <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                    <div className="flex items-center gap-2">
-                      <div className="size-7 rounded-lg flex items-center justify-center bg-tertiary-50">
-                        <SparklesIcon className="size-4 text-tertiary-500 animate-sparkle" />
+                    <div className="flex items-center gap-2.5">
+                      <div className="size-8 rounded-xl flex items-center justify-center bg-gradient-to-br from-tertiary-400 to-primary-500">
+                        <SparklesIcon className="size-4 text-white animate-sparkle" />
                       </div>
                       <div>
                         <DialogTitle className="text-sm font-semibold text-gray-800">AI Assistant</DialogTitle>
