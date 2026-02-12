@@ -92,13 +92,68 @@ function ChartTooltip({ active, payload, label, isDark }: any) {
   )
 }
 
-const periodOptions = ['Today', 'Last 7 Days', 'Last 30 Days', 'This Month', 'This Quarter', 'This Year']
+const periodOptions = [
+  { label: 'Today', short: '1D' },
+  { label: 'Last 7 Days', short: '7D' },
+  { label: 'Last 30 Days', short: '30D' },
+  { label: 'This Month', short: '1M' },
+  { label: 'This Quarter', short: '1Q' },
+  { label: 'This Year', short: '1Y' },
+]
+
+function ActivityList({ items, maxItems, ringColor = 'ring-white dark:ring-slate-900' }: { items: typeof recentActivity; maxItems?: number; ringColor?: string }) {
+  const displayItems = maxItems ? items.slice(0, maxItems) : items
+  return (
+    <ul role="list" className="-mb-8">
+      {displayItems.map((item, idx) => (
+        <li key={item.id}>
+          <div className="relative pb-8">
+            {idx !== displayItems.length - 1 && (
+              <span aria-hidden="true" className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200 dark:bg-slate-700" />
+            )}
+            <div className="relative flex space-x-3">
+              <div>
+                <span className={classNames(
+                  item.type === 'sales' ? 'bg-primary-500' :
+                  item.type === 'payment' ? 'bg-primary-400' :
+                  item.type === 'purchase' ? 'bg-primary-300' :
+                  item.type === 'inventory' ? 'bg-primary-500' :
+                  item.type === 'customer' ? 'bg-primary-400' :
+                  item.type === 'dispatch' ? 'bg-primary-300' :
+                  'bg-primary-400',
+                  `flex size-8 items-center justify-center rounded-full ring-8 ${ringColor}`,
+                )}>
+                  {item.type === 'sales' && <ShoppingCartIcon className="size-4 text-white" />}
+                  {item.type === 'payment' && <BanknotesIcon className="size-4 text-white" />}
+                  {item.type === 'purchase' && <ClipboardDocumentListIcon className="size-4 text-white" />}
+                  {item.type === 'inventory' && <CubeIcon className="size-4 text-white" />}
+                  {item.type === 'customer' && <UsersIcon className="size-4 text-white" />}
+                  {item.type === 'dispatch' && <TruckIcon className="size-4 text-white" />}
+                  {item.type === 'finance' && <CalculatorIcon className="size-4 text-white" />}
+                </span>
+              </div>
+              <div className="flex min-w-0 flex-1 justify-between space-x-4">
+                <div>
+                  <p className="text-sm text-gray-900 dark:text-slate-100">{item.action}</p>
+                  <p className="text-xs text-gray-500 dark:text-slate-400">{item.user}</p>
+                </div>
+                <div className="whitespace-nowrap text-right text-xs text-gray-500 dark:text-slate-400">
+                  {item.time}
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+  )
+}
 
 export default function DashboardPage() {
   const { userName } = useAppShell()
   const [period, setPeriod] = useState('Last 30 Days')
   const [isDark, setIsDark] = useState(false)
-  const [showRecentActivity, setShowRecentActivity] = useState(true)
+  const [showRecentActivity, setShowRecentActivity] = useState(false)
 
   useEffect(() => {
     const checkDark = () => setIsDark(document.documentElement.classList.contains('dark'))
@@ -118,7 +173,7 @@ export default function DashboardPage() {
         showRecentActivity ? 'xl:pr-96' : '',
         'transition-all duration-300'
       )}>
-        <div className="px-4 py-10 sm:px-6 lg:px-8 lg:py-6">
+        <div className="px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
           {/* Page heading */}
           <div className="mb-8">
             <h2 className="text-2xl font-bold leading-7 text-gray-900 dark:text-slate-100 sm:truncate sm:text-3xl sm:tracking-tight">
@@ -131,41 +186,42 @@ export default function DashboardPage() {
 
           {/* Stats section */}
           <div>
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
               <h3 className="text-base font-semibold text-gray-900 dark:text-slate-100">Overview</h3>
-              <div className="flex items-center gap-1 rounded-lg bg-gray-100 dark:bg-slate-800 p-0.5">
+              <div className="flex flex-wrap items-center gap-1 rounded-lg bg-gray-100 dark:bg-slate-800 p-0.5">
                 {periodOptions.map((opt) => (
                   <button
-                    key={opt}
-                    onClick={() => setPeriod(opt)}
+                    key={opt.label}
+                    onClick={() => setPeriod(opt.label)}
                     className={classNames(
-                      opt === period
+                      opt.label === period
                         ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 shadow-sm'
                         : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300',
-                      'rounded-md px-2.5 py-1 text-xs font-medium transition-all',
+                      'rounded-md px-2 py-1.5 text-xs font-medium transition-all sm:px-2.5 sm:py-1',
                     )}
                   >
-                    {opt}
+                    <span className="sm:hidden">{opt.short}</span>
+                    <span className="hidden sm:inline">{opt.label}</span>
                   </button>
                 ))}
               </div>
             </div>
-            <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <dl className="mt-5 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
               {dashboardStats.map((item) => (
                 <a
                   key={item.id}
                   href="#"
-                  className="group relative overflow-hidden rounded-lg border border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 pt-5 pb-5 shadow-sm hover:shadow-md hover:border-primary-200 dark:hover:border-primary-700 transition-all sm:px-6 sm:pt-6"
+                  className="group relative overflow-hidden rounded-lg border border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 pt-4 pb-4 shadow-sm hover:shadow-md hover:border-primary-200 dark:hover:border-primary-700 transition-all sm:px-6 sm:pt-6 sm:pb-5"
                 >
                   <ChevronRightIcon className="absolute top-4 right-3 size-4 text-gray-300 dark:text-slate-600 group-hover:text-primary-400 dark:group-hover:text-primary-400 transition-colors" />
                   <dt>
-                    <div className="absolute rounded-md bg-secondary-100 dark:bg-secondary-900/20 p-3">
-                      <item.icon aria-hidden="true" className="size-6 text-secondary-700 dark:text-secondary-400" />
+                    <div className="absolute rounded-md bg-secondary-100 dark:bg-secondary-900/20 p-2 sm:p-3">
+                      <item.icon aria-hidden="true" className="size-5 sm:size-6 text-secondary-700 dark:text-secondary-400" />
                     </div>
-                    <p className="ml-16 truncate text-sm font-medium text-gray-500 dark:text-slate-400">{item.name}</p>
+                    <p className="ml-12 sm:ml-16 truncate text-xs sm:text-sm font-medium text-gray-500 dark:text-slate-400">{item.name}</p>
                   </dt>
-                  <dd className="ml-16 flex items-baseline">
-                    <p className="text-2xl font-semibold text-gray-900 dark:text-slate-100">{item.stat}</p>
+                  <dd className="ml-12 sm:ml-16 flex items-baseline">
+                    <p className="text-lg sm:text-2xl font-semibold text-gray-900 dark:text-slate-100">{item.stat}</p>
                     <p
                       className={classNames(
                         item.changeType === 'increase' ? 'text-green-600' : 'text-red-600',
@@ -277,7 +333,7 @@ export default function DashboardPage() {
           {/* Quick Links section */}
           <div className="mt-10">
             <h3 className="text-base font-semibold text-gray-900 dark:text-slate-100">Quick Links</h3>
-            <ul role="list" className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <ul role="list" className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
               {quickLinks.map((link) => (
                 <li key={link.name}>
                   <a
@@ -295,6 +351,16 @@ export default function DashboardPage() {
                 </li>
               ))}
             </ul>
+          </div>
+
+          {/* Recent Activity — inline on mobile/tablet where the sidebar is hidden */}
+          <div className="mt-10 xl:hidden">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-slate-100 mb-4">Recent Activity</h3>
+            <div className="rounded-lg border border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm">
+              <div className="flow-root">
+                <ActivityList items={recentActivity} maxItems={5} ringColor="ring-white dark:ring-slate-800" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -319,48 +385,7 @@ export default function DashboardPage() {
           </button>
         </div>
         <div className="flow-root">
-          <ul role="list" className="-mb-8">
-            {recentActivity.map((item, idx) => (
-              <li key={item.id}>
-                <div className="relative pb-8">
-                  {idx !== recentActivity.length - 1 && (
-                    <span aria-hidden="true" className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200 dark:bg-slate-700" />
-                  )}
-                  <div className="relative flex space-x-3">
-                    <div>
-                      <span className={classNames(
-                        item.type === 'sales' ? 'bg-primary-500' :
-                        item.type === 'payment' ? 'bg-primary-400' :
-                        item.type === 'purchase' ? 'bg-primary-300' :
-                        item.type === 'inventory' ? 'bg-primary-500' :
-                        item.type === 'customer' ? 'bg-primary-400' :
-                        item.type === 'dispatch' ? 'bg-primary-300' :
-                        'bg-primary-400',
-                        'flex size-8 items-center justify-center rounded-full ring-8 ring-white dark:ring-slate-900',
-                      )}>
-                        {item.type === 'sales' && <ShoppingCartIcon className="size-4 text-white" />}
-                        {item.type === 'payment' && <BanknotesIcon className="size-4 text-white" />}
-                        {item.type === 'purchase' && <ClipboardDocumentListIcon className="size-4 text-white" />}
-                        {item.type === 'inventory' && <CubeIcon className="size-4 text-white" />}
-                        {item.type === 'customer' && <UsersIcon className="size-4 text-white" />}
-                        {item.type === 'dispatch' && <TruckIcon className="size-4 text-white" />}
-                        {item.type === 'finance' && <CalculatorIcon className="size-4 text-white" />}
-                      </span>
-                    </div>
-                    <div className="flex min-w-0 flex-1 justify-between space-x-4">
-                      <div>
-                        <p className="text-sm text-gray-900 dark:text-slate-100">{item.action}</p>
-                        <p className="text-xs text-gray-500 dark:text-slate-400">{item.user}</p>
-                      </div>
-                      <div className="whitespace-nowrap text-right text-xs text-gray-500 dark:text-slate-400">
-                        {item.time}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <ActivityList items={recentActivity} />
         </div>
       </aside>
 

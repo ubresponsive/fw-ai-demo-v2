@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useMemo, useCallback } from 'react'
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import {
   Dialog,
@@ -314,32 +314,113 @@ function SidebarNavExpanded({ items }: { items: NavItem[] }) {
   )
 }
 
-// ── Collapsed sidebar nav — icon-only with tooltips ──
+// ── Collapsed sidebar nav — icon-only with hover flyouts for submenus ──
+function CollapsedNavItem({ item }: { item: NavItem }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    setIsOpen(true)
+  }
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => setIsOpen(false), 150)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      setIsOpen((prev) => !prev)
+    }
+    if (e.key === 'Escape') setIsOpen(false)
+  }
+
+  const iconClasses = classNames(
+    item.current ? 'text-primary-500 dark:text-primary-400' : 'text-gray-400 dark:text-slate-500 group-hover:text-primary-500 dark:group-hover:text-primary-400',
+    'size-6 shrink-0',
+  )
+  const containerClasses = classNames(
+    item.current
+      ? 'bg-gray-50 dark:bg-slate-800 text-primary-500 dark:text-primary-400'
+      : 'text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary-500 dark:hover:text-primary-400',
+    'group flex rounded-md p-3 text-sm/6 font-semibold',
+  )
+
+  // Items without children: simple direct link
+  if (!item.children) {
+    return (
+      <li>
+        <a href={item.href || '#'} title={item.name} className={containerClasses}>
+          <item.icon aria-hidden="true" className={iconClasses} />
+          <span className="sr-only">{item.name}</span>
+        </a>
+      </li>
+    )
+  }
+
+  // Items with children: flyout on hover
+  return (
+    <li
+      className="relative"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <button
+        type="button"
+        onKeyDown={handleKeyDown}
+        aria-expanded={isOpen}
+        aria-haspopup="true"
+        className={containerClasses}
+      >
+        <item.icon aria-hidden="true" className={iconClasses} />
+        <span className="sr-only">{item.name}</span>
+      </button>
+
+      {/* Flyout submenu panel */}
+      <div
+        className={classNames(
+          isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-1 pointer-events-none',
+          'absolute left-full top-0 z-50 ml-2 w-56 rounded-lg bg-white dark:bg-slate-800 shadow-lg ring-1 ring-black/5 dark:ring-slate-700 py-1 transition-all duration-150 ease-out',
+        )}
+        role="menu"
+        aria-label={item.name}
+      >
+        <div className="px-3 py-2 border-b border-gray-100 dark:border-slate-700">
+          <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+            {item.name}
+          </p>
+        </div>
+        <div className="py-1">
+          {item.children.map((child) => (
+            <a
+              key={child.name}
+              href={child.href}
+              role="menuitem"
+              className={classNames(
+                child.current
+                  ? 'bg-gray-50 dark:bg-slate-700 text-primary-500 dark:text-primary-400 font-semibold'
+                  : 'text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 hover:text-primary-500 dark:hover:text-primary-400',
+                'flex items-center gap-1.5 px-3 py-2 text-sm',
+              )}
+            >
+              {child.name}
+              {child.href !== '#' && (
+                <span className="size-1.5 rounded-full bg-tertiary-400 shrink-0" />
+              )}
+            </a>
+          ))}
+        </div>
+      </div>
+    </li>
+  )
+}
+
 function SidebarNavCollapsed({ items }: { items: NavItem[] }) {
   return (
     <ul role="list" className="flex flex-col items-center space-y-1">
       {items.map((item) => (
-        <li key={item.name}>
-          <a
-            href={item.href || '#'}
-            title={item.name}
-            className={classNames(
-              item.current
-                ? 'bg-gray-50 dark:bg-slate-800 text-primary-500 dark:text-primary-400'
-                : 'text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary-500 dark:hover:text-primary-400',
-              'group flex rounded-md p-3 text-sm/6 font-semibold',
-            )}
-          >
-            <item.icon
-              aria-hidden="true"
-              className={classNames(
-                item.current ? 'text-primary-500 dark:text-primary-400' : 'text-gray-400 dark:text-slate-500 group-hover:text-primary-500 dark:group-hover:text-primary-400',
-                'size-6 shrink-0',
-              )}
-            />
-            <span className="sr-only">{item.name}</span>
-          </a>
-        </li>
+        <CollapsedNavItem key={item.name} item={item} />
       ))}
     </ul>
   )
@@ -615,7 +696,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Desktop header bar */}
         <div className={`hidden lg:fixed lg:right-0 lg:top-0 lg:z-40 lg:flex lg:h-16 lg:items-center lg:border-b lg:border-gray-200 dark:border-slate-700 lg:bg-white dark:bg-slate-900 lg:px-8 transition-all duration-300 ${headerLeft}`}>
           {/* Left side — search */}
-          <div className="flex flex-1 items-center">
+          <div className="flex flex-1 items-center mr-4">
             <div className="relative flex flex-1 max-w-md">
               <MagnifyingGlassIcon
                 aria-hidden="true"
@@ -629,7 +710,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setSearchOpen(true)}
-                className="block w-full border-0 py-1.5 pl-10 pr-3 text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 bg-white dark:bg-slate-800 focus:ring-0 focus:outline-none sm:text-sm/6"
+                className="block w-full rounded-md border-0 py-1.5 pl-10 pr-3 text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 bg-gray-50 dark:bg-slate-800 focus:ring-1 focus:ring-primary-500/30 focus:outline-none sm:text-sm/6"
               />
               {/* Search floating panel */}
               {searchOpen && (
