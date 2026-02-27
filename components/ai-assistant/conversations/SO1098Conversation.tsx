@@ -34,9 +34,10 @@ interface ChatMessage {
 
 interface SO1098ConversationProps {
   onAddLines: (lines: QuoteOrderLine[]) => void
+  onClose?: () => void
 }
 
-export function SO1098Conversation({ onAddLines }: SO1098ConversationProps) {
+export function SO1098Conversation({ onAddLines, onClose }: SO1098ConversationProps) {
   const [step, setStep] = useState(1)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
@@ -330,8 +331,8 @@ export function SO1098Conversation({ onAddLines }: SO1098ConversationProps) {
         {step === 1 && messages.length === 0 && (
           <div className="mb-4 animate-fade-in">
             <div className="flex items-start gap-2 mb-3">
-              <div className="w-[26px] h-[26px] rounded-full bg-gradient-to-br from-tertiary-500 to-sky-600 flex items-center justify-center shrink-0 mt-0.5">
-                <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <div className="w-[26px] h-[26px] rounded-full bg-tertiary-100 dark:bg-tertiary-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                <svg className="w-3.5 h-3.5 text-tertiary-500 dark:text-tertiary-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 0 0-2.455 2.456Z" />
                 </svg>
               </div>
@@ -356,8 +357,8 @@ export function SO1098Conversation({ onAddLines }: SO1098ConversationProps) {
                 </div>
               ) : (
                 <div className="flex items-start gap-2">
-                  <div className="w-[26px] h-[26px] rounded-full bg-gradient-to-br from-tertiary-500 to-sky-600 flex items-center justify-center shrink-0 mt-0.5">
-                    <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <div className="w-[26px] h-[26px] rounded-full bg-tertiary-100 dark:bg-tertiary-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg className="w-3.5 h-3.5 text-tertiary-500 dark:text-tertiary-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 0 0-2.455 2.456Z" />
                     </svg>
                   </div>
@@ -444,12 +445,41 @@ export function SO1098Conversation({ onAddLines }: SO1098ConversationProps) {
         {/* Typing indicator */}
         {isTyping && (
           <div className="flex items-start gap-2 mb-4">
-            <div className="w-[26px] h-[26px] rounded-full bg-gradient-to-br from-tertiary-500 to-sky-600 flex items-center justify-center shrink-0">
-              <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+            <div className="w-[26px] h-[26px] rounded-full bg-tertiary-100 dark:bg-tertiary-500/20 flex items-center justify-center shrink-0">
+              <svg className="w-3.5 h-3.5 text-tertiary-500 dark:text-tertiary-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 0 0-2.455 2.456Z" />
               </svg>
             </div>
             <TypingIndicator />
+          </div>
+        )}
+
+        {/* Quick actions at end of flow */}
+        {step >= 12 && !showProcessing && !isTyping && !isStreaming && (
+          <div className="my-3 animate-fade-in flex flex-wrap gap-1.5">
+            {[
+              { label: 'Check Stock', enabled: false },
+              { label: 'Reprice Quote', enabled: false },
+              { label: 'Customer History', enabled: false },
+              { label: 'Add More Products', enabled: false },
+            ].map((a) => (
+              <button
+                key={a.label}
+                disabled={!a.enabled}
+                onClick={() => a.enabled && handleSend(a.label)}
+                className="px-2.5 py-1 rounded-full text-[11px] font-medium border border-gray-200 dark:border-slate-600 text-gray-500 dark:text-slate-400 hover:border-tertiary-400 hover:text-tertiary-600 dark:hover:text-tertiary-400 hover:bg-tertiary-500/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                {a.label}
+              </button>
+            ))}
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="px-2.5 py-1 rounded-full text-[11px] font-medium border border-gray-200 dark:border-slate-600 text-gray-500 dark:text-slate-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-slate-200 transition-colors ml-auto"
+              >
+                Close Assistant
+              </button>
+            )}
           </div>
         )}
 
@@ -458,7 +488,7 @@ export function SO1098Conversation({ onAddLines }: SO1098ConversationProps) {
 
       {/* Input Area */}
       <div className="border-t border-gray-200 dark:border-slate-700 px-4 py-3">
-        <div className="flex items-end gap-2">
+        <div className="flex items-center gap-2">
           <textarea
             ref={inputRef}
             value={input}

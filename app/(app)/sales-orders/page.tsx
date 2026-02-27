@@ -21,6 +21,7 @@ import {
   ChevronDownIcon,
   ArrowTrendingUpIcon,
   BanknotesIcon,
+  SparklesIcon,
 } from '@heroicons/react/24/outline'
 import { ChevronUpIcon as ChevronUpSolidIcon, ChevronDownIcon as ChevronDownSolidIcon } from '@heroicons/react/20/solid'
 import { classNames } from '@/lib/utils'
@@ -51,11 +52,16 @@ type SalesOrder = {
   assignee: string
   totalInc: number
   custType: string
+  isDemo?: boolean
+  demoLabel?: string
 }
 
 const salesOrders: SalesOrder[] = [
+  // ── AI Demo orders (pinned to top) ──
+  { order: '00000436', bo: 0, brn: 10, transType: 'Order', customer: 'PrePaid Deliveries', orderDate: '20/11/2012', delivDate: '20/10/2025', deliveryAddress: 'PrePaid Deliveries 123 Hill Street NSW ACT AUSTRALIA', custRef: '3321', despatch: 10, status: 'Waiting', assignee: 'master', totalInc: 39.00, custType: 'Cash', isDemo: true, demoLabel: 'Margin Analysis' },
+  { order: '00001098', bo: 0, brn: 10, transType: 'Quote', customer: 'CJ Constructions Pty Ltd', orderDate: '27/02/2026', delivDate: '15/03/2026', deliveryAddress: 'CJ Constructions Pty Ltd', custRef: '', despatch: 10, status: 'New', assignee: 'steve', totalInc: 0.00, custType: 'Charge', isDemo: true, demoLabel: 'Product Matching' },
+  // ── Regular orders ──
   { order: '00000055', bo: 1, brn: 10, transType: 'Order', customer: 'DEVONPORT AUTO ELECTRICS', orderDate: '14/12/2011', delivDate: '19/09/2025', deliveryAddress: 'DEVONPORT AUTO ELECTRICS a a ACT AUSTRALIA', custRef: '', despatch: 90, status: 'New', assignee: 'amanda', totalInc: 83616.50, custType: 'Charge' },
-  { order: '00000436', bo: 0, brn: 10, transType: 'Order', customer: 'PrePaid Deliveries', orderDate: '20/11/2012', delivDate: '20/10/2025', deliveryAddress: 'PrePaid Deliveries 123 Hill Street NSW ACT AUSTRALIA', custRef: '3321', despatch: 10, status: 'Waiting', assignee: 'master', totalInc: 39.00, custType: 'Cash' },
   { order: '00000477', bo: 0, brn: 10, transType: 'Order', customer: 'James Nailer', orderDate: '21/11/2012', delivDate: '23/08/2025', deliveryAddress: '11/210 The Entrance Road erina', custRef: '43', despatch: 40, status: 'Waiting', assignee: 'tomj', totalInc: 419.10, custType: 'C.O.D.' },
   { order: '00000514', bo: 0, brn: 10, transType: 'Order', customer: 'Junior', orderDate: '23/11/2012', delivDate: '28/09/2025', deliveryAddress: 'Junior Customer Pick Up ACT AUSTRALIA', custRef: '889', despatch: 45, status: 'Picking', assignee: 'master', totalInc: 223518.72, custType: 'Charge' },
   { order: '00000518', bo: 0, brn: 10, transType: 'Order', customer: 'PrePaid Deliveries', orderDate: '23/11/2012', delivDate: '20/07/2025', deliveryAddress: 'PrePaid Deliveries', custRef: '5556', despatch: 40, status: 'New', assignee: '', totalInc: 90.00, custType: 'Cash' },
@@ -74,7 +80,6 @@ const salesOrders: SalesOrder[] = [
   { order: '00001024', bo: 0, brn: 10, transType: 'Order', customer: 'freddo frog', orderDate: '09/01/2015', delivDate: '11/08/2025', deliveryAddress: 'freddo frog', custRef: '123', despatch: 40, status: 'Waiting', assignee: 'tcroll', totalInc: 20.02, custType: 'C.O.D.' },
   { order: '00001043', bo: 0, brn: 10, transType: 'Order', customer: 'Cuthbert & Sons', orderDate: '23/01/2015', delivDate: '17/05/2025', deliveryAddress: 'mark hughes 5454', custRef: '4554', despatch: 'LOCAR', status: 'New', assignee: '', totalInc: 31.50, custType: 'Charge' },
   { order: '00001061', bo: 0, brn: 10, transType: 'Order', customer: 'PrePaid Deliveries', orderDate: '28/01/2015', delivDate: '06/10/2025', deliveryAddress: 'PrePaid Deliveries Test 1234 Sydney ACT AUSTRALIA', custRef: 'Test 12345', despatch: 45, status: 'Waiting', assignee: 'fareen', totalInc: 13.00, custType: 'Cash' },
-  { order: '00001098', bo: 0, brn: 10, transType: 'Quote', customer: 'CJ Constructions Pty Ltd', orderDate: '27/02/2026', delivDate: '15/03/2026', deliveryAddress: 'CJ Constructions Pty Ltd', custRef: '', despatch: 10, status: 'New', assignee: 'steve', totalInc: 0.00, custType: 'Charge' },
 ]
 
 // ── Status badge colors ──
@@ -111,6 +116,9 @@ export default function SalesOrdersPage() {
       return true
     })
     .sort((a, b) => {
+      // Demo rows always pinned to top
+      if (a.isDemo && !b.isDemo) return -1
+      if (!a.isDemo && b.isDemo) return 1
       if (!sortCol) return 0
       const dir = sortDir === 'asc' ? 1 : -1
       if (sortCol === 'totalInc') return (a.totalInc - b.totalInc) * dir
@@ -305,11 +313,22 @@ export default function SalesOrdersPage() {
               {filtered.map((so, idx) => (
                 <tr
                   key={`${so.order}-${so.bo}-${idx}`}
-                  className="border-b border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer group"
+                  className={classNames(
+                    'border-b border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer group',
+                    so.isDemo ? 'bg-tertiary-50/40 dark:bg-tertiary-900/10' : ''
+                  )}
                   onClick={() => router.push(`/sales-orders/${so.order.replace(/^0+/, '')}-${so.bo}`)}
                 >
                   <td className="px-3 py-2">
-                    <button className="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-300 hover:underline font-mono">{so.order}</button>
+                    <div className="flex items-center gap-2">
+                      <button className="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-300 hover:underline font-mono">{so.order}</button>
+                      {so.isDemo && (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold rounded-md bg-tertiary-100 dark:bg-tertiary-500/20 text-tertiary-700 dark:text-tertiary-300 border border-tertiary-200 dark:border-tertiary-500/30 whitespace-nowrap">
+                          <SparklesIcon className="size-3" />
+                          {so.demoLabel}
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-2 py-2 text-center text-gray-500 dark:text-slate-400 font-mono">{so.bo}</td>
                   <td className="px-2 py-2 text-center text-gray-500 dark:text-slate-400 font-mono">{so.brn}</td>

@@ -7,7 +7,6 @@ import type { ActionConfig } from '@/lib/ai/types'
 import {
   SO_436_SCRIPT_NODES,
   SO_436_INITIAL_MESSAGE,
-  DEMO_STEPS_436,
   ORDER_436_DATA,
   ORDER_436_LINES,
   STOCK_DATA_436,
@@ -18,7 +17,6 @@ import { TypingIndicator } from '../TypingIndicator'
 import { MessageBubble } from '../MessageBubble'
 import { QuickActions } from '../QuickActions'
 import { FavouritesBar } from '../FavouritesBar'
-import { ProgressSteps } from '../ProgressSteps'
 
 export function SO436Conversation() {
   const {
@@ -32,7 +30,6 @@ export function SO436Conversation() {
     sendAction,
     handleApply,
     handleCancel,
-    demoStep,
   } = useConversation({
     scriptNodes: SO_436_SCRIPT_NODES,
     initialMessage: SO_436_INITIAL_MESSAGE,
@@ -117,9 +114,6 @@ export function SO436Conversation() {
 
   return (
     <>
-      {/* Progress Steps */}
-      <ProgressSteps steps={DEMO_STEPS_436} currentStep={demoStep} />
-
       {/* Favourites Bar */}
       <FavouritesBar
         favourites={favourites}
@@ -181,9 +175,9 @@ export function SO436Conversation() {
         {/* Typing indicator */}
         {isTyping && (
           <div className="flex items-start gap-2 mb-4">
-            <div className="w-[26px] h-[26px] rounded-full bg-gradient-to-br from-tertiary-500 to-sky-600 flex items-center justify-center shrink-0">
+            <div className="w-[26px] h-[26px] rounded-full bg-tertiary-100 dark:bg-tertiary-500/20 flex items-center justify-center shrink-0">
               <svg
-                className="w-3.5 h-3.5 text-white"
+                className="w-3.5 h-3.5 text-tertiary-500 dark:text-tertiary-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
@@ -205,7 +199,7 @@ export function SO436Conversation() {
 
       {/* Input Area */}
       <div className="border-t border-gray-200 dark:border-slate-700 px-4 py-3">
-        <div className="flex items-end gap-2">
+        <div className="flex items-center gap-2">
           <textarea
             ref={inputRef}
             value={input}

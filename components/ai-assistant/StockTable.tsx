@@ -54,7 +54,7 @@ export function StockTable({ data }: StockTableProps) {
               </td>
               <td className="px-3 py-2.5">
                 <span
-                  className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[row.status] || ''}`}
+                  className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-medium whitespace-nowrap ${statusColors[row.status] || ''}`}
                 >
                   {row.status}
                 </span>

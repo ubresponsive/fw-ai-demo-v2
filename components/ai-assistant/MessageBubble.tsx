@@ -97,8 +97,8 @@ export function MessageBubble(props: MessageBubbleProps) {
       {/* Assistant avatar */}
       {!isUser && (
         <div className="flex items-center gap-2 mb-1.5">
-          <div className="w-[26px] h-[26px] rounded-full bg-gradient-to-br from-tertiary-500 to-sky-600 flex items-center justify-center">
-            <SparklesIcon className="w-3.5 h-3.5 text-white" />
+          <div className="w-[26px] h-[26px] rounded-full bg-tertiary-100 dark:bg-tertiary-500/20 flex items-center justify-center">
+            <SparklesIcon className="w-3.5 h-3.5 text-tertiary-500 dark:text-tertiary-400" />
           </div>
           <span className="text-xs font-semibold text-gray-500 dark:text-slate-400">
             AI Assistant

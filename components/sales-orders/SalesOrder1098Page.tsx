@@ -1,12 +1,19 @@
 'use client'
 
-import React, { useState, useMemo, useCallback } from 'react'
+import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogPanel,
+  DialogTitle,
+  Transition,
+} from '@headlessui/react'
 import {
   SparklesIcon,
   ChevronDownIcon,
@@ -22,6 +29,7 @@ import {
   CheckCircleIcon,
   ClockIcon,
 } from '@heroicons/react/24/outline'
+import { XMarkIcon } from '@heroicons/react/20/solid'
 import { classNames } from '@/lib/utils'
 import type { QuoteOrderLine } from '@/lib/ai/types'
 import { QUOTE_1098_HEADER } from '@/lib/ai/data/quote-1098'
@@ -113,6 +121,9 @@ export default function SalesOrder1098Page() {
   const [aiOpen, setAiOpen] = useState(false)
   const [orderLines, setOrderLines] = useState<QuoteOrderLine[]>([])
   const [highlightedLines, setHighlightedLines] = useState<Set<number>>(new Set())
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false)
 
   const h = QUOTE_1098_HEADER
 
@@ -131,6 +142,32 @@ export default function SalesOrder1098Page() {
     // Clear highlights after animation
     setTimeout(() => setHighlightedLines(new Set()), 2500)
   }, [orderLines.length])
+
+  // Save handler — show success toast
+  const handleSave = useCallback(() => {
+    const lineCount = orderLines.length
+    setToastMessage(
+      lineCount > 0
+        ? `Quote SO ${h.orderNumber} saved — ${lineCount} line${lineCount !== 1 ? 's' : ''}, $${(orderLines.reduce((s, l) => s + l.lineTotal, 0) * 1.1).toFixed(2)} inc GST`
+        : `Quote SO ${h.orderNumber} saved`
+    )
+    setShowToast(true)
+  }, [orderLines, h.orderNumber])
+
+  // Auto-dismiss toast after 4 seconds
+  useEffect(() => {
+    if (!showToast) return
+    const t = setTimeout(() => setShowToast(false), 4000)
+    return () => clearTimeout(t)
+  }, [showToast])
+
+  // Cancel handler — confirm then clear lines
+  const handleCancelConfirm = useCallback(() => {
+    setOrderLines([])
+    setShowCancelConfirm(false)
+    setToastMessage('All entries cleared from quote')
+    setShowToast(true)
+  }, [])
 
   // Computed totals
   const subtotal = useMemo(
@@ -339,12 +376,92 @@ export default function SalesOrder1098Page() {
             </div>
           ))}
           <div className="ml-auto flex items-center gap-2">
-            <button className="px-4 py-1.5 rounded-lg text-xs font-medium text-white bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-600">Save</button>
-            <button className="px-4 py-1.5 rounded-lg text-xs font-medium bg-gray-200 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-300 dark:hover:bg-slate-600">Cancel</button>
+            <button onClick={handleSave} className="px-4 py-1.5 rounded-lg text-xs font-medium text-white bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-600">Save</button>
+            <button onClick={() => orderLines.length > 0 ? setShowCancelConfirm(true) : undefined} className="px-4 py-1.5 rounded-lg text-xs font-medium bg-gray-200 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-300 dark:hover:bg-slate-600">Cancel</button>
             <button className="px-4 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700">Close</button>
           </div>
         </div>
       </div>
+
+      {/* ── Success Toast ── */}
+      <div aria-live="assertive" className="pointer-events-none fixed inset-0 z-[70] flex items-end px-4 py-6 sm:items-start sm:p-6">
+        <div className="flex w-full flex-col items-center space-y-4 sm:items-end">
+          <Transition show={showToast}>
+            <div className="pointer-events-auto w-full max-w-sm rounded-lg bg-white dark:bg-slate-800 shadow-lg border border-gray-200 dark:border-slate-700 transition data-closed:opacity-0 data-enter:transform data-enter:duration-300 data-enter:ease-out data-closed:data-enter:translate-y-2 data-leave:duration-100 data-leave:ease-in data-closed:data-enter:sm:translate-x-2 data-closed:data-enter:sm:translate-y-0">
+              <div className="p-4">
+                <div className="flex items-start">
+                  <div className="shrink-0">
+                    <CheckCircleIcon aria-hidden="true" className="size-6 text-emerald-400" />
+                  </div>
+                  <div className="ml-3 w-0 flex-1 pt-0.5">
+                    <p className="text-sm font-medium text-gray-900 dark:text-slate-100">Saved successfully</p>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">{toastMessage}</p>
+                  </div>
+                  <div className="ml-4 flex shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setShowToast(false)}
+                      className="inline-flex rounded-md text-gray-400 dark:text-slate-500 hover:text-gray-500 dark:hover:text-slate-300"
+                    >
+                      <span className="sr-only">Close</span>
+                      <XMarkIcon aria-hidden="true" className="size-5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Transition>
+        </div>
+      </div>
+
+      {/* ── Cancel Confirmation Dialog ── */}
+      <Dialog open={showCancelConfirm} onClose={setShowCancelConfirm} className="relative z-[70]">
+        <DialogBackdrop
+          transition
+          className="fixed inset-0 bg-gray-500/75 dark:bg-black/70 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
+        />
+        <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <DialogPanel
+              transition
+              className="relative transform overflow-hidden rounded-lg bg-white dark:bg-slate-800 px-4 pt-5 pb-4 text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg sm:p-6 data-closed:sm:translate-y-0 data-closed:sm:scale-95"
+            >
+              <div className="sm:flex sm:items-start">
+                <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-500/20 sm:mx-0 sm:size-10">
+                  <ExclamationTriangleIcon aria-hidden="true" className="size-6 text-amber-600 dark:text-amber-400" />
+                </div>
+                <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                  <DialogTitle as="h3" className="text-base font-semibold text-gray-900 dark:text-slate-100">
+                    Clear all entries?
+                  </DialogTitle>
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-500 dark:text-slate-400">
+                      This will remove all {orderLines.length} line item{orderLines.length !== 1 ? 's' : ''} from quote SO {h.orderNumber}. This action cannot be undone.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                <button
+                  type="button"
+                  onClick={handleCancelConfirm}
+                  className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto"
+                >
+                  Clear All
+                </button>
+                <button
+                  type="button"
+                  data-autofocus
+                  onClick={() => setShowCancelConfirm(false)}
+                  className="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-slate-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-slate-200 shadow-xs ring-1 ring-inset ring-gray-300 dark:ring-slate-600 hover:bg-gray-50 dark:hover:bg-slate-600 sm:mt-0 sm:w-auto"
+                >
+                  Keep Entries
+                </button>
+              </div>
+            </DialogPanel>
+          </div>
+        </div>
+      </Dialog>
 
       {/* ── AI Assistant Drawer ── */}
       <AIDrawerShell
@@ -353,7 +470,7 @@ export default function SalesOrder1098Page() {
         title="AI Assistant"
         subtitle={`Quote: SO ${h.orderNumber} · ${h.customer.name} · ${orderLines.length} lines`}
       >
-        <SO1098Conversation onAddLines={handleAddLines} />
+        <SO1098Conversation onAddLines={handleAddLines} onClose={() => setAiOpen(false)} />
       </AIDrawerShell>
     </div>
   )

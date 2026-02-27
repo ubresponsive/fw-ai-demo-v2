@@ -53,14 +53,14 @@ export function ConfirmCard({
                     f.highlight && f.new !== null
                       ? 'text-red-600 dark:text-red-400 font-semibold line-through'
                       : f.highlight
-                        ? 'text-emerald-600 dark:text-emerald-400 font-semibold'
+                        ? 'text-primary-600 dark:text-primary-400 font-semibold'
                         : 'text-gray-900 dark:text-slate-200'
                   }`}
                 >
                   {f.current}
                 </td>
                 {f.new !== null && (
-                  <td className="py-1.5 text-right text-emerald-600 dark:text-emerald-400 font-semibold">
+                  <td className="py-1.5 text-right text-primary-600 dark:text-primary-400 font-semibold">
                     {f.new}
                   </td>
                 )}
@@ -73,7 +73,7 @@ export function ConfirmCard({
         <div className="px-4 py-3 flex gap-2.5 border-t border-amber-200/30 dark:border-amber-500/15">
           <button
             onClick={onApply}
-            className="flex-1 px-4 py-2.5 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[13px] flex items-center justify-center gap-1.5 transition-colors"
+            className="flex-1 px-4 py-2.5 rounded-md bg-primary-500 hover:bg-primary-600 text-white font-semibold text-[13px] flex items-center justify-center gap-1.5 transition-colors"
           >
             ✓ Apply Change
           </button>
