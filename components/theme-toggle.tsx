@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { SunIcon, MoonIcon, ComputerDesktopIcon } from '@heroicons/react/24/outline'
+import { SunIcon, MoonIcon } from '@heroicons/react/24/outline'
 import { classNames } from '@/lib/utils'
 
-type Theme = 'light' | 'dark' | 'system'
+type Theme = 'light' | 'dark'
 
 export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>('light')
@@ -12,69 +12,51 @@ export function ThemeToggle() {
 
   useEffect(() => {
     setMounted(true)
-    const stored = localStorage.getItem('theme') as Theme | null
-    setTheme(stored || 'light') // Default to light
-    applyTheme(stored || 'light')
+    const stored = localStorage.getItem('theme')
+    // Migrate legacy "system" preference to "light"
+    const resolved: Theme = stored === 'dark' ? 'dark' : 'light'
+    console.log('[ThemeToggle] mount — stored:', stored, '→ resolved:', resolved, '| <html> classes:', document.documentElement.className)
+    setTheme(resolved)
+    applyTheme(resolved)
   }, [])
 
   const applyTheme = (newTheme: Theme) => {
     const root = document.documentElement
-
-    if (newTheme === 'system') {
-      localStorage.setItem('theme', 'system')
-      const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-      root.classList.toggle('dark', systemDark)
-    } else {
-      localStorage.setItem('theme', newTheme)
-      root.classList.toggle('dark', newTheme === 'dark')
-    }
+    localStorage.setItem('theme', newTheme)
+    root.classList.toggle('dark', newTheme === 'dark')
+    console.log('[ThemeToggle] applied:', newTheme, '| <html> classes:', root.className)
   }
 
-  const handleThemeChange = (newTheme: Theme) => {
-    setTheme(newTheme)
-    applyTheme(newTheme)
+  const handleToggle = () => {
+    const next: Theme = theme === 'light' ? 'dark' : 'light'
+    console.log('[ThemeToggle] toggle:', theme, '→', next)
+    setTheme(next)
+    applyTheme(next)
   }
 
-  if (!mounted) return null // Avoid hydration mismatch
+  if (!mounted) return null
 
   return (
-    <div className="flex items-center gap-0.5 rounded-lg bg-gray-100 dark:bg-slate-800 p-0.5">
-      <button
-        onClick={() => handleThemeChange('light')}
+    <button
+      onClick={handleToggle}
+      className={classNames(
+        'relative inline-flex h-7 w-12 items-center rounded-full transition-colors',
+        theme === 'dark' ? 'bg-slate-700' : 'bg-gray-200',
+      )}
+      title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+    >
+      <span
         className={classNames(
-          theme === 'light'
-            ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 shadow-sm'
-            : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300',
-          'p-1.5 rounded-md transition-all'
+          'inline-flex size-5 items-center justify-center rounded-full bg-white dark:bg-slate-500 shadow-sm transition-transform',
+          theme === 'dark' ? 'translate-x-6' : 'translate-x-1',
         )}
-        title="Light mode"
       >
-        <SunIcon className="size-4" />
-      </button>
-      <button
-        onClick={() => handleThemeChange('system')}
-        className={classNames(
-          theme === 'system'
-            ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 shadow-sm'
-            : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300',
-          'p-1.5 rounded-md transition-all'
+        {theme === 'light' ? (
+          <SunIcon className="size-3 text-amber-500" />
+        ) : (
+          <MoonIcon className="size-3 text-slate-200" />
         )}
-        title="System preference"
-      >
-        <ComputerDesktopIcon className="size-4" />
-      </button>
-      <button
-        onClick={() => handleThemeChange('dark')}
-        className={classNames(
-          theme === 'dark'
-            ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 shadow-sm'
-            : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300',
-          'p-1.5 rounded-md transition-all'
-        )}
-        title="Dark mode"
-      >
-        <MoonIcon className="size-4" />
-      </button>
-    </div>
+      </span>
+    </button>
   )
 }

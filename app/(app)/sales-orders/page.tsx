@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   HomeIcon,
@@ -105,6 +105,15 @@ export default function SalesOrdersPage() {
   const [sortDir, setSortDir] = useState<SortDir>('asc')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [showFilters, setShowFilters] = useState(false)
+  const [searchExpanded, setSearchExpanded] = useState(false)
+  const searchInputRef = useRef<HTMLInputElement>(null)
+
+  // Focus and auto-close search when expanding/collapsing
+  useEffect(() => {
+    if (searchExpanded && searchInputRef.current) {
+      searchInputRef.current.focus()
+    }
+  }, [searchExpanded])
 
   // Filter & sort
   const filtered = salesOrders
@@ -204,51 +213,81 @@ export default function SalesOrdersPage() {
 
       {/* Filter / Search Bar */}
       <div className="mx-4 bg-white dark:bg-slate-800 rounded-t-lg border border-b-0 border-gray-200 dark:border-slate-700">
-        <div className="flex items-center gap-2 px-3 py-2.5 flex-wrap">
-          {/* Search */}
-          <div className="relative flex-1 min-w-[200px] max-w-sm">
-            <MagnifyingGlassIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-gray-400 dark:text-slate-500 pointer-events-none" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search order, customer, address, ref..."
-              className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300"
-            />
-          </div>
+        <div className="flex items-center gap-2 px-3 py-2.5">
+          {/* Search — icon on small screens, expands on click */}
+          {!searchExpanded ? (
+            <>
+              {/* Collapsed: icon button (visible on small screens) */}
+              <button
+                onClick={() => setSearchExpanded(true)}
+                className="md:hidden p-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-400 dark:text-slate-500 hover:bg-gray-50 dark:hover:bg-slate-800"
+                title="Search orders"
+              >
+                <MagnifyingGlassIcon className="size-4" />
+              </button>
+              {/* Expanded by default on md+ */}
+              <div className="relative hidden md:block flex-1 max-w-sm">
+                <MagnifyingGlassIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-gray-400 dark:text-slate-500 pointer-events-none" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search order, customer, address, ref..."
+                  className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300"
+                />
+              </div>
+            </>
+          ) : (
+            /* Expanded search on small screens — takes full row */
+            <div className="relative flex-1 md:max-w-sm">
+              <MagnifyingGlassIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-gray-400 dark:text-slate-500 pointer-events-none" />
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onBlur={() => { if (!search) setSearchExpanded(false) }}
+                placeholder="Search order, customer, address, ref..."
+                className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300"
+              />
+            </div>
+          )}
 
-          {/* Branch */}
-          <div className="grid grid-cols-1">
-            <select className="col-start-1 row-start-1 appearance-none rounded-lg bg-white dark:bg-slate-900 py-1.5 pl-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300">
-              <option>Branch: 10 - TEST BRANCH 010</option>
-            </select>
-            <ChevronDownSolidSmIcon aria-hidden="true" className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 dark:text-slate-400 sm:size-4" />
-          </div>
+          {/* Filters — hidden when search is expanded on mobile */}
+          <div className={classNames(searchExpanded ? 'hidden md:flex' : 'flex', 'items-center gap-2 flex-wrap')}>
+            {/* Branch */}
+            <div className="grid grid-cols-1 min-w-[140px]">
+              <select className="col-start-1 row-start-1 appearance-none rounded-lg bg-white dark:bg-slate-900 py-1.5 pl-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300 truncate">
+                <option>Branch: 10 - TEST BRANCH 010</option>
+              </select>
+              <ChevronDownSolidSmIcon aria-hidden="true" className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 dark:text-slate-400 sm:size-4" />
+            </div>
 
-          {/* Type */}
-          <div className="grid grid-cols-1">
-            <select className="col-start-1 row-start-1 appearance-none rounded-lg bg-white dark:bg-slate-900 py-1.5 pl-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300">
-              <option>Type: Order</option>
-              <option>Type: Quote</option>
-              <option>Type: All</option>
-            </select>
-            <ChevronDownSolidSmIcon aria-hidden="true" className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 dark:text-slate-400 sm:size-4" />
-          </div>
+            {/* Type */}
+            <div className="grid grid-cols-1 min-w-[110px]">
+              <select className="col-start-1 row-start-1 appearance-none rounded-lg bg-white dark:bg-slate-900 py-1.5 pl-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300">
+                <option>Type: Order</option>
+                <option>Type: Quote</option>
+                <option>Type: All</option>
+              </select>
+              <ChevronDownSolidSmIcon aria-hidden="true" className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 dark:text-slate-400 sm:size-4" />
+            </div>
 
-          {/* Status filter */}
-          <div className="grid grid-cols-1">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="col-start-1 row-start-1 appearance-none rounded-lg bg-white dark:bg-slate-900 py-1.5 pl-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300"
-            >
-              <option value="all">All Statuses</option>
-              <option value="New">New</option>
-              <option value="Waiting">Waiting</option>
-              <option value="Picking">Picking</option>
-              <option value="Picked (Loc...)">Picked</option>
-            </select>
-            <ChevronDownSolidSmIcon aria-hidden="true" className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 dark:text-slate-400 sm:size-4" />
+            {/* Status filter */}
+            <div className="grid grid-cols-1 min-w-[120px]">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="col-start-1 row-start-1 appearance-none rounded-lg bg-white dark:bg-slate-900 py-1.5 pl-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300"
+              >
+                <option value="all">All Statuses</option>
+                <option value="New">New</option>
+                <option value="Waiting">Waiting</option>
+                <option value="Picking">Picking</option>
+                <option value="Picked (Loc...)">Picked</option>
+              </select>
+              <ChevronDownSolidSmIcon aria-hidden="true" className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 dark:text-slate-400 sm:size-4" />
+            </div>
           </div>
 
           <div className="ml-auto flex items-center gap-1.5">

@@ -28,7 +28,20 @@ import {
   ChatBubbleLeftRightIcon,
   CheckCircleIcon,
   ClockIcon,
+  EyeSlashIcon,
+  ArrowPathIcon,
+  CurrencyDollarIcon,
+  ScissorsIcon,
+  CubeIcon,
+  LinkIcon,
+  CreditCardIcon,
+  PauseIcon,
+  TrashIcon,
+  PrinterIcon,
+  DocumentDuplicateIcon,
+  MapPinIcon,
 } from '@heroicons/react/24/outline'
+import { ChevronDownIcon as ChevronDownSolidSmIcon } from '@heroicons/react/16/solid'
 import { XMarkIcon } from '@heroicons/react/20/solid'
 import { classNames } from '@/lib/utils'
 import type { QuoteOrderLine } from '@/lib/ai/types'
@@ -115,10 +128,28 @@ const columns = [
   }),
 ]
 
+// ── Actions menu items ──
+const actionItems: { icon: React.ElementType; label: string; danger?: boolean }[] = [
+  { icon: DocumentTextIcon, label: 'Edit Header' },
+  { icon: EyeSlashIcon, label: 'Hide Costs' },
+  { icon: ArrowPathIcon, label: 'Reprice' },
+  { icon: CurrencyDollarIcon, label: 'Gross Profit Reprice' },
+  { icon: ScissorsIcon, label: 'Split Transaction' },
+  { icon: CubeIcon, label: 'Pick & Release' },
+  { icon: ClipboardDocumentListIcon, label: 'Picking Enquiry' },
+  { icon: LinkIcon, label: 'Linked PO' },
+  { icon: CreditCardIcon, label: 'Make Payment' },
+  { icon: PauseIcon, label: 'Hold Order' },
+  { icon: TrashIcon, label: 'Void Order', danger: true },
+  { icon: PrinterIcon, label: 'Print Options' },
+  { icon: DocumentDuplicateIcon, label: 'Copy Order' },
+]
+
 // ── Main Page Component ──
 export default function SalesOrder1098Page() {
   const [activeTab, setActiveTab] = useState('lines')
   const [aiOpen, setAiOpen] = useState(false)
+  const [showActions, setShowActions] = useState(false)
   const aiResetRef = useRef<(() => void) | null>(null)
   const [orderLines, setOrderLines] = useState<QuoteOrderLine[]>([])
   const [highlightedLines, setHighlightedLines] = useState<Set<number>>(new Set())
@@ -230,10 +261,34 @@ export default function SalesOrder1098Page() {
             </button>
 
             {/* Actions dropdown */}
-            <button className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg text-white bg-primary-600 dark:bg-primary-700 hover:bg-primary-700 dark:hover:bg-primary-600 transition-all">
-              Actions
-              <ChevronDownIcon className="size-3" />
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowActions(!showActions)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg text-white bg-primary-600 dark:bg-primary-700 hover:bg-primary-700 dark:hover:bg-primary-600 transition-all"
+              >
+                Actions
+                <ChevronDownIcon className="size-3" />
+              </button>
+              {showActions && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setShowActions(false)} />
+                  <div className="absolute right-0 top-full mt-1 w-56 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-xl z-50 py-1">
+                    {actionItems.map(({ icon: Icon, label, danger }) => (
+                      <button
+                        key={label}
+                        className={classNames(
+                          danger ? 'text-red-600 dark:text-red-400' : 'text-gray-700 dark:text-slate-300',
+                          'w-full flex items-center gap-2.5 px-3 py-2 text-xs hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors',
+                        )}
+                      >
+                        <Icon className="size-4 text-gray-400 dark:text-slate-500" />
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -356,10 +411,331 @@ export default function SalesOrder1098Page() {
           </>
         )}
 
-        {/* Placeholder for other tabs */}
-        {activeTab !== 'lines' && (
-          <div className="flex-1 flex items-center justify-center py-20">
-            <p className="text-sm text-gray-400 dark:text-slate-500">No items to show.</p>
+        {/* ── Delivery Details Tab ── */}
+        {activeTab === 'delivery' && (
+          <div className="flex-1 overflow-auto p-5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Left column — Address & Contact */}
+              <div className="space-y-4">
+                {[
+                  { label: 'Delivery Date', value: '10/03/2026', type: 'date' as const },
+                  { label: 'Requested Time', value: '', type: 'select' as const },
+                  { label: 'Delivery Time', value: '00:00' },
+                  { label: 'Deliver To', value: 'CJ Constructions Pty Ltd' },
+                  { label: 'Address', value: '47 Industrial Drive' },
+                  { label: 'Suburb/City', value: 'Penrith' },
+                  { label: 'State', value: 'NSW - New South Wales', type: 'select' as const },
+                  { label: 'Post Code', value: '2750' },
+                  { label: 'Country', value: 'AUSTRALIA' },
+                  { label: 'Instructions', value: 'Ring on arrival — site gate code 4421' },
+                  { label: 'Contact Name', value: 'Steve Johnson' },
+                  { label: 'Contact Phone', value: '0412 345 678' },
+                  { label: 'Contact Email', value: 'steve@cjconstructions.com.au' },
+                ].map((field) => (
+                  <div key={field.label} className="flex items-center gap-3">
+                    <label className="w-28 text-xs font-medium text-gray-500 dark:text-slate-400 text-right shrink-0">{field.label}</label>
+                    {field.type === 'select' ? (
+                      <div className="flex-1 grid grid-cols-1">
+                        <select className="col-start-1 row-start-1 appearance-none px-2 py-1.5 pr-7 text-xs border border-gray-200 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-primary-300 dark:focus:ring-primary-500">
+                          <option>{field.value || '—'}</option>
+                        </select>
+                        <ChevronDownSolidSmIcon aria-hidden="true" className="pointer-events-none col-start-1 row-start-1 mr-2 size-4 self-center justify-self-end text-gray-400 dark:text-slate-500" />
+                      </div>
+                    ) : (
+                      <input
+                        type="text"
+                        defaultValue={field.value}
+                        className="flex-1 px-2 py-1.5 text-xs border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-300 dark:focus:ring-primary-500"
+                      />
+                    )}
+                  </div>
+                ))}
+                <div className="flex items-center gap-3 pt-1">
+                  <div className="w-28" />
+                  <button className="px-3 py-1.5 text-xs font-medium rounded-md text-white bg-primary-600 dark:bg-primary-700 hover:bg-primary-700 dark:hover:bg-primary-600">
+                    Save Contact
+                  </button>
+                </div>
+              </div>
+
+              {/* Middle column — Delivery details */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <label className="w-28 text-xs font-medium text-gray-500 dark:text-slate-400 text-right shrink-0">Type Of Load</label>
+                  <div className="flex-1 grid grid-cols-1">
+                    <select className="col-start-1 row-start-1 appearance-none px-2 py-1.5 pr-7 text-xs border border-gray-200 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-primary-300 dark:focus:ring-primary-500">
+                      <option>Flatbed</option>
+                    </select>
+                    <ChevronDownSolidSmIcon aria-hidden="true" className="pointer-events-none col-start-1 row-start-1 mr-2 size-4 self-center justify-self-end text-gray-400 dark:text-slate-500" />
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <label className="w-28 text-xs font-medium text-gray-500 dark:text-slate-400 text-right shrink-0">Has Phoned</label>
+                  <input type="checkbox" className="rounded border-gray-300 dark:border-slate-600 dark:bg-slate-700" />
+                </div>
+                {[
+                  { label: 'Map Ref', value: '' },
+                  { label: 'Map Xref', value: '' },
+                  { label: 'Delivery Area', value: 'D200' },
+                  { label: 'Delivery Fee(Inc)', value: '55' },
+                ].map((field) => (
+                  <div key={field.label} className="flex items-center gap-3">
+                    <label className="w-28 text-xs font-medium text-gray-500 dark:text-slate-400 text-right shrink-0">{field.label}</label>
+                    <input
+                      type="text"
+                      defaultValue={field.value}
+                      className="flex-1 px-2 py-1.5 text-xs border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-300 dark:focus:ring-primary-500"
+                    />
+                  </div>
+                ))}
+                <div className="mt-4 space-y-3">
+                  <div className="flex items-start gap-3">
+                    <label className="w-28 text-xs font-medium text-gray-500 dark:text-slate-400 text-right shrink-0 pt-1.5">Comments</label>
+                    <textarea rows={3} defaultValue="Customer requires delivery before 8am start" className="flex-1 px-2 py-1.5 text-xs border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-300 dark:focus:ring-primary-500 resize-none" />
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <label className="w-28 text-xs font-medium text-gray-500 dark:text-slate-400 text-right shrink-0 pt-1.5">Picking Comment</label>
+                    <textarea rows={3} className="flex-1 px-2 py-1.5 text-xs border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-300 dark:focus:ring-primary-500 resize-none bg-green-50/30 dark:bg-green-500/10" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Right column — Vehicle & Map */}
+              <div className="space-y-4">
+                {[
+                  { label: 'Vehicle', value: '' },
+                  { label: 'Run No.', value: '0' },
+                  { label: 'Drop No.', value: '0' },
+                ].map((field) => (
+                  <div key={field.label} className="flex items-center gap-3">
+                    <label className="w-20 text-xs font-medium text-gray-500 dark:text-slate-400 text-right shrink-0">{field.label}</label>
+                    <input
+                      type="text"
+                      defaultValue={field.value}
+                      className="w-24 px-2 py-1.5 text-xs border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-300 dark:focus:ring-primary-500"
+                    />
+                  </div>
+                ))}
+                <div className="mt-2 rounded-lg border border-gray-200 dark:border-slate-700 overflow-hidden">
+                  <div className="bg-gray-100 dark:bg-slate-900 h-48 flex items-center justify-center">
+                    <div className="text-center">
+                      <MapPinIcon className="size-8 text-gray-300 dark:text-slate-600 mx-auto" />
+                      <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">47 Industrial Dr, Penrith NSW</p>
+                      <a href="#" className="text-xs text-primary-500 dark:text-primary-400 hover:underline">View larger map</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Header Tab ── */}
+        {activeTab === 'header' && (
+          <div className="flex-1 overflow-auto p-5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Left column — Order details */}
+              <div className="space-y-3 border border-gray-100 dark:border-slate-700 rounded-lg p-4">
+                {[
+                  { label: 'Ordered By', value: 'Steve Johnson' },
+                  { label: 'Operator', value: '10', extra: 'System Administrator' },
+                  { label: 'Order Taken By', value: 'stevend', extra: 'Steve Dennis' },
+                  { label: 'Status', value: 'Entry Incomplete' },
+                  { label: 'Assignee', value: 'stevend' },
+                ].map((field) => (
+                  <div key={field.label} className="flex items-center gap-3">
+                    <label className="w-32 text-xs font-medium text-gray-500 dark:text-slate-400 text-right shrink-0">{field.label}</label>
+                    <span className="text-xs text-gray-800 dark:text-slate-200">{field.value}</span>
+                    {field.extra && <span className="text-xs text-gray-400 dark:text-slate-500 ml-2">{field.extra}</span>}
+                  </div>
+                ))}
+                <div className="flex items-center gap-3">
+                  <div className="w-32" />
+                  <button className="px-3 py-1.5 text-xs font-medium rounded-md text-white bg-primary-600 dark:bg-primary-700 hover:bg-primary-700 dark:hover:bg-primary-600">
+                    Assign To Me
+                  </button>
+                </div>
+                <div className="border-t border-gray-100 dark:border-slate-700 my-2" />
+                {[
+                  { label: 'Date ordered', value: '27/02/2026' },
+                  { label: 'BO Created', value: '' },
+                  { label: 'Original Deliv Date', value: '10/03/2026' },
+                  { label: 'Linked Transfer', value: '' },
+                  { label: 'Pick List Print #', value: '0' },
+                ].map((field) => (
+                  <div key={field.label} className="flex items-center gap-3">
+                    <label className="w-32 text-xs font-medium text-gray-500 dark:text-slate-400 text-right shrink-0">{field.label}</label>
+                    <span className="text-xs text-gray-800 dark:text-slate-200">{field.value || '—'}</span>
+                  </div>
+                ))}
+                <div className="border-t border-gray-100 dark:border-slate-700 my-2" />
+                <div className="flex items-center gap-3">
+                  <label className="w-32 text-xs font-medium text-gray-500 dark:text-slate-400 text-right shrink-0">Hide Quote Line Pricing on Web</label>
+                  <input type="checkbox" className="rounded border-gray-300 dark:border-slate-600 dark:bg-slate-700" />
+                </div>
+                <div className="flex items-center gap-3">
+                  <label className="w-32 text-xs font-medium text-gray-500 dark:text-slate-400 text-right shrink-0">Selling Branch</label>
+                  <span className="text-xs text-gray-800 dark:text-slate-200">10 - TEST BRANCH 010</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <label className="w-32 text-xs font-medium text-gray-500 dark:text-slate-400 text-right shrink-0">Supply Warehouse</label>
+                  <span className="text-xs text-gray-800 dark:text-slate-200">—</span>
+                </div>
+              </div>
+
+              {/* Middle column — Project, payment, descriptions */}
+              <div className="space-y-3 border border-gray-100 dark:border-slate-700 rounded-lg p-4">
+                <div className="flex items-center gap-3">
+                  <label className="w-32 text-xs font-medium text-gray-500 dark:text-slate-400 text-right shrink-0">Export Sale</label>
+                  <input type="checkbox" className="rounded border-gray-300 dark:border-slate-600 dark:bg-slate-700" />
+                </div>
+                <div className="flex items-center gap-3">
+                  <label className="w-32 text-xs font-medium text-gray-500 dark:text-slate-400 text-right shrink-0">Online Sale</label>
+                  <input type="checkbox" className="rounded border-gray-300 dark:border-slate-600 dark:bg-slate-700" />
+                </div>
+                {[
+                  { label: 'Project', value: '0' },
+                  { label: 'Job', value: '0' },
+                  { label: 'Section', value: '0' },
+                ].map((field) => (
+                  <div key={field.label} className="flex items-center gap-3">
+                    <label className="w-32 text-xs font-medium text-gray-500 dark:text-slate-400 text-right shrink-0">{field.label}</label>
+                    <input
+                      type="text"
+                      defaultValue={field.value}
+                      className="w-24 px-2 py-1.5 text-xs border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-300 dark:focus:ring-primary-500"
+                    />
+                  </div>
+                ))}
+                <div className="flex items-start gap-3">
+                  <label className="w-32 text-xs font-medium text-gray-500 dark:text-slate-400 text-right shrink-0 pt-1.5">Transaction Description</label>
+                  <textarea rows={2} defaultValue="Renovation materials — 47 Industrial Dr Penrith" className="flex-1 px-2 py-1.5 text-xs border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-300 dark:focus:ring-primary-500 resize-none" />
+                </div>
+                <div className="flex items-start gap-3">
+                  <label className="w-32 text-xs font-medium text-gray-500 dark:text-slate-400 text-right shrink-0 pt-1.5">Text Invoice</label>
+                  <textarea rows={2} className="flex-1 px-2 py-1.5 text-xs border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-300 dark:focus:ring-primary-500 resize-none" />
+                </div>
+                <div className="flex items-center gap-3">
+                  <label className="w-32 text-xs font-medium text-gray-500 dark:text-slate-400 text-right shrink-0">Payment Terms</label>
+                  <input
+                    type="text"
+                    defaultValue="30Days"
+                    className="w-24 px-2 py-1.5 text-xs border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-300 dark:focus:ring-primary-500"
+                  />
+                  <span className="text-xs text-gray-500 dark:text-slate-400">Nett 30 Days</span>
+                </div>
+              </div>
+
+              {/* Right column — Approvals */}
+              <div className="space-y-3 border border-gray-100 dark:border-slate-700 rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-medium text-gray-600 dark:text-slate-300">Checked by Sales Manager</label>
+                  <input type="checkbox" className="rounded border-gray-300 dark:border-slate-600 dark:bg-slate-700" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-medium text-gray-600 dark:text-slate-300">Checked by Transport Manager</label>
+                  <input type="checkbox" className="rounded border-gray-300 dark:border-slate-600 dark:bg-slate-700" />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Diary Notes Tab ── */}
+        {activeTab === 'diary' && (
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 overflow-auto">
+              <table className="w-full text-xs">
+                <thead className="sticky top-0 z-10">
+                  <tr className="bg-gray-50 dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700">
+                    {['Type', 'Date', 'Time', 'User', 'Perm.', 'Secure', 'Follow Up', 'Diary Note'].map((col) => (
+                      <th key={col} className="px-3 py-2 text-left font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider" style={{ fontSize: '10px' }}>
+                        {col}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { type: 'order', date: '27/02/2026', time: '9:15 AM', user: 'stevend', perm: false, secure: false, followUp: false, note: 'Sales Quote 1098/0 created for CJ Constructions Pty Ltd (29468). Branch 10.' },
+                    { type: 'order', date: '27/02/2026', time: '9:16 AM', user: 'stevend', perm: false, secure: false, followUp: true, note: 'Customer Steve Johnson called requesting quote for renovation materials — 47 Industrial Dr Penrith site.' },
+                    { type: 'transport', date: '27/02/2026', time: '9:17 AM', user: 'stevend', perm: false, secure: false, followUp: false, note: 'Delivery Date set: 10/03/2026. Customer requires delivery before 8am start.' },
+                  ].map((row, i) => (
+                    <tr key={i} className="border-b border-gray-100 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50">
+                      <td className="px-3 py-2 text-gray-700 dark:text-slate-300">{row.type}</td>
+                      <td className="px-3 py-2 text-gray-700 dark:text-slate-300 whitespace-nowrap">{row.date}</td>
+                      <td className="px-3 py-2 text-gray-500 dark:text-slate-400 whitespace-nowrap">{row.time}</td>
+                      <td className="px-3 py-2 text-gray-700 dark:text-slate-300">{row.user}</td>
+                      <td className="px-3 py-2"><input type="checkbox" defaultChecked={row.perm} className="rounded border-gray-300 dark:border-slate-600 dark:bg-slate-700" disabled /></td>
+                      <td className="px-3 py-2"><input type="checkbox" defaultChecked={row.secure} className="rounded border-gray-300 dark:border-slate-600 dark:bg-slate-700" disabled /></td>
+                      <td className="px-3 py-2"><input type="checkbox" defaultChecked={row.followUp} className="rounded border-gray-300 dark:border-slate-600 dark:bg-slate-700" disabled /></td>
+                      <td className="px-3 py-2 text-gray-600 dark:text-slate-400 truncate max-w-md">{row.note}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="border-t border-gray-100 dark:border-slate-700 px-4 py-2.5 bg-gray-50/50 dark:bg-slate-900/50">
+              <button className="px-3 py-1.5 text-xs font-medium rounded-md text-white bg-primary-600 dark:bg-primary-700 hover:bg-primary-700 dark:hover:bg-primary-600">
+                Add Diary Note
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Messages Tab ── */}
+        {activeTab === 'messages' && (
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="px-3 py-2 border-b border-gray-100 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-900/50">
+              <button className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-600 text-gray-700 dark:text-slate-300">
+                <PlusIcon className="size-3.5" />
+                Add
+              </button>
+            </div>
+            <div className="flex-1 overflow-auto">
+              <table className="w-full text-xs">
+                <thead className="sticky top-0 z-10">
+                  <tr className="bg-gray-50 dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700">
+                    <th className="px-3 py-2 text-left font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider" style={{ fontSize: '10px', width: 50 }}>Line</th>
+                    <th className="px-3 py-2 text-left font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider" style={{ fontSize: '10px', width: 120 }}>Type</th>
+                    <th className="px-3 py-2 text-left font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider" style={{ fontSize: '10px' }}>Message</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colSpan={3} className="px-3 py-16 text-center text-sm text-gray-400 dark:text-slate-500">
+                      No messages yet.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ── Tasks Tab ── */}
+        {activeTab === 'tasks' && (
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 overflow-auto">
+              <table className="w-full text-xs">
+                <thead className="sticky top-0 z-10">
+                  <tr className="bg-gray-50 dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700">
+                    {['Code', 'Assignee', 'Status', 'Quantity', 'UOM', 'Date Due', 'Date Complete', 'Notes'].map((col) => (
+                      <th key={col} className="px-3 py-2 text-left font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider" style={{ fontSize: '10px' }}>
+                        {col}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colSpan={8} className="px-3 py-16 text-center text-sm text-gray-400 dark:text-slate-500">
+                      No tasks assigned.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
