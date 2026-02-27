@@ -42,13 +42,10 @@ export function SO436Conversation({ resetRef }: SO436ConversationProps) {
   })
 
   const [input, setInput] = useState('')
-  const [showQuickActions, setShowQuickActions] = useState(true)
-
   // Expose reset to parent
   const handleReset = useCallback(() => {
     reset()
     setInput('')
-    setShowQuickActions(true)
   }, [reset])
 
   useEffect(() => {
@@ -80,7 +77,6 @@ export function SO436Conversation({ resetRef }: SO436ConversationProps) {
   const handleSend = useCallback(
     async (text: string) => {
       if (!text.trim()) return
-      setShowQuickActions(false)
       await sendMessage(text)
     },
     [sendMessage]
@@ -88,7 +84,6 @@ export function SO436Conversation({ resetRef }: SO436ConversationProps) {
 
   const handleAction = useCallback(
     (action: ActionConfig) => {
-      setShowQuickActions(false)
       sendAction(action)
     },
     [sendAction]
@@ -96,7 +91,6 @@ export function SO436Conversation({ resetRef }: SO436ConversationProps) {
 
   const handleQuickAction = useCallback(
     (label: string) => {
-      setShowQuickActions(false)
       sendMessage(label)
     },
     [sendMessage]
@@ -139,14 +133,12 @@ export function SO436Conversation({ resetRef }: SO436ConversationProps) {
         }
       />
 
-      {/* Quick Actions */}
-      {showQuickActions && (
-        <QuickActions
-          onSelect={handleQuickAction}
-          favourites={favourites}
-          onToggleFavourite={toggleFavourite}
-        />
-      )}
+      {/* Quick Actions — always visible as persistent header */}
+      <QuickActions
+        onSelect={handleQuickAction}
+        favourites={favourites}
+        onToggleFavourite={toggleFavourite}
+      />
 
       {/* Chat Area */}
       <div className="flex-1 overflow-y-auto px-4 py-4">

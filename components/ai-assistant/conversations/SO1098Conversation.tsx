@@ -57,7 +57,7 @@ export function SO1098Conversation({ onAddLines, onClose, resetRef }: SO1098Conv
   const [showProcessing, setShowProcessing] = useState(false)
   const [processingItems, setProcessingItems] = useState<string[]>([])
   const [productLinesAdded, setProductLinesAdded] = useState(false)
-  const [showQuickActions, setShowQuickActions] = useState(true)
+  // Quick actions always visible as persistent header
   const [favourites, setFavourites] = useState<string[]>(() => {
     try {
       const stored = localStorage.getItem('fw-ai-1098-favourites')
@@ -99,7 +99,7 @@ export function SO1098Conversation({ onAddLines, onClose, resetRef }: SO1098Conv
     setProcessingItems([])
     setProductLinesAdded(false)
     setStreamingMsgId(null)
-    setShowQuickActions(true)
+    // Quick actions always visible — no state to reset
   }, [])
 
   useEffect(() => {
@@ -146,7 +146,7 @@ export function SO1098Conversation({ onAddLines, onClose, resetRef }: SO1098Conv
   // ── Quick action clicked ──
   const handleQuickAction = useCallback(
     async (label: string) => {
-      setShowQuickActions(false)
+
       addUserMessage(label)
       if (label === 'Find Products') {
         setStep(2)
@@ -172,7 +172,7 @@ export function SO1098Conversation({ onAddLines, onClose, resetRef }: SO1098Conv
   const handleSend = useCallback(
     async (text: string) => {
       if (!text.trim()) return
-      setShowQuickActions(false)
+
       addUserMessage(text)
 
       if (step === 2) {
@@ -406,15 +406,13 @@ export function SO1098Conversation({ onAddLines, onClose, resetRef }: SO1098Conv
         }
       />
 
-      {/* Quick Actions */}
-      {showQuickActions && (
-        <QuickActions
-          onSelect={handleQuickAction}
-          favourites={favourites}
-          onToggleFavourite={toggleFavourite}
-          actions={QUOTE_QUICK_ACTIONS}
-        />
-      )}
+      {/* Quick Actions — always visible as persistent header */}
+      <QuickActions
+        onSelect={handleQuickAction}
+        favourites={favourites}
+        onToggleFavourite={toggleFavourite}
+        actions={QUOTE_QUICK_ACTIONS}
+      />
 
       {/* Chat Area */}
       <div className="flex-1 overflow-y-auto px-4 py-4">
