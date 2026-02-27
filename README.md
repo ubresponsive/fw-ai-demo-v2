@@ -1,6 +1,8 @@
-# FW AI Mockup
+# FW AI Mockup v2
 
 A modern ERP solution mockup showcasing enhanced UI layouts and AI interactivity.
+
+**Live Demo:** [https://fwks-ai-demo.vercel.app/](https://fwks-ai-demo.vercel.app/)
 
 ## Tech Stack
 

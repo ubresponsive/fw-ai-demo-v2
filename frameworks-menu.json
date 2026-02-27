@@ -1,0 +1,2394 @@
+[
+  {
+    "name": "Sales",
+    "children": [
+      {
+        "name": "Transaction Processing",
+        "children": [
+          {
+            "name": "Point Of Sale"
+          },
+          {
+            "name": "Projects"
+          },
+          {
+            "name": "Sales Orders"
+          },
+          {
+            "name": "Credit Memos"
+          },
+          {
+            "name": "Direct Ship"
+          },
+          {
+            "name": "Customer Orders"
+          },
+          {
+            "name": "Template Orders"
+          },
+          {
+            "name": "Express Pickups Dashboard"
+          },
+          {
+            "name": "Picking Dashboard"
+          },
+          {
+            "name": "Print Pick Tickets"
+          },
+          {
+            "name": "Staging Location Dashboard"
+          },
+          {
+            "name": "Print Assembly Notes"
+          }
+        ]
+      },
+      {
+        "name": "Reconciliation & Banking",
+        "children": [
+          {
+            "name": "Cash Drawer Reconciliation"
+          },
+          {
+            "name": "Multiple Drawer Deposits"
+          },
+          {
+            "name": "API Payments Log"
+          },
+          {
+            "name": "Cash Drawer Log"
+          }
+        ]
+      },
+      {
+        "name": "Maintenance",
+        "children": [
+          {
+            "name": "Customer Product Translations"
+          },
+          {
+            "name": "Reward Card Maintenance"
+          },
+          {
+            "name": "Preferred Branches"
+          },
+          {
+            "name": "Delivery Address Maintenance"
+          },
+          {
+            "name": "Dispatch Methods Maintenance"
+          }
+        ]
+      },
+      {
+        "name": "Mighty Rewards",
+        "children": [
+          {
+            "name": "Mighty Rewards Card Maintenance"
+          },
+          {
+            "name": "Submit Pick & Despatch invoices to DCA"
+          },
+          {
+            "name": "Retrieve Mighty Rewards SignUp Configuration"
+          },
+          {
+            "name": "Branch Configuration (Classic)"
+          }
+        ]
+      },
+      {
+        "name": "Interim Invoicing",
+        "children": [
+          {
+            "name": "Interim Invoices"
+          },
+          {
+            "name": "Consolidate Interim Invoices"
+          },
+          {
+            "name": "Scheduled Interim Invoice Post"
+          }
+        ]
+      },
+      {
+        "name": "Utilities & Scheduled Tasks",
+        "children": [
+          {
+            "name": "Utility to unlock checked picking"
+          },
+          {
+            "name": "Utility to clear sales locations"
+          },
+          {
+            "name": "Print Dispatch Labels"
+          },
+          {
+            "name": "GP Calculator"
+          },
+          {
+            "name": "Vii Check Balance"
+          },
+          {
+            "name": "Import Sales Order Transactions"
+          },
+          {
+            "name": "Sales Order Reprice"
+          },
+          {
+            "name": "Sales Order Recost"
+          },
+          {
+            "name": "OCR Import Customer Orders"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Central Allocations",
+    "children": [
+      {
+        "name": "Transport Order Entry"
+      },
+      {
+        "name": "Transport Order View"
+      },
+      {
+        "name": "Transport Planning"
+      },
+      {
+        "name": "Weighbridge Ticket Entry"
+      },
+      {
+        "name": "Weighbridge Ticket View"
+      },
+      {
+        "name": "Central Allocations Scheduled task"
+      }
+    ]
+  },
+  {
+    "name": "Bookings",
+    "children": [
+      {
+        "name": "Booking Processing (Classic)"
+      },
+      {
+        "name": "Bookings Workflow Maintenance (Classic)"
+      }
+    ]
+  },
+  {
+    "name": "Production Scheduling",
+    "children": [
+      {
+        "name": "Transaction Processing",
+        "children": [
+          {
+            "name": "Process Management"
+          },
+          {
+            "name": "Production Dashboard"
+          }
+        ]
+      },
+      {
+        "name": "Maintenance",
+        "children": [
+          {
+            "name": "Plant Maintenance"
+          },
+          {
+            "name": "Process Model Maintenance"
+          },
+          {
+            "name": "Task Shift Maintenance"
+          }
+        ]
+      },
+      {
+        "name": "Utilities & Scheduled Tasks",
+        "children": [
+          {
+            "name": "Build Production Calendar"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Dispatch",
+    "children": [
+      {
+        "name": "Dispatch Dashboard"
+      },
+      {
+        "name": "Dispatch Calendar"
+      },
+      {
+        "name": "Dispatch Calendar View"
+      },
+      {
+        "name": "Dispatch Runsheet Maintenance"
+      },
+      {
+        "name": "Branch Non Dispatch Days"
+      }
+    ]
+  },
+  {
+    "name": "Receivables",
+    "children": [
+      {
+        "name": "Transaction Processing",
+        "children": [
+          {
+            "name": "Customer Payments"
+          },
+          {
+            "name": "Customer Transaction ReAllocation"
+          },
+          {
+            "name": "Customer To Customer Adjustments"
+          },
+          {
+            "name": "Write-off Open AR by Customer"
+          },
+          {
+            "name": "Order Credit Approval"
+          },
+          {
+            "name": "Administration Fees and Interest Charges"
+          },
+          {
+            "name": "Bad Debt Write Off"
+          },
+          {
+            "name": "AR Month End Close"
+          }
+        ]
+      },
+      {
+        "name": "Inquiries",
+        "children": [
+          {
+            "name": "Customer Dashboard"
+          },
+          {
+            "name": "Bad Debt Enquiry (Classic)"
+          },
+          {
+            "name": "Customer Transaction Inquiry"
+          },
+          {
+            "name": "Customer Transaction Detail Inquiry"
+          },
+          {
+            "name": "Customer Statements"
+          },
+          {
+            "name": "AR Dashboard"
+          }
+        ]
+      },
+      {
+        "name": "Maintenance",
+        "children": [
+          {
+            "name": "Customer Maintenance"
+          },
+          {
+            "name": "Customer Export/Import"
+          },
+          {
+            "name": "Job Maintenance"
+          },
+          {
+            "name": "Customer Contact Export/Import"
+          },
+          {
+            "name": "Customer Jobs Import"
+          },
+          {
+            "name": "Payment Terms Maintenance"
+          }
+        ]
+      },
+      {
+        "name": "Utilities & Scheduled Tasks",
+        "children": [
+          {
+            "name": "Debtor's Transaction Import"
+          },
+          {
+            "name": "Customer Payment and Allocation Import"
+          },
+          {
+            "name": "Small Balance Write Off"
+          },
+          {
+            "name": "Schedule Invoice Printing"
+          },
+          {
+            "name": "Scheduled Statement Print"
+          },
+          {
+            "name": "Scheduled Debtor Letter Output"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Customer Rewards",
+    "children": [
+      {
+        "name": "Reward Program Maintenance"
+      },
+      {
+        "name": "Reward Program Customers (Classic)"
+      },
+      {
+        "name": "Adjust Reward Points"
+      },
+      {
+        "name": "Reward Transaction Report (Classic)"
+      },
+      {
+        "name": "Product Group Reward Rates (Classic)"
+      },
+      {
+        "name": "Reward Point Expiry Task (Classic)"
+      },
+      {
+        "name": "Calculate Reward Points Earned"
+      }
+    ]
+  },
+  {
+    "name": "Payables",
+    "children": [
+      {
+        "name": "Transaction Processing",
+        "children": [
+          {
+            "name": "Expense Invoice Entry"
+          },
+          {
+            "name": "Supplier Prepayment Request"
+          },
+          {
+            "name": "Stock Invoice Approval"
+          },
+          {
+            "name": "Invoice Maintenance"
+          },
+          {
+            "name": "Payment Selection Batches"
+          },
+          {
+            "name": "Check Number Allocation"
+          },
+          {
+            "name": "Supplier Invoice Scanning"
+          },
+          {
+            "name": "Supplier Statement Reconciliation"
+          }
+        ]
+      },
+      {
+        "name": "Inquiries",
+        "children": [
+          {
+            "name": "Supplier Dashboard"
+          },
+          {
+            "name": "Supplier Transaction Inquiry"
+          }
+        ]
+      },
+      {
+        "name": "Maintenance",
+        "children": [
+          {
+            "name": "Supplier Maintenance"
+          },
+          {
+            "name": "Supplier Export/Import"
+          },
+          {
+            "name": "Change Supplier Code"
+          },
+          {
+            "name": "Payments Configuration"
+          }
+        ]
+      },
+      {
+        "name": "Utilities & Scheduled Tasks",
+        "children": [
+          {
+            "name": "Import Do It Best Invoices"
+          },
+          {
+            "name": "Import TradeNet Invoices"
+          },
+          {
+            "name": "Import Supplier Invoices EDI ANSI format"
+          },
+          {
+            "name": "Import CSV Invoice Headers"
+          },
+          {
+            "name": "Import CSV Expense Invoices"
+          },
+          {
+            "name": "Import Supplier Statements"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Inventory",
+    "children": [
+      {
+        "name": "Transaction Processing",
+        "children": [
+          {
+            "name": "Inventory Adjustments"
+          },
+          {
+            "name": "Average Cost Adjustments"
+          },
+          {
+            "name": "Physical Inventory"
+          },
+          {
+            "name": "Kit Assembly/Disassembly"
+          },
+          {
+            "name": "Break Parent Product"
+          },
+          {
+            "name": "Inventory Adjustment Import"
+          },
+          {
+            "name": "Average Cost Adjustment Import"
+          }
+        ]
+      },
+      {
+        "name": "Inquiries",
+        "children": [
+          {
+            "name": "Product Dashboard"
+          },
+          {
+            "name": "Product Inquiry (Mobile)"
+          },
+          {
+            "name": "Inventory Activity"
+          },
+          {
+            "name": "Price Inquiry"
+          }
+        ]
+      },
+      {
+        "name": "Maintenance",
+        "children": [
+          {
+            "name": "Product Maintenance"
+          },
+          {
+            "name": "Kit Maintenance"
+          },
+          {
+            "name": "Product Import"
+          },
+          {
+            "name": "Product Branch Stock Import"
+          },
+          {
+            "name": "Future Price Review"
+          },
+          {
+            "name": "Preferred Supplier Review (Classic)"
+          },
+          {
+            "name": "Supplier Rebate Defaults"
+          },
+          {
+            "name": "Central Inventory Reorder Defaults"
+          },
+          {
+            "name": "Product Locations"
+          },
+          {
+            "name": "Sales Location Transfer"
+          }
+        ]
+      },
+      {
+        "name": "Tier Pricing",
+        "children": [
+          {
+            "name": "Product Tier Pricing Dashboard"
+          },
+          {
+            "name": "Discount Group Tier Maintenance"
+          },
+          {
+            "name": "Customer Tier Maintenance"
+          },
+          {
+            "name": "National Tier Maintenance"
+          },
+          {
+            "name": "Customer Import - National Contracts"
+          },
+          {
+            "name": "Tier Pricing Inquiry"
+          },
+          {
+            "name": "Tier Pricing Health Check"
+          },
+          {
+            "name": "Tier Pricing Import"
+          },
+          {
+            "name": "Apply Tier Price to Contract & Discounts"
+          }
+        ]
+      },
+      {
+        "name": "Electronic Product Catalog",
+        "children": [
+          {
+            "name": "EPC Dashboard"
+          },
+          {
+            "name": "EPC Price Change Load"
+          },
+          {
+            "name": "EPC Import Format Maintenance"
+          },
+          {
+            "name": "EPC Import Translation Maintenance"
+          },
+          {
+            "name": "EPC Translation Import"
+          }
+        ]
+      },
+      {
+        "name": "Labels",
+        "children": [
+          {
+            "name": "Label Batches"
+          },
+          {
+            "name": "Product Price Label Extract"
+          },
+          {
+            "name": "Send Price Label Information"
+          }
+        ]
+      },
+      {
+        "name": "Inventory Level Management",
+        "children": [
+          {
+            "name": "Min/Max Forecasting Maintenance"
+          },
+          {
+            "name": "Seasonal Weighting Maintenance"
+          }
+        ]
+      },
+      {
+        "name": "Utilities & Scheduled Tasks",
+        "children": [
+          {
+            "name": "Change Product Codes"
+          },
+          {
+            "name": "Switch Products on Transactions"
+          },
+          {
+            "name": "Merge Product Codes"
+          },
+          {
+            "name": "Generate Branch Product Records"
+          },
+          {
+            "name": "Alternate Product Code Import"
+          },
+          {
+            "name": "Update Branch Product Records"
+          },
+          {
+            "name": "Stock Forecasting Update"
+          },
+          {
+            "name": "EPC Update from Do It Best"
+          },
+          {
+            "name": "EPC Update from Orgil"
+          },
+          {
+            "name": "EPC File Import"
+          },
+          {
+            "name": "Apply Costing Method"
+          },
+          {
+            "name": "Update Branch GP% and Sell Price"
+          },
+          {
+            "name": "Generate Future Price Labels"
+          },
+          {
+            "name": "Apply Product Future Pricing"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "WorkOrders",
+    "children": [
+      {
+        "name": "Work Orders"
+      },
+      {
+        "name": "Time Sheet Entry"
+      },
+      {
+        "name": "Project / Service Configuration"
+      },
+      {
+        "name": "Labour Setup"
+      },
+      {
+        "name": "Labour Rates Maintenance"
+      }
+    ]
+  },
+  {
+    "name": "Purchasing & Receiving",
+    "children": [
+      {
+        "name": "Transaction Processing",
+        "children": [
+          {
+            "name": "Purchase Requisitions"
+          },
+          {
+            "name": "Purchase Orders"
+          },
+          {
+            "name": "Receiving"
+          },
+          {
+            "name": "Transfer Order Labelling"
+          },
+          {
+            "name": "Purchasing Expenses"
+          },
+          {
+            "name": "Purchase Consignment Stock"
+          },
+          {
+            "name": "Quick Transfers"
+          },
+          {
+            "name": "Supplier Invoice Registration"
+          },
+          {
+            "name": "Special Order Receipt Labels"
+          }
+        ]
+      },
+      {
+        "name": "Maintenance",
+        "children": [
+          {
+            "name": "Purchase Cost Maintenance"
+          },
+          {
+            "name": "Purchase Cost Defaults"
+          }
+        ]
+      },
+      {
+        "name": "Utilities & Scheduled Tasks",
+        "children": [
+          {
+            "name": "Reorder Inventory Tasks"
+          },
+          {
+            "name": "Import P/O Confirmations"
+          },
+          {
+            "name": "Import P/O Forward Confirmation"
+          },
+          {
+            "name": "Create Purchase Requisition Lines"
+          },
+          {
+            "name": "Create PO From Purchase Requisition"
+          },
+          {
+            "name": "Remove SO to PO Links"
+          },
+          {
+            "name": "Import Purchase Order Transactions"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Import Purchasing",
+    "children": [
+      {
+        "name": "Purchase Order Entry (Classic)"
+      },
+      {
+        "name": "Shipment Maintenance (Classic)"
+      },
+      {
+        "name": "Shipment Enquiry (Classic)"
+      },
+      {
+        "name": "Currency Exchange Rates (Classic)"
+      },
+      {
+        "name": "Foreign Exchange Revaluation (Classic)"
+      },
+      {
+        "name": "Imports Table Maintenance (Classic)"
+      }
+    ]
+  },
+  {
+    "name": "Lumber Bundles",
+    "children": [
+      {
+        "name": "Create Lumber Bundles"
+      },
+      {
+        "name": "Bundle Dashboard"
+      },
+      {
+        "name": "Bundle Maintenance"
+      },
+      {
+        "name": "Bundle Adjustments"
+      },
+      {
+        "name": "Commit Bundles to Stock"
+      },
+      {
+        "name": "Bundle Inquiry"
+      },
+      {
+        "name": "Pack Treatment"
+      },
+      {
+        "name": "Pack Merge"
+      },
+      {
+        "name": "Bundle Handling (Mobile)"
+      },
+      {
+        "name": "Move Timber Packs (Mobile)"
+      },
+      {
+        "name": "Move Timber Packs"
+      },
+      {
+        "name": "Print Bundle Labels"
+      },
+      {
+        "name": "Bulk Pack Label Print"
+      },
+      {
+        "name": "Utilities & Scheduled Tasks",
+        "children": [
+          {
+            "name": "Create Lumber Product Search Records"
+          },
+          {
+            "name": "Move Transit Bundles into stock"
+          },
+          {
+            "name": "Re-calculate Bundles on Order"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Special Pricing",
+    "children": [
+      {
+        "name": "Maintenance",
+        "children": [
+          {
+            "name": "Promotions"
+          },
+          {
+            "name": "Promotion Import"
+          },
+          {
+            "name": "Contracts"
+          },
+          {
+            "name": "Contract Import Export"
+          },
+          {
+            "name": "Contract Future Price Review"
+          },
+          {
+            "name": "Discount Module Maintenance"
+          },
+          {
+            "name": "Customer Price Books"
+          },
+          {
+            "name": "Supplier Contract"
+          },
+          {
+            "name": "Supplier Contract Export/Import"
+          }
+        ]
+      },
+      {
+        "name": "Supplier Promotions",
+        "children": [
+          {
+            "name": "Supplier Promotion Dashboard"
+          },
+          {
+            "name": "Supplier Promotion Import Format Maintenance"
+          },
+          {
+            "name": "Supplier Promotion Import Translation Maintenance"
+          },
+          {
+            "name": "Supplier Promotion Import"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "General Ledger",
+    "children": [
+      {
+        "name": "Transaction Processing",
+        "children": [
+          {
+            "name": "Sundry Receipts"
+          },
+          {
+            "name": "Check Entry"
+          },
+          {
+            "name": "Journal Entry"
+          },
+          {
+            "name": "Bank Reconciliation"
+          },
+          {
+            "name": "GL Period Close Scheduler"
+          },
+          {
+            "name": "GL YearEnd Close"
+          }
+        ]
+      },
+      {
+        "name": "Inquiries",
+        "children": [
+          {
+            "name": "GL Dashboard"
+          },
+          {
+            "name": "Account Reconciliation Dashboard"
+          },
+          {
+            "name": "Financial Reporting Dashboard"
+          },
+          {
+            "name": "Payment Inquiry"
+          }
+        ]
+      },
+      {
+        "name": "Maintenance",
+        "children": [
+          {
+            "name": "Chart of Accounts"
+          },
+          {
+            "name": "Ledger Chart of Accounts Import"
+          },
+          {
+            "name": "Budget Import"
+          },
+          {
+            "name": "Bank Account Maintenance"
+          },
+          {
+            "name": "GL Table Maintenance"
+          },
+          {
+            "name": "Ledger Reporting Chart Maintenance"
+          },
+          {
+            "name": "GL Year Maintenance"
+          },
+          {
+            "name": "Ledger Loan Accounts"
+          },
+          {
+            "name": "Bank Reconciliation Entity Maintenance"
+          },
+          {
+            "name": "Bank Reconciliation Eftpos TID/MID Cross Reference"
+          }
+        ]
+      },
+      {
+        "name": "Utilities & Scheduled Tasks",
+        "children": [
+          {
+            "name": "Branch Transfer Recon Scheduled Task"
+          },
+          {
+            "name": "Purchase Clearing Recon Scheduled Task"
+          },
+          {
+            "name": "GL Account Merge"
+          },
+          {
+            "name": "GL Accounts Batch Merge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Tax",
+    "children": [
+      {
+        "name": "Maintenance",
+        "children": [
+          {
+            "name": "Tax Authority Maintenance"
+          },
+          {
+            "name": "Tax Code Maintenance"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Asset Register",
+    "children": [
+      {
+        "name": "Asset Maintenance (Classic)"
+      },
+      {
+        "name": "Asset Enquiries (Classic)"
+      },
+      {
+        "name": "Asset Reporting (Classic)"
+      },
+      {
+        "name": "Asset Table Maintenance (Classic)"
+      },
+      {
+        "name": "G/L Interface (Classic)"
+      }
+    ]
+  },
+  {
+    "name": "EDI",
+    "children": [
+      {
+        "name": "ETM Control Parameters"
+      },
+      {
+        "name": "ETM System Parameters"
+      },
+      {
+        "name": "ETM Output Formats"
+      },
+      {
+        "name": "ETM Input Formats"
+      },
+      {
+        "name": "ETM Dictionary Import"
+      },
+      {
+        "name": "ETM Data Translations"
+      }
+    ]
+  },
+  {
+    "name": "TradePortal",
+    "children": [
+      {
+        "name": "Import Product Categories (Classic)"
+      },
+      {
+        "name": "Import Product Types (Classic)"
+      },
+      {
+        "name": "Import Product Hierarchy (Classic)"
+      },
+      {
+        "name": "Import Product/Class Mapping (Classic)"
+      },
+      {
+        "name": "Import Attrbutes (Classic)"
+      },
+      {
+        "name": "Import Media Files (Classic)"
+      },
+      {
+        "name": "Maintain Product Categories (Classic)"
+      },
+      {
+        "name": "Maintain Product Types (Classic)"
+      },
+      {
+        "name": "Maintain Product Classes (Classic)"
+      },
+      {
+        "name": "Maintain Product Hierarchy (Classic)"
+      },
+      {
+        "name": "Export/Import Screen Definitions (Classic)"
+      },
+      {
+        "name": "Maintain Screen Definitions (Classic)"
+      },
+      {
+        "name": "Maintain Branch Configuration (Classic)"
+      },
+      {
+        "name": "Import Custom Lists (Classic)"
+      },
+      {
+        "name": "Maintain Downloads List (Classic)"
+      },
+      {
+        "name": "Maintain Distance Delivery Charges (Classic)"
+      },
+      {
+        "name": "Maintain Logins (Classic)"
+      },
+      {
+        "name": "User Count Scheduled Task (Classic)"
+      }
+    ]
+  },
+  {
+    "name": "My Frameworks",
+    "children": [
+      {
+        "name": "My Printer Configuration"
+      },
+      {
+        "name": "Signature Pad Configuration"
+      },
+      {
+        "name": "Device Id Allocation"
+      },
+      {
+        "name": "Change Password/PIN"
+      },
+      {
+        "name": "Reset your MFA"
+      },
+      {
+        "name": "Documents & Reports"
+      },
+      {
+        "name": "Tasks"
+      }
+    ]
+  },
+  {
+    "name": "Third Party Integrations",
+    "children": [
+      {
+        "name": "Manage BI Tables (Classic)"
+      },
+      {
+        "name": "Schedule BI Tables (Classic)"
+      },
+      {
+        "name": "View latest BI Stats (Classic)"
+      },
+      {
+        "name": "BI Data Extracts (Classic)"
+      },
+      {
+        "name": "Sugar Data Extracts (Classic)"
+      },
+      {
+        "name": "Rebate Management System (Classic)"
+      },
+      {
+        "name": "Phocas Integration",
+        "children": [
+          {
+            "name": "Phocas BI Extract Maintenance"
+          },
+          {
+            "name": "Phocas Extract Tasks"
+          }
+        ]
+      },
+      {
+        "name": "EPG (IHG)",
+        "children": [
+          {
+            "name": "EPG Settings"
+          },
+          {
+            "name": "EPG SFTP Directories"
+          },
+          {
+            "name": "EPG SFTP Login Settings"
+          },
+          {
+            "name": "EPG SFTP Script Settings"
+          },
+          {
+            "name": "Electronic Product Guide File Import"
+          },
+          {
+            "name": "EPG Maintenance"
+          },
+          {
+            "name": "Electronic Product Guide Data Processing"
+          }
+        ]
+      },
+      {
+        "name": "Do It Best Integration",
+        "children": [
+          {
+            "name": "Do It Best Retail Inventory Export"
+          },
+          {
+            "name": "Do It Best Retail POS Sales Export"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Utilities",
+    "children": [
+      {
+        "name": "Account Reconciliation Scheduled Task"
+      },
+      {
+        "name": "Default Attribute Apply (eg: cust)"
+      },
+      {
+        "name": "Clear Auto Stock Transfer for a customer"
+      },
+      {
+        "name": "Convert Legacy Feature Codes"
+      },
+      {
+        "name": "Branch Shipping Terms Import"
+      },
+      {
+        "name": "Import/Export System Setup Scheduled Task"
+      },
+      {
+        "name": "Query Tester"
+      },
+      {
+        "name": "Table Stat Query"
+      },
+      {
+        "name": "Query Report Visibility (current user)"
+      },
+      {
+        "name": "Scheduled Recalc of Branch Product Qty Picked"
+      },
+      {
+        "name": "Re-create Sales Future/Past Calendar"
+      },
+      {
+        "name": "Update Sales Rep of Transactions"
+      },
+      {
+        "name": "Security Group Build"
+      },
+      {
+        "name": "Reload Activity Definitions"
+      },
+      {
+        "name": "Transaction Comments"
+      },
+      {
+        "name": "Branch Product Cost Sync"
+      },
+      {
+        "name": "Update Costing Method"
+      },
+      {
+        "name": "Reverse Mighty Rewards Transactions"
+      },
+      {
+        "name": "File Upload"
+      },
+      {
+        "name": "PostCode Area link Fix"
+      }
+    ]
+  },
+  {
+    "name": "Implementation Utilities",
+    "children": [
+      {
+        "name": "Sympac Imports",
+        "children": [
+          {
+            "name": "Historical Customer Invoices Import from Sympac"
+          }
+        ]
+      },
+      {
+        "name": "Pacsoft Imports",
+        "children": [
+          {
+            "name": "Pacsoft data import for sales orders and quotes"
+          }
+        ]
+      },
+      {
+        "name": "IHG Imports",
+        "children": [
+          {
+            "name": "Hardings South Purchase Order Data Import"
+          },
+          {
+            "name": "Hardings South Quote Data Import"
+          },
+          {
+            "name": "Hardings South Sales Data Import"
+          },
+          {
+            "name": "IHG Invoice Data Import"
+          },
+          {
+            "name": "IHG Once-off Product Import"
+          },
+          {
+            "name": "IHG Purchase Order Data Import"
+          },
+          {
+            "name": "IHG Purchase Order Receipt Data Import"
+          },
+          {
+            "name": "IHG Quote Data Import"
+          },
+          {
+            "name": "IHG Sales Data Import"
+          },
+          {
+            "name": "IHG Stock On Hand Import"
+          },
+          {
+            "name": "IHG Supplier Data Import"
+          },
+          {
+            "name": "IHG Report unallocated PO Links"
+          },
+          {
+            "name": "Report duplicate IHG SKU codes"
+          }
+        ]
+      },
+      {
+        "name": "Std Imports",
+        "children": [
+          {
+            "name": "Opening Stock & Avg Cost Import"
+          },
+          {
+            "name": "New Implementation - Order/Quote Import"
+          },
+          {
+            "name": "New Implementation - Purchase Order Import"
+          },
+          {
+            "name": "New Implementation - Stock Adjustment Import"
+          },
+          {
+            "name": "New Implementation - Stock Receipt Import"
+          },
+          {
+            "name": "New Implementation - Historical Invoice Import"
+          },
+          {
+            "name": "New Implementation - GL Transaction Import"
+          },
+          {
+            "name": "Product Sales History Import"
+          }
+        ]
+      },
+      {
+        "name": "Customer Mid-Month Balance Recalc"
+      },
+      {
+        "name": "Mighty Rewards Customer Import"
+      },
+      {
+        "name": "Mighty Rewards Card Import"
+      },
+      {
+        "name": "Move Branch Data to a new Company"
+      }
+    ]
+  },
+  {
+    "name": "System Administration",
+    "children": [
+      {
+        "name": "System Setup",
+        "children": [
+          {
+            "name": "Payables",
+            "children": [
+              {
+                "name": "Supplier Groups"
+              },
+              {
+                "name": "Credit Claim Reason Codes"
+              },
+              {
+                "name": "Direct Deposit Formats"
+              },
+              {
+                "name": "Direct Deposit SFTP Directories"
+              },
+              {
+                "name": "Direct Deposit SFTP Scripts"
+              },
+              {
+                "name": "Direct Deposit SFTP Login Settings"
+              },
+              {
+                "name": "EStatement Directories"
+              },
+              {
+                "name": "EStatement FTP Scripts"
+              },
+              {
+                "name": "EStatement FTP Login Settings"
+              },
+              {
+                "name": "EStatement General Settings"
+              },
+              {
+                "name": "NACHA Batch Control Record"
+              },
+              {
+                "name": "NACHA Batch Header Record"
+              },
+              {
+                "name": "NACHA File Control Record Definition"
+              },
+              {
+                "name": "NACHA File Header Record Definition"
+              },
+              {
+                "name": "NACHA CCD Record Definition"
+              },
+              {
+                "name": "NACHA CTX Record Definition"
+              },
+              {
+                "name": "NACHA PPD Record Definition"
+              },
+              {
+                "name": "NACHA TEL Record Definition"
+              },
+              {
+                "name": "NACHA WEB Record Definition"
+              },
+              {
+                "name": "NACHA Addenda Record Definition"
+              },
+              {
+                "name": "Document Scan Lookup Rules - A/P"
+              }
+            ]
+          },
+          {
+            "name": "Receivables",
+            "children": [
+              {
+                "name": "Customer Groups"
+              },
+              {
+                "name": "Customer Contact Types"
+              },
+              {
+                "name": "Customer Profiles"
+              },
+              {
+                "name": "Finance Source Codes"
+              },
+              {
+                "name": "Insurance Companies"
+              },
+              {
+                "name": "Held Securities"
+              },
+              {
+                "name": "AR Payment/Adjustment Reason Codes"
+              },
+              {
+                "name": "Disputed Invoice Reason Codes"
+              },
+              {
+                "name": "Invoice Export Formats"
+              },
+              {
+                "name": "Price Book Filename Defaults"
+              },
+              {
+                "name": "Lien Status Maintenance"
+              },
+              {
+                "name": "Debtor's Account Letter Maintenance"
+              },
+              {
+                "name": "Debtor's Collection Letter Maintenance"
+              },
+              {
+                "name": "Customer Reminder Message Maintenance"
+              }
+            ]
+          },
+          {
+            "name": "Central Allocations",
+            "children": [
+              {
+                "name": "Central Allocations Trade Cartage"
+              },
+              {
+                "name": "Vehicle Configurations"
+              },
+              {
+                "name": "Central Allocations Delivery Settings"
+              },
+              {
+                "name": "Central Allocations OnCharge GL Accounts"
+              },
+              {
+                "name": "Central Allocations Products"
+              },
+              {
+                "name": "Central Allocations RCTI Posting"
+              },
+              {
+                "name": "Central Allocations Sites"
+              },
+              {
+                "name": "Central Allocations Socket Parameters"
+              },
+              {
+                "name": "Central Allocations Supplier Expense GL Accounts"
+              },
+              {
+                "name": "Weighbridge Ticket Reversal Reason Codes"
+              },
+              {
+                "name": "Weighbridge Ticket Void Reason Codes"
+              }
+            ]
+          },
+          {
+            "name": "Configuration",
+            "children": [
+              {
+                "name": "System Control File Maintenance"
+              },
+              {
+                "name": "Country Maintenance"
+              },
+              {
+                "name": "State Maintenance"
+              },
+              {
+                "name": "State Export/Import"
+              },
+              {
+                "name": "Branch Sales Zones"
+              },
+              {
+                "name": "System Settings - Flags"
+              },
+              {
+                "name": "System Settings - Amounts"
+              },
+              {
+                "name": "System Settings - Integers"
+              },
+              {
+                "name": "System Settings - General"
+              },
+              {
+                "name": "Translation Maintenance"
+              },
+              {
+                "name": "Frameworks Auto-Installer Setup"
+              },
+              {
+                "name": "Miscellaneous Table Installer"
+              },
+              {
+                "name": "Additional Validations"
+              },
+              {
+                "name": "System Colours"
+              },
+              {
+                "name": "Roles"
+              },
+              {
+                "name": "Define Attributes"
+              },
+              {
+                "name": "Attribute Maintenance"
+              }
+            ]
+          },
+          {
+            "name": "General Ledger",
+            "children": [
+              {
+                "name": "Bank Import Format Maintenance"
+              },
+              {
+                "name": "Bank Reconciliation - File Formats"
+              },
+              {
+                "name": "Bank Reconciliation NAI Account Summary Codes"
+              },
+              {
+                "name": "Bank Reconciliation NAI File Record Types"
+              },
+              {
+                "name": "Bank Reconciliation NAI Transaction Detail Codes"
+              },
+              {
+                "name": "Bank Reconciliation NAI Transaction Detail Settings"
+              },
+              {
+                "name": "Financial Reporting Templates"
+              },
+              {
+                "name": "Depreciation Rates"
+              }
+            ]
+          },
+          {
+            "name": "Company & Branch",
+            "children": [
+              {
+                "name": "Company Maintenance"
+              },
+              {
+                "name": "Branch Maintenance"
+              },
+              {
+                "name": "Brand Maintenance"
+              }
+            ]
+          },
+          {
+            "name": "Devices & Printing",
+            "children": [
+              {
+                "name": "Device Maintenance"
+              },
+              {
+                "name": "Printer Maintenance"
+              }
+            ]
+          },
+          {
+            "name": "Importing",
+            "children": [
+              {
+                "name": "Shipping Lines"
+              },
+              {
+                "name": "Vessels"
+              },
+              {
+                "name": "Ports"
+              },
+              {
+                "name": "Currency Maintenance"
+              },
+              {
+                "name": "Importing Cost Methods"
+              },
+              {
+                "name": "Import Charge Maintenance"
+              }
+            ]
+          },
+          {
+            "name": "Integrations",
+            "children": [
+              {
+                "name": "ClicknCollect Directories"
+              },
+              {
+                "name": "ClicknCollect SFTP Scripts"
+              },
+              {
+                "name": "ClicknCollect SFTP Login Settings"
+              },
+              {
+                "name": "Cooks Connect Directories"
+              },
+              {
+                "name": "Cooks Connect SFTP Scripts"
+              },
+              {
+                "name": "Cooks Connect SFTP Login Settings"
+              },
+              {
+                "name": "Kepler Sales Extract Directories"
+              },
+              {
+                "name": "Kepler Sales Scripts"
+              },
+              {
+                "name": "Kepler Sales SFTP Login Settings"
+              },
+              {
+                "name": "Trade Online Directories"
+              },
+              {
+                "name": "Trade Online SFTP Scripts"
+              },
+              {
+                "name": "Trade Online SFTP Login Details"
+              },
+              {
+                "name": "Triumph API Settings"
+              },
+              {
+                "name": "Triumph REST API Configuration"
+              },
+              {
+                "name": "General Web Service Settings"
+              },
+              {
+                "name": "Map API Configuration Utility"
+              }
+            ]
+          },
+          {
+            "name": "Inventory",
+            "children": [
+              {
+                "name": "Product Group Maintenance"
+              },
+              {
+                "name": "Units Of Measure"
+              },
+              {
+                "name": "Product Costing Methods"
+              },
+              {
+                "name": "Core Product Levels"
+              },
+              {
+                "name": "Product Class Codes"
+              },
+              {
+                "name": "Product Origin Codes"
+              },
+              {
+                "name": "Stock Performance Categories"
+              },
+              {
+                "name": "Stock Reorder Cycle Codes"
+              },
+              {
+                "name": "Supplier Rebate Codes"
+              },
+              {
+                "name": "Product Surcharges"
+              },
+              {
+                "name": "Stock Zone Maintenance"
+              },
+              {
+                "name": "Timber Specie Codes"
+              },
+              {
+                "name": "Timber Grade Codes"
+              },
+              {
+                "name": "Timber Finish Codes"
+              },
+              {
+                "name": "Timber Production Codes"
+              },
+              {
+                "name": "Pack Rework Costs"
+              },
+              {
+                "name": "Hazchem Codes"
+              },
+              {
+                "name": "Liquid Flashpoint Codes"
+              },
+              {
+                "name": "Hazardous Goods - Packaging Groups"
+              },
+              {
+                "name": "Poison Codes"
+              },
+              {
+                "name": "Hazardous Goods Subrisk Codes"
+              },
+              {
+                "name": "Dangerous Goods Codes"
+              },
+              {
+                "name": "Stock Adjustment Reason Codes"
+              },
+              {
+                "name": "EPC Update Control Codes"
+              },
+              {
+                "name": "EPC Update Control Descriptive Codes"
+              },
+              {
+                "name": "Price Label Store Id Maintenance"
+              }
+            ]
+          },
+          {
+            "name": "Pricing",
+            "children": [
+              {
+                "name": "Tier Pricing Sections"
+              },
+              {
+                "name": "Discount Groups"
+              },
+              {
+                "name": "Pricing Hierarchy Maintenance"
+              },
+              {
+                "name": "Branch Transfer Pricing Maintenance"
+              }
+            ]
+          },
+          {
+            "name": "Purchasing",
+            "children": [
+              {
+                "name": "Purchase Order Export Format Maintenance"
+              },
+              {
+                "name": "PO Confirmation Import Formats"
+              },
+              {
+                "name": "Shipping Basis Codes"
+              }
+            ]
+          },
+          {
+            "name": "Sales",
+            "children": [
+              {
+                "name": "Backorder Reason Codes"
+              },
+              {
+                "name": "Refund Reason Codes"
+              },
+              {
+                "name": "Deferred Sale Reason Codes"
+              },
+              {
+                "name": "Unconfirming Delivery Date Reason Codes"
+              },
+              {
+                "name": "Interim Invoice Price Override Reason Codes"
+              },
+              {
+                "name": "Product Substitution Reason Codes"
+              },
+              {
+                "name": "Price Override Reason Codes"
+              },
+              {
+                "name": "Quote/Order Termination Reason Codes"
+              },
+              {
+                "name": "Requested Delivery Times"
+              },
+              {
+                "name": "Sales Rep Maintenance"
+              },
+              {
+                "name": "SalesRep Call Types"
+              },
+              {
+                "name": "Template Order Type Maintenance"
+              },
+              {
+                "name": "Job Section Maintenance"
+              },
+              {
+                "name": "Job Rectification Type Maintenance"
+              },
+              {
+                "name": "Usage Code Maintenance"
+              },
+              {
+                "name": "Picker Maintenance"
+              },
+              {
+                "name": "Picking Groups"
+              },
+              {
+                "name": "Job Import - Estimators"
+              },
+              {
+                "name": "PostCode Delivery Area Link Maintenance"
+              },
+              {
+                "name": "Quote Import Xref Section Maintenance"
+              },
+              {
+                "name": "Quote Import Xref UOM Maintenance"
+              },
+              {
+                "name": "Quote Import Xref Usage Maintenance"
+              },
+              {
+                "name": "Quote Import XRef Product Codes Maintenance"
+              },
+              {
+                "name": "Customer Product Code Maintenance"
+              },
+              {
+                "name": "Mitek Product Types"
+              },
+              {
+                "name": "Multinail Product Types"
+              },
+              {
+                "name": "Bundle Type Maintenance"
+              }
+            ]
+          },
+          {
+            "name": "Screens & Menus",
+            "children": [
+              {
+                "name": "Menu Maintenance"
+              },
+              {
+                "name": "Activity Maintenance"
+              },
+              {
+                "name": "Home Dashboard Configuration"
+              },
+              {
+                "name": "Help Maintenance"
+              }
+            ]
+          },
+          {
+            "name": "Forms & Reports",
+            "children": [
+              {
+                "name": "Print Document Configuration"
+              },
+              {
+                "name": "Label Configurations"
+              },
+              {
+                "name": "Brochure Types"
+              },
+              {
+                "name": "Quote Templates"
+              },
+              {
+                "name": "Delivery Docket Messages"
+              },
+              {
+                "name": "Quote Messages"
+              },
+              {
+                "name": "Special Item Invoice Message"
+              },
+              {
+                "name": "Non-Stock Invoice, Quote, Order Conf, Del Dkt Message"
+              },
+              {
+                "name": "Run out Invoice, Quote and Order Conf Message"
+              },
+              {
+                "name": "Branch POS Receipt Message Maintenance"
+              },
+              {
+                "name": "Branch Invoice Message Maintenance"
+              },
+              {
+                "name": "Stationery - Additional Invoice Instructions"
+              },
+              {
+                "name": "Stationery - Statement Payment Options"
+              },
+              {
+                "name": "Fuji Print Invoice File Header Definition"
+              },
+              {
+                "name": "Fuji Print Invoice Line Definition"
+              },
+              {
+                "name": "Fuji Print Statement File Header Definition"
+              },
+              {
+                "name": "Fuji Print Statement Line Definition"
+              },
+              {
+                "name": "Fuji SFTP Directories"
+              },
+              {
+                "name": "Fuji SFTP Login Settings"
+              },
+              {
+                "name": "Fuji SFTP Scripts"
+              },
+              {
+                "name": "External Print Types"
+              },
+              {
+                "name": "Report Visibility"
+              },
+              {
+                "name": "Report Definition"
+              }
+            ]
+          },
+          {
+            "name": "Tasks",
+            "children": [
+              {
+                "name": "Standard Task Maintenance"
+              }
+            ]
+          },
+          {
+            "name": "Payments",
+            "children": [
+              {
+                "name": "Credit Cards"
+              },
+              {
+                "name": "Payment Types"
+              },
+              {
+                "name": "Gift Cards & Vouchers"
+              },
+              {
+                "name": "PIN Pad Maintenance"
+              },
+              {
+                "name": "In House Card Authorisation Details"
+              },
+              {
+                "name": "In House Card Member Details"
+              }
+            ]
+          },
+          {
+            "name": "Dispatch",
+            "children": [
+              {
+                "name": "Delivery Drivers"
+              },
+              {
+                "name": "Transport Companies"
+              },
+              {
+                "name": "Vehicle Types"
+              },
+              {
+                "name": "Vehicle Maintenance"
+              },
+              {
+                "name": "Delivery Map Reference Maintenance"
+              },
+              {
+                "name": "Load Types"
+              },
+              {
+                "name": "Runsheet Defaults Maintenance"
+              },
+              {
+                "name": "Delivery Areas"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Users & Security",
+        "children": [
+          {
+            "name": "Security Group Maintenance"
+          },
+          {
+            "name": "User Maintenance"
+          }
+        ]
+      },
+      {
+        "name": "Licencing",
+        "children": [
+          {
+            "name": "Frameworks License Maintenance"
+          },
+          {
+            "name": "Licence Usage Inquiry"
+          },
+          {
+            "name": "Logged In Sessions Inquiry"
+          }
+        ]
+      },
+      {
+        "name": "Auditing",
+        "children": [
+          {
+            "name": "Audit Inquiry"
+          },
+          {
+            "name": "Audit Extract Tasks"
+          },
+          {
+            "name": "Login Audit Log"
+          },
+          {
+            "name": "Service Log"
+          },
+          {
+            "name": "API Usage Audit Log"
+          },
+          {
+            "name": "Bounced Emails Log"
+          }
+        ]
+      },
+      {
+        "name": "Task Scheduler",
+        "children": [
+          {
+            "name": "Schedulable Tasks",
+            "children": [
+              {
+                "name": "Auto-install scheduled task"
+              },
+              {
+                "name": "Build Sales Calendar"
+              },
+              {
+                "name": "Build Sales Calendar - Quotes"
+              },
+              {
+                "name": "Build Sales Calendar - Future/Past Orders"
+              },
+              {
+                "name": "Build Default Runsheet Headers"
+              },
+              {
+                "name": "Calculate Product 'On Order' Quantities"
+              },
+              {
+                "name": "Build KPI Data (Sales, Cust and Supp)"
+              },
+              {
+                "name": "Build KPI Product Data"
+              },
+              {
+                "name": "Build KPI (Extended) Inventory Data"
+              },
+              {
+                "name": "Build General Ledger KPI's"
+              },
+              {
+                "name": "Customer Payment Auto Allocations"
+              },
+              {
+                "name": "Report duplicate contact security users"
+              },
+              {
+                "name": "Swap Preferred Supplier"
+              },
+              {
+                "name": "Close Empty Cash Drawers"
+              },
+              {
+                "name": "Accounts Receivable Balancing"
+              },
+              {
+                "name": "Accounts Payable Balancing"
+              },
+              {
+                "name": "Accounts Payable Payment Audit"
+              },
+              {
+                "name": "Inventory GL Balancing"
+              },
+              {
+                "name": "Scan project attachments directory"
+              },
+              {
+                "name": "Capture Product Out of Stock Data"
+              },
+              {
+                "name": "Scheduled Reprice of Kit Products"
+              },
+              {
+                "name": "Scheduled Load of Longitude and Latitude"
+              },
+              {
+                "name": "GP Contract Cost Check"
+              },
+              {
+                "name": "Contract Margin Management"
+              },
+              {
+                "name": "Contract Future Price Updates"
+              },
+              {
+                "name": "Synchronize Contracts Scheduled Task"
+              },
+              {
+                "name": "Update Cost/Price by Last Received Cost"
+              },
+              {
+                "name": "Customer Balance Recalc"
+              },
+              {
+                "name": "Cooks Connect Interface Scheduler"
+              },
+              {
+                "name": "Post Matched Stock Invoice"
+              },
+              {
+                "name": "Scan Data Extract Scheduler"
+              },
+              {
+                "name": "Scan Data Finance GL Extract Scheduler"
+              },
+              {
+                "name": "ClicknCollect Feed To POS Scheduler"
+              },
+              {
+                "name": "FTP Scheduler"
+              },
+              {
+                "name": "Reassign Tasks"
+              },
+              {
+                "name": "Bounced Email Extract"
+              },
+              {
+                "name": "Document Extract and Scan"
+              }
+            ]
+          },
+          {
+            "name": "Task Scheduler Queue"
+          }
+        ]
+      },
+      {
+        "name": "Event Notifications",
+        "children": [
+          {
+            "name": "Notification Tasks",
+            "children": [
+              {
+                "name": "Sales Orders Past Due Delivery"
+              },
+              {
+                "name": "Sales Orders requiring Credit Approval"
+              },
+              {
+                "name": "Dispatch Confirmation"
+              },
+              {
+                "name": "Linked Purchase Orders Not Received"
+              },
+              {
+                "name": "Quote Follow up"
+              },
+              {
+                "name": "DETrack report on all orders for a day"
+              }
+            ]
+          },
+          {
+            "name": "Setup & Administration",
+            "children": [
+              {
+                "name": "Event Definition Maintenance"
+              },
+              {
+                "name": "Notifications Event Queue"
+              },
+              {
+                "name": "Event Queue Processor"
+              },
+              {
+                "name": "Purge Notification Queue"
+              },
+              {
+                "name": "Test SMTP Configuration"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "File Purges",
+        "children": [
+          {
+            "name": "Purge Products"
+          },
+          {
+            "name": "Purge Product from Import"
+          },
+          {
+            "name": "Purge Alternate Suppliers from Import"
+          },
+          {
+            "name": "Purge Supplier from Import"
+          },
+          {
+            "name": "Purge Supplier History"
+          },
+          {
+            "name": "Purge Aged Purchase Orders & Receipts"
+          },
+          {
+            "name": "Purge Customer from Import"
+          },
+          {
+            "name": "Purge Customer Delivery Addresses"
+          },
+          {
+            "name": "Purge Customer Notes"
+          },
+          {
+            "name": "Purge Customer Statements"
+          },
+          {
+            "name": "Purge Customer Rewards"
+          },
+          {
+            "name": "Void POS Suspended Sales"
+          },
+          {
+            "name": "Void Internal Backordered Salesorders"
+          },
+          {
+            "name": "Sales Order Cleanup"
+          },
+          {
+            "name": "Sales and Quote Cleanup"
+          },
+          {
+            "name": "Purge Purchase Requisitions"
+          },
+          {
+            "name": "Purge Inventory Adjustments"
+          },
+          {
+            "name": "Purge Account Payable Invoices"
+          },
+          {
+            "name": "Purge Location Movements"
+          },
+          {
+            "name": "Purge Invoice Print Records"
+          },
+          {
+            "name": "Purge Product Tier Pricing"
+          },
+          {
+            "name": "Purge Scan Documents"
+          },
+          {
+            "name": "Purge Batch Notifications"
+          },
+          {
+            "name": "Purge EPG Records"
+          },
+          {
+            "name": "Purge processed pricer data"
+          },
+          {
+            "name": "Purge CDC data"
+          },
+          {
+            "name": "Purge Session State Data"
+          },
+          {
+            "name": "Purge Licence Usage Data"
+          },
+          {
+            "name": "Purge & Archive Task Scheduler Data"
+          },
+          {
+            "name": "Purge Bounced Emails"
+          }
+        ]
+      },
+      {
+        "name": "Admin Console"
+      }
+    ]
+  },
+  {
+    "name": "Logout"
+  }
+]

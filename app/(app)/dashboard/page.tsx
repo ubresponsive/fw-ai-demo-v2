@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useAppShell } from '@/lib/app-shell-context'
 import { classNames } from '@/lib/utils'
 import { getChartColors } from '@/lib/chart-colors'
-import { ArrowDownIcon, ArrowUpIcon, ChevronRightIcon, ChevronLeftIcon } from '@heroicons/react/20/solid'
+import { ArrowDownIcon, ArrowUpIcon, ChevronRightIcon, ChevronDownIcon } from '@heroicons/react/20/solid'
 import {
   ShoppingCartIcon,
   CurrencyDollarIcon,
@@ -19,11 +19,109 @@ import {
   ReceiptPercentIcon,
   WrenchScrewdriverIcon,
   UsersIcon,
+  ClockIcon,
+  ExclamationTriangleIcon,
+  CalendarIcon,
+  ArrowTrendingDownIcon,
+  ArchiveBoxIcon,
+  CalendarDaysIcon,
+  CheckCircleIcon,
 } from '@heroicons/react/24/outline'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell,
 } from 'recharts'
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+type ScheduleCategory = 'purchasing' | 'sales' | 'accounts' | 'inventory' | 'production'
+
+interface ScheduleItem {
+  id: string
+  priority: number
+  icon: React.ForwardRefExoticComponent<React.SVGProps<SVGSVGElement> & { title?: string; titleId?: string }>
+  category: ScheduleCategory
+  title: string
+  detail: string
+  secondaryText: string
+  count?: number
+  time?: string
+}
+
+interface ActionItem {
+  id: string
+  title: string
+  context: string
+  shortcutLabel?: string
+  shortcutHref?: string
+}
+
+// ---------------------------------------------------------------------------
+// Category style map — full static class strings for Tailwind purge safety
+// ---------------------------------------------------------------------------
+
+const CATEGORY_STYLES: Record<ScheduleCategory, { dot: string; icon: string; bg: string }> = {
+  purchasing: {
+    dot: 'bg-schedule-purchasing',
+    icon: 'text-blue-500 dark:text-blue-400',
+    bg: 'bg-blue-50 dark:bg-blue-900/20',
+  },
+  sales: {
+    dot: 'bg-schedule-sales',
+    icon: 'text-amber-500 dark:text-amber-400',
+    bg: 'bg-amber-50 dark:bg-amber-900/20',
+  },
+  accounts: {
+    dot: 'bg-schedule-accounts',
+    icon: 'text-emerald-500 dark:text-emerald-400',
+    bg: 'bg-emerald-50 dark:bg-emerald-900/20',
+  },
+  inventory: {
+    dot: 'bg-schedule-inventory',
+    icon: 'text-red-500 dark:text-red-400',
+    bg: 'bg-red-50 dark:bg-red-900/20',
+  },
+  production: {
+    dot: 'bg-schedule-production',
+    icon: 'text-violet-500 dark:text-violet-400',
+    bg: 'bg-violet-50 dark:bg-violet-900/20',
+  },
+}
+
+// ---------------------------------------------------------------------------
+// Data constants
+// ---------------------------------------------------------------------------
+
+const todaysSchedule: ScheduleItem[] = [
+  { id: 's1', priority: 1, icon: TruckIcon, category: 'purchasing', title: '3 purchase orders arriving', detail: 'PO 4821, 4823, 4825', secondaryText: 'Boral, AUS-TIM', count: 3 },
+  { id: 's2', priority: 2, icon: ArchiveBoxIcon, category: 'sales', title: '12 orders awaiting pick', detail: '8 delivery, 4 counter collect', secondaryText: '', count: 12 },
+  { id: 's3', priority: 3, icon: ClockIcon, category: 'sales', title: '5 deliveries due by 2pm', detail: 'Dispatches scheduled today', secondaryText: '', time: 'by 2:00 PM' },
+  { id: 's4', priority: 4, icon: DocumentTextIcon, category: 'accounts', title: '2 quotes expiring today', detail: 'QU 1087/0, QU 1092/0', secondaryText: 'CJ Constructions, Bayside Builders', count: 2 },
+  { id: 's5', priority: 5, icon: ExclamationTriangleIcon, category: 'inventory', title: '4 items below reorder point', detail: 'PLY-STR-17, CONC-RS-20KG', secondaryText: 'NAIL-BH-75, CEM025', count: 4 },
+  { id: 's6', priority: 6, icon: CalendarIcon, category: 'production', title: 'Stocktake: Timber yard', detail: 'Scheduled for 3:00 PM', secondaryText: '', time: '3:00 PM' },
+  { id: 's7', priority: 7, icon: ArrowTrendingDownIcon, category: 'production', title: '3 jobs behind schedule', detail: 'Production jobs 1842, 1845, 1847', secondaryText: '', count: 3 },
+]
+
+const defaultActions: ActionItem[] = [
+  { id: 'action-1', title: 'Issue customer statements', context: 'End of month — 142 accounts', shortcutLabel: 'Run Statements', shortcutHref: '#' },
+  { id: 'action-2', title: 'Follow up overdue payments', context: '8 accounts over 60 days, $47.2K outstanding', shortcutLabel: 'View Aged Debtors', shortcutHref: '#' },
+  { id: 'action-3', title: 'Review low-margin orders', context: '3 orders with GP below 10% flagged yesterday', shortcutLabel: 'View Orders', shortcutHref: '/sales-orders' },
+  { id: 'action-4', title: 'Approve purchase orders', context: '2 POs pending approval ($12.4K total)', shortcutLabel: 'View POs', shortcutHref: '#' },
+  { id: 'action-5', title: 'Check morning delivery schedule', context: '5 deliveries dispatched at 7:30 AM' },
+  { id: 'action-6', title: 'Review yesterday\'s sales figures', context: 'Branch 10 revenue: $18.4K' },
+]
+
+const DEFAULT_CHECKED_ACTIONS = ['action-5', 'action-6']
+
+// localStorage keys
+const SECTION_STATE_KEY = 'dashboard-section-state'
+const CHECKED_ACTIONS_KEY = 'dashboard-checked-actions'
+
+// ---------------------------------------------------------------------------
+// Existing dashboard data (unchanged)
+// ---------------------------------------------------------------------------
 
 const dashboardStats = [
   { id: 1, name: 'Revenue (MTD)', stat: '$284,391', icon: CurrencyDollarIcon, change: '12.5%', changeType: 'increase' as const },
@@ -81,6 +179,30 @@ const salesByCategoryData = [
 
 const salesTotalValue = salesByCategoryData.reduce((sum, c) => sum + c.value, 0)
 
+const periodOptions = [
+  { label: 'Today', short: '1D' },
+  { label: 'Last 7 Days', short: '7D' },
+  { label: 'Last 30 Days', short: '30D' },
+  { label: 'This Month', short: '1M' },
+  { label: 'This Quarter', short: '1Q' },
+  { label: 'This Year', short: '1Y' },
+]
+
+// ---------------------------------------------------------------------------
+// Helper: formatted today's date
+// ---------------------------------------------------------------------------
+
+function getTodayLabel() {
+  const d = new Date()
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`
+}
+
+// ---------------------------------------------------------------------------
+// Sub-components
+// ---------------------------------------------------------------------------
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ChartTooltip({ active, payload, label, isDark }: any) {
   if (!active || !payload?.length) return null
@@ -91,15 +213,6 @@ function ChartTooltip({ active, payload, label, isDark }: any) {
     </div>
   )
 }
-
-const periodOptions = [
-  { label: 'Today', short: '1D' },
-  { label: 'Last 7 Days', short: '7D' },
-  { label: 'Last 30 Days', short: '30D' },
-  { label: 'This Month', short: '1M' },
-  { label: 'This Quarter', short: '1Q' },
-  { label: 'This Year', short: '1Y' },
-]
 
 function ActivityList({ items, maxItems, ringColor = 'ring-white dark:ring-slate-900' }: { items: typeof recentActivity; maxItems?: number; ringColor?: string }) {
   const displayItems = maxItems ? items.slice(0, maxItems) : items
@@ -149,28 +262,308 @@ function ActivityList({ items, maxItems, ringColor = 'ring-white dark:ring-slate
   )
 }
 
+// ---------------------------------------------------------------------------
+// CollapsibleSection — custom controlled collapsible with localStorage
+// ---------------------------------------------------------------------------
+
+function CollapsibleSection({
+  title,
+  rightContent,
+  isOpen,
+  onToggle,
+  children,
+}: {
+  title: string
+  rightContent?: React.ReactNode
+  isOpen: boolean
+  onToggle: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full items-center justify-between py-2 text-left group"
+      >
+        <div className="flex items-center gap-2">
+          <ChevronDownIcon
+            className={classNames(
+              'size-4 text-gray-400 dark:text-slate-500 transition-transform duration-200',
+              isOpen ? '' : '-rotate-90',
+            )}
+          />
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">{title}</h3>
+        </div>
+        {rightContent && <div className="flex items-center">{rightContent}</div>}
+      </button>
+      <div
+        className={classNames(
+          'overflow-hidden transition-all duration-200',
+          isOpen ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0',
+        )}
+      >
+        {children}
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// ScheduleList
+// ---------------------------------------------------------------------------
+
+function ScheduleList({ items }: { items: ScheduleItem[] }) {
+  if (items.length === 0) {
+    return (
+      <div className="py-6 text-center">
+        <p className="text-sm text-neutral-500 dark:text-slate-400 italic">Nothing scheduled for today. Enjoy the quiet.</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="divide-y divide-neutral-100 dark:divide-slate-700/50">
+      {items.map((item) => {
+        const styles = CATEGORY_STYLES[item.category]
+        return (
+          <div
+            key={item.id}
+            className="flex items-start gap-2.5 py-3 px-1 hover:bg-neutral-50 dark:hover:bg-slate-800/50 cursor-pointer rounded transition-colors"
+          >
+            {/* Colour dot */}
+            <span className={classNames('mt-1.5 size-1.5 rounded-full shrink-0', styles.dot)} />
+            {/* Icon */}
+            <item.icon className={classNames('size-4 shrink-0 mt-0.5', styles.icon)} />
+            {/* Text */}
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-gray-900 dark:text-slate-100 truncate">{item.title}</p>
+              <p className="text-xs text-neutral-500 dark:text-slate-400 truncate">
+                {item.detail}{item.secondaryText ? ` — ${item.secondaryText}` : ''}
+              </p>
+            </div>
+            {/* Right: count badge or time */}
+            {item.count != null && (
+              <span className="shrink-0 mt-0.5 bg-neutral-100 dark:bg-slate-700 text-neutral-700 dark:text-slate-300 text-xs font-medium px-2 py-0.5 rounded-full">
+                {item.count}
+              </span>
+            )}
+            {item.time && !item.count && (
+              <span className="shrink-0 mt-0.5 text-xs text-neutral-500 dark:text-slate-400 whitespace-nowrap">
+                {item.time}
+              </span>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// ActionsList
+// ---------------------------------------------------------------------------
+
+function ActionsList({
+  items,
+  checkedIds,
+  onToggle,
+}: {
+  items: ActionItem[]
+  checkedIds: Set<string>
+  onToggle: (id: string) => void
+}) {
+  // Sort: unchecked first, then checked
+  const sorted = [...items].sort((a, b) => {
+    const aChecked = checkedIds.has(a.id) ? 1 : 0
+    const bChecked = checkedIds.has(b.id) ? 1 : 0
+    return aChecked - bChecked
+  })
+
+  const allDone = items.every((i) => checkedIds.has(i.id))
+
+  if (allDone) {
+    return (
+      <div className="py-6 text-center">
+        <CheckCircleIcon className="mx-auto size-6 text-emerald-500 dark:text-emerald-400 mb-1" />
+        <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">All caught up for today.</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="divide-y divide-neutral-100 dark:divide-slate-700/50">
+      {sorted.map((item) => {
+        const checked = checkedIds.has(item.id)
+        return (
+          <div key={item.id} className="flex items-start gap-3 py-3 px-1 transition-all duration-200">
+            {/* Checkbox */}
+            <input
+              type="checkbox"
+              checked={checked}
+              onChange={() => onToggle(item.id)}
+              className="mt-0.5 size-4 rounded border-gray-300 dark:border-slate-600 dark:bg-slate-700 text-emerald-500 focus:ring-emerald-500 dark:focus:ring-emerald-400 cursor-pointer"
+            />
+            {/* Text */}
+            <div className="min-w-0 flex-1">
+              <p className={classNames(
+                'text-sm font-medium transition-all',
+                checked
+                  ? 'line-through text-neutral-400 dark:text-slate-500'
+                  : 'text-gray-900 dark:text-slate-100',
+              )}>
+                {item.title}
+              </p>
+              <p className={classNames(
+                'text-xs mt-0.5 transition-all',
+                checked
+                  ? 'text-neutral-300 dark:text-slate-600'
+                  : 'text-neutral-500 dark:text-slate-400',
+              )}>
+                {item.context}
+              </p>
+            </div>
+            {/* Shortcut link */}
+            {!checked && item.shortcutLabel && (
+              <a
+                href={item.shortcutHref || '#'}
+                className="shrink-0 mt-0.5 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium whitespace-nowrap"
+              >
+                {item.shortcutLabel} →
+              </a>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// DashboardPage
+// ---------------------------------------------------------------------------
+
 export default function DashboardPage() {
   const { userName } = useAppShell()
   const [period, setPeriod] = useState('Last 30 Days')
   const [isDark, setIsDark] = useState(false)
-  const [showRecentActivity, setShowRecentActivity] = useState(false)
+  const [showSidebar, setShowSidebar] = useState(false)
+  const [sectionOpen, setSectionOpen] = useState<Record<string, boolean>>({
+    schedule: true,
+    actions: true,
+    activity: true,
+  })
+  const [checkedActions, setCheckedActions] = useState<Set<string>>(new Set(DEFAULT_CHECKED_ACTIONS))
 
   useEffect(() => {
+    // Dark mode observer
     const checkDark = () => setIsDark(document.documentElement.classList.contains('dark'))
     checkDark()
-
     const observer = new MutationObserver(checkDark)
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+
+    // Hydrate section open state from localStorage
+    try {
+      const storedSections = localStorage.getItem(SECTION_STATE_KEY)
+      if (storedSections) {
+        setSectionOpen(JSON.parse(storedSections))
+      }
+    } catch { /* use defaults */ }
+
+    // Hydrate checked actions from localStorage
+    try {
+      const storedChecked = localStorage.getItem(CHECKED_ACTIONS_KEY)
+      if (storedChecked) {
+        setCheckedActions(new Set(JSON.parse(storedChecked)))
+      }
+    } catch { /* use defaults */ }
 
     return () => observer.disconnect()
   }, [])
 
+  const toggleSection = useCallback((key: string) => {
+    setSectionOpen((prev) => {
+      const next = { ...prev, [key]: !prev[key] }
+      localStorage.setItem(SECTION_STATE_KEY, JSON.stringify(next))
+      return next
+    })
+  }, [])
+
+  const toggleAction = useCallback((id: string) => {
+    setCheckedActions((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
+      localStorage.setItem(CHECKED_ACTIONS_KEY, JSON.stringify([...next]))
+      return next
+    })
+  }, [])
+
+  const pendingCount = defaultActions.filter((a) => !checkedActions.has(a.id)).length
   const colors = getChartColors(isDark)
+
+  // ---------------------------------------------------------------------------
+  // Sidebar content (shared between desktop aside and mobile inline)
+  // ---------------------------------------------------------------------------
+
+  const sidebarContent = (ringColor: string) => (
+    <>
+      {/* Today's Schedule */}
+      <CollapsibleSection
+        title="Today's Schedule"
+        isOpen={sectionOpen.schedule}
+        onToggle={() => toggleSection('schedule')}
+        rightContent={
+          <span className="text-xs text-neutral-500 dark:text-slate-400">{getTodayLabel()}</span>
+        }
+      >
+        <ScheduleList items={todaysSchedule} />
+      </CollapsibleSection>
+
+      <div className="border-t border-gray-200 dark:border-slate-700 my-2" />
+
+      {/* My Actions */}
+      <CollapsibleSection
+        title="My Actions"
+        isOpen={sectionOpen.actions}
+        onToggle={() => toggleSection('actions')}
+        rightContent={
+          pendingCount > 0 ? (
+            <span className="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-xs font-medium px-2 py-0.5 rounded-full">
+              {pendingCount} pending
+            </span>
+          ) : (
+            <span className="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 text-xs font-medium px-2 py-0.5 rounded-full">
+              Done
+            </span>
+          )
+        }
+      >
+        <ActionsList items={defaultActions} checkedIds={checkedActions} onToggle={toggleAction} />
+      </CollapsibleSection>
+
+      <div className="border-t border-gray-200 dark:border-slate-700 my-2" />
+
+      {/* Recent Activity */}
+      <CollapsibleSection
+        title="Recent Activity"
+        isOpen={sectionOpen.activity}
+        onToggle={() => toggleSection('activity')}
+      >
+        <div className="flow-root pt-2">
+          <ActivityList items={recentActivity} ringColor={ringColor} />
+        </div>
+      </CollapsibleSection>
+    </>
+  )
 
   return (
     <>
       <div className={classNames(
-        showRecentActivity ? 'xl:pr-96' : '',
+        showSidebar ? 'xl:pr-96' : '',
         'transition-all duration-300'
       )}>
         <div className="px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
@@ -362,50 +755,80 @@ export default function DashboardPage() {
             </ul>
           </div>
 
-          {/* Recent Activity — inline on mobile/tablet where the sidebar is hidden */}
-          <div className="mt-10 xl:hidden">
-            <h3 className="text-base font-semibold text-gray-900 dark:text-slate-100 mb-4">Recent Activity</h3>
-            <div className="rounded-lg border border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm">
-              <div className="flow-root">
-                <ActivityList items={recentActivity} maxItems={5} ringColor="ring-white dark:ring-slate-800" />
+          {/* Sidebar content — inline on mobile/tablet where the aside is hidden */}
+          <div className="mt-10 xl:hidden space-y-6">
+            {/* Today's Schedule */}
+            <div>
+              <h3 className="text-base font-semibold text-gray-900 dark:text-slate-100 mb-4">Today&apos;s Schedule</h3>
+              <div className="rounded-lg border border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm">
+                <ScheduleList items={todaysSchedule} />
+              </div>
+            </div>
+
+            {/* My Actions */}
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base font-semibold text-gray-900 dark:text-slate-100">My Actions</h3>
+                {pendingCount > 0 && (
+                  <span className="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-xs font-medium px-2 py-0.5 rounded-full">
+                    {pendingCount} pending
+                  </span>
+                )}
+              </div>
+              <div className="rounded-lg border border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm">
+                <ActionsList items={defaultActions} checkedIds={checkedActions} onToggle={toggleAction} />
+              </div>
+            </div>
+
+            {/* Recent Activity */}
+            <div>
+              <h3 className="text-base font-semibold text-gray-900 dark:text-slate-100 mb-4">Recent Activity</h3>
+              <div className="rounded-lg border border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm">
+                <div className="flow-root">
+                  <ActivityList items={recentActivity} maxItems={5} ringColor="ring-white dark:ring-slate-800" />
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Secondary column on right */}
+      {/* Secondary column on right — desktop sidebar */}
       <aside className={classNames(
-        showRecentActivity ? 'xl:block' : 'xl:hidden',
+        showSidebar ? 'xl:block' : 'xl:hidden',
         'fixed top-16 bottom-0 right-0 hidden w-96 overflow-y-auto border-l border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-6 sm:px-6 lg:px-8'
       )}>
+        {/* Sidebar header with close button */}
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-slate-100">Recent Activity</h3>
+          <div className="flex items-center gap-2">
+            <CalendarDaysIcon className="size-5 text-primary-500 dark:text-primary-400" />
+            <h2 className="text-sm font-semibold text-gray-900 dark:text-slate-100">Today</h2>
+          </div>
           <button
-            onClick={() => setShowRecentActivity(!showRecentActivity)}
+            onClick={() => setShowSidebar(false)}
             className="text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors"
-            title={showRecentActivity ? 'Hide recent activity' : 'Show recent activity'}
+            title="Hide sidebar"
           >
-            {showRecentActivity ? (
-              <ChevronRightIcon className="size-5" />
-            ) : (
-              <ChevronLeftIcon className="size-5" />
-            )}
+            <ChevronRightIcon className="size-5" />
           </button>
         </div>
-        <div className="flow-root">
-          <ActivityList items={recentActivity} />
+
+        <div className="border-t border-gray-200 dark:border-slate-700 pt-4">
+          {sidebarContent('ring-white dark:ring-slate-900')}
         </div>
       </aside>
 
-      {/* Floating toggle button when Recent Activity is hidden */}
-      {!showRecentActivity && (
+      {/* Floating toggle button when sidebar is hidden */}
+      {!showSidebar && (
         <button
-          onClick={() => setShowRecentActivity(true)}
+          onClick={() => setShowSidebar(true)}
           className="fixed top-20 right-4 z-10 hidden xl:flex items-center gap-2 rounded-lg bg-white dark:bg-slate-800 px-3 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 shadow-lg border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
         >
-          <ChevronLeftIcon className="size-4" />
-          Recent Activity
+          <CalendarDaysIcon className="size-4" />
+          Today
+          {pendingCount > 0 && (
+            <span className="size-2 rounded-full bg-red-500 animate-pulse" />
+          )}
         </button>
       )}
     </>

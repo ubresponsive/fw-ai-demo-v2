@@ -167,7 +167,7 @@ export default function SalesOrdersPage() {
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
           {stats.map((stat) => (
-            <div key={stat.name} className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 px-3 py-3 shadow-sm">
+            <div key={stat.name} className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 px-3 py-3 shadow-card">
               <div className="flex items-center gap-2 mb-2">
                 <div className={classNames(stat.color.split(' ')[0], 'p-1.5 rounded-lg')}>
                   <stat.icon className={classNames(stat.color.split(' ')[1], 'size-4')} />
@@ -271,32 +271,32 @@ export default function SalesOrdersPage() {
           <table className="w-full text-xs">
             <thead className="sticky top-0 z-10">
               <tr className="bg-gray-50 dark:bg-slate-900 border-b border-gray-300 dark:border-slate-700">
-                <th className="px-3 py-2.5 text-left font-medium text-gray-900 dark:text-slate-100 uppercase tracking-wider cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-slate-800" style={{ fontSize: '10px' }} onClick={() => toggleSort('order')}>
+                <th className="px-3 py-2.5 text-left font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-slate-800" style={{ fontSize: '10px' }} onClick={() => toggleSort('order')}>
                   <span className="flex items-center gap-0.5">Order <SortIndicator col="order" /></span>
                 </th>
-                <th className="px-2 py-2.5 text-center font-medium text-gray-900 dark:text-slate-100 uppercase tracking-wider" style={{ fontSize: '10px', width: 40 }}>B/O</th>
-                <th className="px-2 py-2.5 text-center font-medium text-gray-900 dark:text-slate-100 uppercase tracking-wider" style={{ fontSize: '10px', width: 40 }}>Brn</th>
-                <th className="px-2 py-2.5 text-left font-medium text-gray-900 dark:text-slate-100 uppercase tracking-wider" style={{ fontSize: '10px', width: 80 }}>Type</th>
-                <th className="px-3 py-2.5 text-left font-medium text-gray-900 dark:text-slate-100 uppercase tracking-wider cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-slate-800" style={{ fontSize: '10px' }} onClick={() => toggleSort('customer')}>
+                <th className="px-2 py-2.5 text-center font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider" style={{ fontSize: '10px', width: 40 }}>B/O</th>
+                <th className="px-2 py-2.5 text-center font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider" style={{ fontSize: '10px', width: 40 }}>Brn</th>
+                <th className="px-2 py-2.5 text-left font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider" style={{ fontSize: '10px', width: 80 }}>Type</th>
+                <th className="px-3 py-2.5 text-left font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-slate-800" style={{ fontSize: '10px' }} onClick={() => toggleSort('customer')}>
                   <span className="flex items-center gap-0.5">Customer Name <SortIndicator col="customer" /></span>
                 </th>
-                <th className="px-2 py-2.5 text-left font-medium text-gray-900 dark:text-slate-100 uppercase tracking-wider cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-slate-800" style={{ fontSize: '10px', width: 90 }} onClick={() => toggleSort('orderDate')}>
+                <th className="px-2 py-2.5 text-left font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-slate-800" style={{ fontSize: '10px', width: 90 }} onClick={() => toggleSort('orderDate')}>
                   <span className="flex items-center gap-0.5">Order Date <SortIndicator col="orderDate" /></span>
                 </th>
-                <th className="px-2 py-2.5 text-left font-medium text-gray-900 dark:text-slate-100 uppercase tracking-wider cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-slate-800" style={{ fontSize: '10px', width: 90 }} onClick={() => toggleSort('delivDate')}>
+                <th className="px-2 py-2.5 text-left font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-slate-800" style={{ fontSize: '10px', width: 90 }} onClick={() => toggleSort('delivDate')}>
                   <span className="flex items-center gap-0.5">Deliv Date <SortIndicator col="delivDate" /></span>
                 </th>
-                <th className="px-3 py-2.5 text-left font-medium text-gray-900 dark:text-slate-100 uppercase tracking-wider" style={{ fontSize: '10px' }}>Delivery Address</th>
-                <th className="px-2 py-2.5 text-left font-medium text-gray-900 dark:text-slate-100 uppercase tracking-wider" style={{ fontSize: '10px', width: 80 }}>Cust Ref</th>
-                <th className="px-2 py-2.5 text-center font-medium text-gray-900 dark:text-slate-100 uppercase tracking-wider" style={{ fontSize: '10px', width: 65 }}>Despatch</th>
-                <th className="px-2 py-2.5 text-left font-medium text-gray-900 dark:text-slate-100 uppercase tracking-wider cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-slate-800" style={{ fontSize: '10px', width: 95 }} onClick={() => toggleSort('status')}>
+                <th className="px-3 py-2.5 text-left font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider" style={{ fontSize: '10px' }}>Delivery Address</th>
+                <th className="px-2 py-2.5 text-left font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider" style={{ fontSize: '10px', width: 80 }}>Cust Ref</th>
+                <th className="px-2 py-2.5 text-center font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider" style={{ fontSize: '10px', width: 65 }}>Despatch</th>
+                <th className="px-2 py-2.5 text-left font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-slate-800" style={{ fontSize: '10px', width: 95 }} onClick={() => toggleSort('status')}>
                   <span className="flex items-center gap-0.5">Status <SortIndicator col="status" /></span>
                 </th>
-                <th className="px-2 py-2.5 text-left font-medium text-gray-900 dark:text-slate-100 uppercase tracking-wider" style={{ fontSize: '10px', width: 75 }}>Assignee</th>
-                <th className="px-3 py-2.5 text-right font-medium text-gray-900 dark:text-slate-100 uppercase tracking-wider cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-slate-800" style={{ fontSize: '10px', width: 110 }} onClick={() => toggleSort('totalInc')}>
+                <th className="px-2 py-2.5 text-left font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider" style={{ fontSize: '10px', width: 75 }}>Assignee</th>
+                <th className="px-3 py-2.5 text-right font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-slate-800" style={{ fontSize: '10px', width: 110 }} onClick={() => toggleSort('totalInc')}>
                   <span className="flex items-center justify-end gap-0.5">Total INC <SortIndicator col="totalInc" /></span>
                 </th>
-                <th className="px-2 py-2.5 text-left font-medium text-gray-900 dark:text-slate-100 uppercase tracking-wider" style={{ fontSize: '10px', width: 70 }}>Cust Type</th>
+                <th className="px-2 py-2.5 text-left font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider" style={{ fontSize: '10px', width: 70 }}>Cust Type</th>
                 <th className="px-2 py-2.5" style={{ width: 40 }} />
               </tr>
             </thead>

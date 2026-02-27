@@ -111,7 +111,7 @@ function Tab({ active, icon: Icon, label, count, onClick }: { active: boolean; i
       <Icon className="size-4" />
       {label}
       {count !== undefined && (
-        <span className={classNames(active ? 'bg-primary-100 text-primary-700 dark:bg-primary-500/20 dark:text-primary-400' : 'bg-gray-100 text-gray-500 dark:bg-slate-700 dark:text-slate-400', 'ml-1 px-1.5 py-0 text-xs rounded-full')}>
+        <span className={classNames(active ? 'bg-primary-50 text-primary-600 dark:bg-primary-500/15 dark:text-primary-400' : 'bg-gray-100 text-gray-400 dark:bg-slate-700 dark:text-slate-500', 'ml-1 px-1.5 py-0 text-[10px] font-normal rounded-full')}>
           {count}
         </span>
       )}
@@ -396,7 +396,7 @@ export default function SalesOrderDetailPage() {
       </div>
 
       {/* Order Header Card */}
-      <div className="mx-4 mt-3 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm">
+      <div className="mx-4 mt-3 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-card">
         {/* Header Top Row */}
         <div className="flex items-start justify-between px-5 pt-4 pb-3">
           <div>
@@ -456,7 +456,7 @@ export default function SalesOrderDetailPage() {
         {/* Header Fields Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-4 gap-y-2 px-5 pb-4 text-xs">
           {[
-            { label: 'Customer', value: '555555 — PrePaid Deliveries' },
+            { label: 'Customer', value: '555555 — PrePaid Deliveries', isLink: true },
             { label: 'Cust Order #', value: '3321' },
             { label: 'Sales Rep', value: 'Anne Love' },
             { label: 'Branch', value: '10 — Test Branch 010' },
@@ -464,14 +464,19 @@ export default function SalesOrderDetailPage() {
             { label: 'Date Required', value: '20/10/2025' },
           ].map((field) => (
             <div key={field.label}>
-              <label className="text-[10px] text-gray-400 dark:text-slate-500 font-medium uppercase tracking-wider">{field.label}</label>
-              <div className="font-semibold text-gray-800 dark:text-slate-200 mt-0.5">{field.value}</div>
+              <label className="text-[10px] text-neutral-500 dark:text-slate-500 font-medium uppercase tracking-wider">{field.label}</label>
+              <div className={classNames(
+                'font-medium mt-0.5',
+                field.isLink
+                  ? 'text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline cursor-pointer'
+                  : 'text-neutral-800 dark:text-slate-200'
+              )}>{field.value}</div>
             </div>
           ))}
         </div>
 
         {/* Payment Alert */}
-        <div className="mx-5 mb-3 flex items-center gap-2 px-3 py-2 rounded-lg text-xs bg-amber-50 dark:bg-amber-500/20 border border-amber-200 dark:border-amber-500/30">
+        <div className="mx-5 mb-3 flex items-center gap-2 px-3 py-2 rounded-lg text-xs bg-amber-50 dark:bg-amber-500/20 border border-amber-200 dark:border-amber-500/30 border-l-4 border-l-amber-400 dark:border-l-amber-500">
           <ExclamationTriangleIcon className="size-4 shrink-0 text-amber-500 dark:text-amber-400" />
           <span className="text-amber-800 dark:text-amber-300">$15.00 still to be paid on this order.</span>
           <button className="ml-auto text-xs font-medium text-primary-500 dark:text-primary-400 hover:text-primary-400 dark:hover:text-primary-300">Make Payment</button>
@@ -1025,8 +1030,11 @@ export default function SalesOrderDetailPage() {
               </span>
             </div>
           ))}
+          <button className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline text-xs font-medium ml-2">
+            View Totals &amp; Charges
+          </button>
           <div className="ml-auto flex items-center gap-2">
-            <button className="px-4 py-1.5 rounded-lg text-xs font-medium text-white bg-tertiary-500 hover:bg-tertiary-600 dark:bg-tertiary-600 dark:hover:bg-tertiary-500">Save</button>
+            <button className="px-4 py-1.5 rounded-lg text-xs font-medium text-white bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-600">Save</button>
             <button className="px-4 py-1.5 rounded-lg text-xs font-medium bg-gray-200 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-300 dark:hover:bg-slate-600">Cancel</button>
             <button className="px-4 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700">Close</button>
           </div>

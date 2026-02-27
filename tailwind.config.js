@@ -64,6 +64,31 @@ module.exports = {
           tertiary: '#94a3b8',  // slate-400 - lower contrast text
           muted: '#64748b',     // slate-500 - very muted text
         },
+        // Neutral palette — semantic slate-based neutrals (single source of truth)
+        neutral: {
+          50:  '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
+        },
+        // Schedule category colours — operational area indicators
+        schedule: {
+          purchasing: '#3b82f6',  // blue-500
+          sales:      '#f59e0b',  // amber-500
+          accounts:   '#10b981',  // emerald-500
+          inventory:  '#ef4444',  // red-500
+          production: '#8b5cf6',  // violet-500
+        },
+      },
+      boxShadow: {
+        card: '0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06)',
+        'card-hover': '0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07)',
       },
       keyframes: {
         sparkle: {
