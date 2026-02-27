@@ -213,19 +213,19 @@ export default function SalesOrdersPage() {
 
       {/* Filter / Search Bar */}
       <div className="mx-4 bg-white dark:bg-slate-800 rounded-t-lg border border-b-0 border-gray-200 dark:border-slate-700">
-        <div className="flex items-center gap-2 px-3 py-2.5">
-          {/* Search — icon on small screens, expands on click */}
+        <div className="flex flex-wrap items-center gap-2 px-3 py-2.5">
+          {/* Search — icon on small screens, full input on md+ */}
           {!searchExpanded ? (
             <>
-              {/* Collapsed: icon button (visible on small screens) */}
+              {/* Collapsed: plain icon (visible below md) */}
               <button
                 onClick={() => setSearchExpanded(true)}
-                className="md:hidden p-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-400 dark:text-slate-500 hover:bg-gray-50 dark:hover:bg-slate-800"
+                className="md:hidden p-1.5 rounded-lg text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
                 title="Search orders"
               >
                 <MagnifyingGlassIcon className="size-4" />
               </button>
-              {/* Expanded by default on md+ */}
+              {/* Always visible on md+ */}
               <div className="relative hidden md:block flex-1 max-w-sm">
                 <MagnifyingGlassIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-gray-400 dark:text-slate-500 pointer-events-none" />
                 <input
@@ -238,8 +238,8 @@ export default function SalesOrdersPage() {
               </div>
             </>
           ) : (
-            /* Expanded search on small screens — takes full row */
-            <div className="relative flex-1 md:max-w-sm">
+            /* Expanded search — full width on mobile */
+            <div className="relative w-full md:flex-1 md:max-w-sm">
               <MagnifyingGlassIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-gray-400 dark:text-slate-500 pointer-events-none" />
               <input
                 ref={searchInputRef}
@@ -253,10 +253,10 @@ export default function SalesOrdersPage() {
             </div>
           )}
 
-          {/* Filters — hidden when search is expanded on mobile */}
-          <div className={classNames(searchExpanded ? 'hidden md:flex' : 'flex', 'items-center gap-2 flex-wrap')}>
+          {/* Filter dropdowns — wrap to next line on small screens when needed */}
+          <div className={classNames(searchExpanded ? 'hidden md:contents' : 'contents')}>
             {/* Branch */}
-            <div className="grid grid-cols-1 min-w-[140px]">
+            <div className="grid grid-cols-1 flex-1 min-w-[160px] md:flex-initial md:min-w-0">
               <select className="col-start-1 row-start-1 appearance-none rounded-lg bg-white dark:bg-slate-900 py-1.5 pl-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300 truncate">
                 <option>Branch: 10 - TEST BRANCH 010</option>
               </select>
@@ -264,7 +264,7 @@ export default function SalesOrdersPage() {
             </div>
 
             {/* Type */}
-            <div className="grid grid-cols-1 min-w-[110px]">
+            <div className="grid grid-cols-1 flex-1 min-w-[120px] md:flex-initial md:min-w-0">
               <select className="col-start-1 row-start-1 appearance-none rounded-lg bg-white dark:bg-slate-900 py-1.5 pl-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300">
                 <option>Type: Order</option>
                 <option>Type: Quote</option>
@@ -274,7 +274,7 @@ export default function SalesOrdersPage() {
             </div>
 
             {/* Status filter */}
-            <div className="grid grid-cols-1 min-w-[120px]">
+            <div className="grid grid-cols-1 flex-1 min-w-[130px] md:flex-initial md:min-w-0">
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
