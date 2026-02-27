@@ -105,11 +105,41 @@ module.exports = {
           '60%': { transform: 'rotate(-2deg)' },
           '70%, 100%': { transform: 'rotate(0deg)' },
         },
+        'ai-bounce': {
+          '0%, 60%, 100%': { transform: 'translateY(0)' },
+          '30%': { transform: 'translateY(-6px)' },
+        },
+        'fade-in': {
+          '0%': { opacity: '0', transform: 'translateY(4px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        'highlight-green': {
+          '0%': { backgroundColor: 'rgb(240 253 244)' },
+          '100%': { backgroundColor: 'transparent' },
+        },
+        'highlight-green-dark': {
+          '0%': { backgroundColor: 'rgba(16, 185, 129, 0.15)' },
+          '100%': { backgroundColor: 'transparent' },
+        },
+        'scale-in': {
+          '0%': { transform: 'scale(0)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        blink: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0' },
+        },
       },
       animation: {
         sparkle: 'sparkle 1.5s ease-in-out infinite',
         'sparkle-3': 'sparkle 1.5s ease-in-out 3',
         'bell-ring': 'bell-ring 1s ease-in-out infinite',
+        'ai-bounce': 'ai-bounce 1.2s ease-in-out infinite',
+        'fade-in': 'fade-in 0.3s ease-out',
+        'highlight-green': 'highlight-green 2s ease-out forwards',
+        'highlight-green-dark': 'highlight-green-dark 2s ease-out forwards',
+        'scale-in': 'scale-in 0.3s ease-out',
+        blink: 'blink 0.8s step-end infinite',
       },
     },
   },

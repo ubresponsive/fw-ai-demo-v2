@@ -74,6 +74,7 @@ const salesOrders: SalesOrder[] = [
   { order: '00001024', bo: 0, brn: 10, transType: 'Order', customer: 'freddo frog', orderDate: '09/01/2015', delivDate: '11/08/2025', deliveryAddress: 'freddo frog', custRef: '123', despatch: 40, status: 'Waiting', assignee: 'tcroll', totalInc: 20.02, custType: 'C.O.D.' },
   { order: '00001043', bo: 0, brn: 10, transType: 'Order', customer: 'Cuthbert & Sons', orderDate: '23/01/2015', delivDate: '17/05/2025', deliveryAddress: 'mark hughes 5454', custRef: '4554', despatch: 'LOCAR', status: 'New', assignee: '', totalInc: 31.50, custType: 'Charge' },
   { order: '00001061', bo: 0, brn: 10, transType: 'Order', customer: 'PrePaid Deliveries', orderDate: '28/01/2015', delivDate: '06/10/2025', deliveryAddress: 'PrePaid Deliveries Test 1234 Sydney ACT AUSTRALIA', custRef: 'Test 12345', despatch: 45, status: 'Waiting', assignee: 'fareen', totalInc: 13.00, custType: 'Cash' },
+  { order: '00001098', bo: 0, brn: 10, transType: 'Quote', customer: 'CJ Constructions Pty Ltd', orderDate: '27/02/2026', delivDate: '15/03/2026', deliveryAddress: 'CJ Constructions Pty Ltd', custRef: '', despatch: 10, status: 'New', assignee: 'steve', totalInc: 0.00, custType: 'Charge' },
 ]
 
 // ── Status badge colors ──

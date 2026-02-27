@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react'
+import { useParams } from 'next/navigation'
 import {
   Dialog,
   DialogBackdrop,
@@ -58,6 +59,9 @@ import {
 } from '@heroicons/react/24/outline'
 import { ChevronUpIcon as ChevronUpSolidIcon, ChevronDownIcon as ChevronDownSolidIcon } from '@heroicons/react/20/solid'
 import { classNames } from '@/lib/utils'
+import { AIDrawerShell } from '@/components/ai-assistant/AIDrawerShell'
+import { SO436Conversation } from '@/components/ai-assistant/conversations/SO436Conversation'
+import SalesOrder1098Page from '@/components/sales-orders/SalesOrder1098Page'
 
 // ── Order line data ──
 type OrderLine = {
@@ -276,6 +280,15 @@ const actionItems = [
 const COMMENTS_KEY = 'so-436-0-comments'
 
 export default function SalesOrderDetailPage() {
+  const params = useParams()
+  const id = params.id as string
+
+  if (id === '1098-0') return <SalesOrder1098Page />
+
+  return <SalesOrder436Page />
+}
+
+function SalesOrder436Page() {
   const [activeTab, setActiveTab] = useState('lines')
   const [aiOpen, setAiOpen] = useState(false)
   const [aiInput, setAiInput] = useState('')
@@ -1042,221 +1055,14 @@ export default function SalesOrderDetailPage() {
       </div>
 
       {/* ── AI Assistant Slide-Over Drawer ── */}
-      <Dialog open={aiOpen} onClose={setAiOpen} className="relative z-[60]">
-        <DialogBackdrop
-          transition
-          className="fixed inset-0 bg-gray-900/50 dark:bg-black/70 backdrop-blur-sm transition-all duration-500 ease-in-out data-[closed]:opacity-0 data-[closed]:backdrop-blur-none"
-        />
-        <div className="fixed inset-0 overflow-hidden">
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
-              <DialogPanel
-                transition
-                className="pointer-events-auto w-screen max-w-md transform transition-transform duration-700 ease-in-out data-[closed]:translate-x-full data-[closed]:duration-500"
-              >
-                <div className="flex h-full flex-col bg-white dark:bg-slate-800 shadow-2xl">
-                  {/* Panel Header */}
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-slate-700">
-                    <div className="flex items-center gap-2.5">
-                      <div className="size-8 rounded-xl flex items-center justify-center bg-tertiary-50 dark:bg-tertiary-500/20">
-                        <SparklesIcon className="size-4 text-tertiary-500 dark:text-tertiary-400 animate-sparkle" />
-                      </div>
-                      <div>
-                        <DialogTitle className="text-sm font-semibold text-gray-800 dark:text-slate-100">AI Assistant</DialogTitle>
-                        <p className="text-xs text-gray-400 dark:text-slate-500">Context: SO 436/0</p>
-                      </div>
-                    </div>
-                    <button onClick={() => setAiOpen(false)} className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700">
-                      <XMarkIcon className="size-5 text-gray-400 dark:text-slate-500" />
-                    </button>
-                  </div>
-
-                  {/* Quick Actions */}
-                  <div className="px-3 py-2.5 border-b border-gray-100 dark:border-slate-700">
-                    <p className="text-[10px] font-medium text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-2">Quick Actions</p>
-                    <div className="grid grid-cols-2 gap-1.5">
-                      {[
-                        { icon: ArrowPathIcon, label: 'Reprice Order', color: 'text-primary-500 dark:text-primary-400' },
-                        { icon: CubeIcon, label: 'Check Stock', color: 'text-tertiary-500 dark:text-tertiary-400' },
-                        { icon: ScissorsIcon, label: 'Split Transaction', color: 'text-secondary-500 dark:text-secondary-400' },
-                        { icon: ChartBarIcon, label: 'Margin Analysis', color: 'text-purple-500 dark:text-purple-400' },
-                        { icon: ArrowTrendingUpIcon, label: 'Customer Trends', color: 'text-green-500 dark:text-green-400' },
-                        { icon: CreditCardIcon, label: 'Payment Status', color: 'text-rose-500 dark:text-rose-400' },
-                      ].map(({ icon: Icon, label, color }) => (
-                        <button
-                          key={label}
-                          className="flex items-center gap-2 px-2.5 py-2 rounded-lg border border-gray-100 dark:border-slate-700 hover:border-gray-200 dark:hover:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700 transition-all text-left"
-                        >
-                          <Icon className={classNames(color, 'size-4 shrink-0')} />
-                          <span className="text-xs text-gray-600 dark:text-slate-300">{label}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Chat Area */}
-                  <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
-                    {/* AI Welcome */}
-                    <div className="flex gap-2.5">
-                      <div className="size-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-tertiary-50 dark:bg-tertiary-500/20">
-                        <SparklesIcon className="size-3.5 text-tertiary-500 dark:text-tertiary-400 animate-sparkle" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="bg-gray-50 dark:bg-slate-900 rounded-xl rounded-tl-sm px-3 py-2.5 text-xs text-gray-700 dark:text-slate-300 leading-relaxed">
-                          <p>You&apos;re viewing <strong>SO 436/0</strong> for PrePaid Deliveries (Cust 555555). There are <strong>4 order lines</strong> totalling <strong>$464.29</strong> exc. GST.</p>
-                          <p className="mt-2 flex items-center gap-1.5 text-red-600 dark:text-red-400">
-                            <ExclamationTriangleIcon className="size-3" />
-                            <span>Line 2 has a negative GP of -206% — selling below cost.</span>
-                          </p>
-                        </div>
-                        <div className="mt-2 flex flex-wrap gap-1.5">
-                          {['Check stock for all items', 'Reprice line 2', 'Show margin breakdown', 'Customer order history'].map((s) => (
-                            <button key={s} className="px-2.5 py-1 text-xs rounded-full border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 hover:border-gray-300 dark:hover:border-slate-500 transition-colors">
-                              {s}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* User Message */}
-                    <div className="flex gap-2.5 justify-end">
-                      <div className="bg-primary-50 dark:bg-primary-500/20 border border-primary-100 dark:border-primary-500/30 rounded-xl rounded-tr-sm px-3 py-2 text-xs text-gray-700 dark:text-slate-300 max-w-72">
-                        Show me the margin breakdown for this order
-                      </div>
-                    </div>
-
-                    {/* AI Response with Chart */}
-                    <div className="flex gap-2.5">
-                      <div className="size-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-tertiary-50 dark:bg-tertiary-500/20">
-                        <SparklesIcon className="size-3.5 text-tertiary-500 dark:text-tertiary-400 animate-sparkle" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="bg-gray-50 dark:bg-slate-900 rounded-xl rounded-tl-sm px-3 py-2.5 text-xs text-gray-700 dark:text-slate-300 leading-relaxed">
-                          <p className="font-medium mb-2">Margin Analysis — SO 436/0</p>
-                          {/* Mini Chart */}
-                          <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-100 dark:border-slate-700 p-2.5 mb-2">
-                            <div className="space-y-2">
-                              {orderLines.map((line) => (
-                                <div key={line.ln} className="flex items-center gap-2">
-                                  <span className="w-20 text-xs text-gray-500 dark:text-slate-400 truncate">{line.product}</span>
-                                  <div className="flex-1 h-4 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                                    <div
-                                      className={classNames(
-                                        line.gp < 0 ? 'bg-red-400' : line.gp < 15 ? 'bg-amber-400' : 'bg-green-400',
-                                        'h-full rounded-full transition-all',
-                                      )}
-                                      style={{ width: `${Math.max(2, Math.min(100, line.gp > 0 ? line.gp * 2 : 2))}%` }}
-                                    />
-                                  </div>
-                                  <span className={classNames(line.gp < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-700 dark:text-slate-300', 'w-14 text-right text-xs font-mono font-medium')}>
-                                    {line.gp.toFixed(1)}%
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                          <p><strong className="text-red-600 dark:text-red-400">Line 2 (JMB3)</strong> is selling at $2.20 against a unit cost of $6.12, resulting in a loss of $3.92 per unit ($19.60 total).</p>
-                          <p className="mt-1.5">The other 3 lines average <strong className="text-emerald-600 dark:text-emerald-400">28.1% GP</strong>, within acceptable range.</p>
-                        </div>
-
-                        {/* Action Suggestions */}
-                        <div className="mt-2 space-y-1">
-                          <button className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg border border-gray-100 dark:border-slate-700 hover:border-gray-200 dark:hover:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700 transition-all text-left">
-                            <ArrowPathIcon className="size-4 text-primary-500 dark:text-primary-400" />
-                            <span className="text-xs text-gray-600 dark:text-slate-300 flex-1">Reprice JMB3 to breakeven ($6.12)</span>
-                            <ArrowRightIcon className="size-3 text-gray-400 dark:text-slate-500" />
-                          </button>
-                          <button className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg border border-gray-100 dark:border-slate-700 hover:border-gray-200 dark:hover:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700 transition-all text-left">
-                            <CurrencyDollarIcon className="size-4 text-green-500 dark:text-green-400" />
-                            <span className="text-xs text-gray-600 dark:text-slate-300 flex-1">Reprice JMB3 to 15% GP ($7.20)</span>
-                            <ArrowRightIcon className="size-3 text-gray-400 dark:text-slate-500" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Confirmation Preview */}
-                    <div className="flex gap-2.5">
-                      <div className="size-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-tertiary-50 dark:bg-tertiary-500/20">
-                        <SparklesIcon className="size-3.5 text-tertiary-500 dark:text-tertiary-400 animate-sparkle" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="rounded-xl border-2 border-dashed border-secondary-400 dark:border-secondary-500/50 bg-secondary-50/30 dark:bg-secondary-500/10 px-3 py-2.5 text-xs">
-                          <p className="font-medium text-gray-700 dark:text-slate-300 flex items-center gap-1.5 mb-2">
-                            <ExclamationTriangleIcon className="size-3 text-secondary-500 dark:text-secondary-400" />
-                            Confirm Price Change
-                          </p>
-                          <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-100 dark:border-slate-700 overflow-hidden mb-2">
-                            <table className="w-full text-xs">
-                              <thead>
-                                <tr className="bg-gray-50 dark:bg-slate-900">
-                                  <th className="px-2 py-1.5 text-left text-gray-500 dark:text-slate-400 font-medium">Field</th>
-                                  <th className="px-2 py-1.5 text-right text-gray-500 dark:text-slate-400 font-medium">Current</th>
-                                  <th className="px-2 py-1.5 text-right text-gray-500 dark:text-slate-400 font-medium">New</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr className="border-t border-gray-50 dark:border-slate-700">
-                                  <td className="px-2 py-1.5 text-gray-600 dark:text-slate-400">Sell Price</td>
-                                  <td className="px-2 py-1.5 text-right font-mono text-red-500 dark:text-red-400 line-through">$2.20</td>
-                                  <td className="px-2 py-1.5 text-right font-mono font-medium text-emerald-600 dark:text-emerald-400">$7.20</td>
-                                </tr>
-                                <tr className="border-t border-gray-50 dark:border-slate-700">
-                                  <td className="px-2 py-1.5 text-gray-600 dark:text-slate-400">Line Total</td>
-                                  <td className="px-2 py-1.5 text-right font-mono text-gray-400 dark:text-slate-500">$11.00</td>
-                                  <td className="px-2 py-1.5 text-right font-mono font-medium text-gray-700 dark:text-slate-300">$36.00</td>
-                                </tr>
-                                <tr className="border-t border-gray-50 dark:border-slate-700">
-                                  <td className="px-2 py-1.5 text-gray-600 dark:text-slate-400">GP%</td>
-                                  <td className="px-2 py-1.5 text-right font-mono text-red-500 dark:text-red-400">-206.1%</td>
-                                  <td className="px-2 py-1.5 text-right font-mono font-medium text-emerald-600 dark:text-emerald-400">15.0%</td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <button className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-white text-xs font-medium bg-tertiary-500 hover:bg-tertiary-600 dark:bg-tertiary-600 dark:hover:bg-tertiary-500">
-                              <CheckIcon className="size-3" /> Apply Change
-                            </button>
-                            <button className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 text-xs font-medium hover:bg-gray-200 dark:hover:bg-slate-600">
-                              <XMarkIcon className="size-3" /> Cancel
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Input Area */}
-                  <div className="p-3 border-t border-gray-100 dark:border-slate-700">
-                    <div className="flex items-stretch gap-2">
-                      <div className="flex-1 relative">
-                        <textarea
-                          value={aiInput}
-                          onChange={(e) => setAiInput(e.target.value)}
-                          placeholder="Ask about this order..."
-                          rows={1}
-                          className="w-full h-full resize-none rounded-xl border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-tertiary-300 dark:focus:ring-tertiary-500 focus:border-transparent pr-10 placeholder:text-gray-400 dark:placeholder:text-slate-500"
-                        />
-                        <button className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-600">
-                          <PaperClipIcon className="size-4 text-gray-400 dark:text-slate-500" />
-                        </button>
-                      </div>
-                      <button className="flex items-center justify-center px-2.5 rounded-xl text-white bg-tertiary-500 hover:bg-tertiary-600 dark:bg-tertiary-600 dark:hover:bg-tertiary-500 shrink-0">
-                        <PaperAirplaneIcon className="size-4" />
-                      </button>
-                    </div>
-                    <p className="text-center text-[10px] text-gray-300 dark:text-slate-600 mt-1.5">
-                      AI responses are generated — always verify before applying changes
-                    </p>
-                  </div>
-                </div>
-              </DialogPanel>
-            </div>
-          </div>
-        </div>
-      </Dialog>
+      <AIDrawerShell
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        title="AI Assistant"
+        subtitle="Context: SO 436/0"
+      >
+        <SO436Conversation />
+      </AIDrawerShell>
     </div>
   )
 }
