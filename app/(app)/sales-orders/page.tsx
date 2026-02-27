@@ -213,11 +213,11 @@ export default function SalesOrdersPage() {
 
       {/* Filter / Search Bar — sits in page flow to align with breadcrumb & heading */}
       <div className="px-4 pb-2">
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Search — icon on small screens, full input on md+ */}
+        {/* Top row: search + filter toggle + count */}
+        <div className="flex items-center gap-2">
+          {/* Search — icon on small, full input on md+ */}
           {!searchExpanded ? (
             <>
-              {/* Collapsed: plain icon (visible below md) */}
               <button
                 onClick={() => setSearchExpanded(true)}
                 className="md:hidden p-1.5 rounded-lg text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
@@ -225,7 +225,6 @@ export default function SalesOrdersPage() {
               >
                 <MagnifyingGlassIcon className="size-4" />
               </button>
-              {/* Always visible on md+ */}
               <div className="relative hidden md:block flex-1 max-w-sm">
                 <MagnifyingGlassIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-gray-400 dark:text-slate-500 pointer-events-none" />
                 <input
@@ -238,8 +237,7 @@ export default function SalesOrdersPage() {
               </div>
             </>
           ) : (
-            /* Expanded search — full width on mobile */
-            <div className="relative w-full md:flex-1 md:max-w-sm">
+            <div className="relative flex-1 md:max-w-sm">
               <MagnifyingGlassIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-gray-400 dark:text-slate-500 pointer-events-none" />
               <input
                 ref={searchInputRef}
@@ -253,18 +251,15 @@ export default function SalesOrdersPage() {
             </div>
           )}
 
-          {/* Filter dropdowns — wrap to next line on small screens when needed */}
-          <div className={classNames(searchExpanded ? 'hidden md:contents' : 'contents')}>
-            {/* Branch */}
-            <div className="grid grid-cols-1 flex-1 min-w-[160px] md:flex-initial md:min-w-0">
+          {/* Inline dropdowns — md+ only */}
+          <div className="hidden md:flex items-center gap-2">
+            <div className="grid grid-cols-1">
               <select className="col-start-1 row-start-1 appearance-none rounded-lg bg-white dark:bg-slate-900 py-1.5 pl-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300 truncate">
                 <option>Branch: 10 - TEST BRANCH 010</option>
               </select>
               <ChevronDownSolidSmIcon aria-hidden="true" className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 dark:text-slate-400 sm:size-4" />
             </div>
-
-            {/* Type */}
-            <div className="grid grid-cols-1 flex-1 min-w-[120px] md:flex-initial md:min-w-0">
+            <div className="grid grid-cols-1">
               <select className="col-start-1 row-start-1 appearance-none rounded-lg bg-white dark:bg-slate-900 py-1.5 pl-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300">
                 <option>Type: Order</option>
                 <option>Type: Quote</option>
@@ -272,9 +267,7 @@ export default function SalesOrdersPage() {
               </select>
               <ChevronDownSolidSmIcon aria-hidden="true" className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 dark:text-slate-400 sm:size-4" />
             </div>
-
-            {/* Status filter */}
-            <div className="grid grid-cols-1 flex-1 min-w-[130px] md:flex-initial md:min-w-0">
+            <div className="grid grid-cols-1">
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
@@ -294,7 +287,7 @@ export default function SalesOrdersPage() {
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={classNames(showFilters ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-500 dark:text-primary-400' : 'text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700', 'p-1.5 rounded-lg transition-colors')}
-              title="Advanced filters"
+              title="Filters"
             >
               <FunnelIcon className="size-4" />
             </button>
@@ -302,6 +295,39 @@ export default function SalesOrdersPage() {
           </div>
         </div>
 
+        {/* Collapsed filter dropdowns — shown below md when filter button toggled */}
+        {showFilters && (
+          <div className="flex flex-wrap items-center gap-2 mt-2 md:hidden">
+            <div className="grid grid-cols-1 flex-1 min-w-[140px]">
+              <select className="col-start-1 row-start-1 appearance-none rounded-lg bg-white dark:bg-slate-900 py-1.5 pl-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300 truncate">
+                <option>Branch: 10 - TEST BRANCH 010</option>
+              </select>
+              <ChevronDownSolidSmIcon aria-hidden="true" className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 dark:text-slate-400" />
+            </div>
+            <div className="grid grid-cols-1 flex-1 min-w-[100px]">
+              <select className="col-start-1 row-start-1 appearance-none rounded-lg bg-white dark:bg-slate-900 py-1.5 pl-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300">
+                <option>Type: Order</option>
+                <option>Type: Quote</option>
+                <option>Type: All</option>
+              </select>
+              <ChevronDownSolidSmIcon aria-hidden="true" className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 dark:text-slate-400" />
+            </div>
+            <div className="grid grid-cols-1 flex-1 min-w-[110px]">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="col-start-1 row-start-1 appearance-none rounded-lg bg-white dark:bg-slate-900 py-1.5 pl-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300"
+              >
+                <option value="all">All Statuses</option>
+                <option value="New">New</option>
+                <option value="Waiting">Waiting</option>
+                <option value="Picking">Picking</option>
+                <option value="Picked (Loc...)">Picked</option>
+              </select>
+              <ChevronDownSolidSmIcon aria-hidden="true" className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 dark:text-slate-400" />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Data Table Card */}
