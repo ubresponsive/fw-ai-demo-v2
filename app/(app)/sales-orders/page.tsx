@@ -211,9 +211,9 @@ export default function SalesOrdersPage() {
         </div>
       </div>
 
-      {/* Filter / Search Bar */}
-      <div className="mx-4 bg-white dark:bg-slate-800 rounded-t-lg border border-b-0 border-gray-200 dark:border-slate-700">
-        <div className="flex flex-wrap items-center gap-2 px-3 py-2.5">
+      {/* Filter / Search Bar — sits in page flow to align with breadcrumb & heading */}
+      <div className="px-4 pb-2">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Search — icon on small screens, full input on md+ */}
           {!searchExpanded ? (
             <>
@@ -302,9 +302,13 @@ export default function SalesOrdersPage() {
           </div>
         </div>
 
+      </div>
+
+      {/* Data Table Card */}
+      <div className="mx-4 flex-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden flex flex-col mb-4">
         {/* Advanced Filters (toggleable) */}
         {showFilters && (
-          <div className="flex items-center gap-3 px-3 py-2 border-t border-gray-100 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-900/50 flex-wrap">
+          <div className="flex items-center gap-3 px-4 py-2 border-b border-gray-100 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-900/50 flex-wrap">
             <div className="flex items-center gap-2">
               <label className="text-xs text-gray-700 dark:text-slate-300">Customer:</label>
               <input className="px-2 py-1 text-xs border border-gray-300 dark:border-slate-600 rounded-md w-32 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary-300" placeholder="Customer #" />
@@ -321,10 +325,6 @@ export default function SalesOrdersPage() {
             <button className="px-3 py-1 text-xs font-medium rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700">Advanced</button>
           </div>
         )}
-      </div>
-
-      {/* Data Table */}
-      <div className="mx-4 flex-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-b-lg overflow-hidden flex flex-col mb-4">
         <div className="flex-1 overflow-auto">
           <table className="w-full text-xs">
             <thead className="sticky top-0 z-10">
