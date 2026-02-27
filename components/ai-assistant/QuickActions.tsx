@@ -57,7 +57,7 @@ export function QuickActions({
             <div key={i} className="relative">
               <button
                 onClick={() => onSelect(a.label)}
-                className="w-full px-3 py-2.5 rounded-lg text-[13px] font-medium border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 flex items-center gap-2 text-left transition-all hover:border-tertiary-400 dark:hover:border-tertiary-500 hover:bg-tertiary-500/5"
+                className="w-full px-3 py-2.5 rounded-lg text-[13px] font-medium border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 flex items-center gap-2 text-left transition-all hover:border-primary-300 dark:hover:border-primary-500 hover:bg-primary-500/5"
               >
                 {Icon && <Icon className="w-4 h-4 text-gray-400 dark:text-slate-500" />}
                 {a.label}

@@ -1,6 +1,7 @@
 'use client'
 
 import { PlusIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { ChevronDownIcon as ChevronDownSolidSmIcon } from '@heroicons/react/16/solid'
 import type { OCRItem } from '@/lib/ai/types'
 import { UOM_OPTIONS } from '@/lib/ai/data/quote-1098'
 
@@ -53,17 +54,20 @@ export function OCRGrid({ items, onChange, onSearchCatalogue }: OCRGridProps) {
             onChange={(e) => updateItem(item.id, 'qty', Math.max(1, Number(e.target.value)))}
             className="w-full text-[13px] px-2 py-1 rounded border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 text-center focus:outline-none focus:border-tertiary-400"
           />
-          <select
-            value={item.uom}
-            onChange={(e) => updateItem(item.id, 'uom', e.target.value)}
-            className="w-full text-[12px] px-1 py-1 rounded border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 focus:outline-none focus:border-tertiary-400"
-          >
-            {UOM_OPTIONS.map((u) => (
-              <option key={u} value={u}>
-                {u}
-              </option>
-            ))}
-          </select>
+          <div className="grid grid-cols-1">
+            <select
+              value={item.uom}
+              onChange={(e) => updateItem(item.id, 'uom', e.target.value)}
+              className="col-start-1 row-start-1 w-full appearance-none text-[12px] pl-1.5 pr-5 py-1 rounded border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 focus:outline-none focus:border-primary-400"
+            >
+              {UOM_OPTIONS.map((u) => (
+                <option key={u} value={u}>
+                  {u}
+                </option>
+              ))}
+            </select>
+            <ChevronDownSolidSmIcon aria-hidden="true" className="pointer-events-none col-start-1 row-start-1 mr-1 size-3.5 self-center justify-self-end text-gray-400 dark:text-slate-500" />
+          </div>
           <button
             onClick={() => removeItem(item.id)}
             className="p-0.5 text-gray-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"

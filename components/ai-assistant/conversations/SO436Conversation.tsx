@@ -18,7 +18,11 @@ import { MessageBubble } from '../MessageBubble'
 import { QuickActions } from '../QuickActions'
 import { FavouritesBar } from '../FavouritesBar'
 
-export function SO436Conversation() {
+interface SO436ConversationProps {
+  resetRef?: React.MutableRefObject<(() => void) | null>
+}
+
+export function SO436Conversation({ resetRef }: SO436ConversationProps) {
   const {
     messages,
     isTyping,
@@ -30,6 +34,7 @@ export function SO436Conversation() {
     sendAction,
     handleApply,
     handleCancel,
+    reset,
   } = useConversation({
     scriptNodes: SO_436_SCRIPT_NODES,
     initialMessage: SO_436_INITIAL_MESSAGE,
@@ -38,6 +43,17 @@ export function SO436Conversation() {
 
   const [input, setInput] = useState('')
   const [showQuickActions, setShowQuickActions] = useState(true)
+
+  // Expose reset to parent
+  const handleReset = useCallback(() => {
+    reset()
+    setInput('')
+    setShowQuickActions(true)
+  }, [reset])
+
+  useEffect(() => {
+    if (resetRef) resetRef.current = handleReset
+  }, [resetRef, handleReset])
   const [favourites, setFavourites] = useState<string[]>(() => {
     try {
       const stored = localStorage.getItem('fw-ai-436-favourites')
@@ -207,7 +223,7 @@ export function SO436Conversation() {
             onKeyDown={handleKeyDown}
             placeholder="Ask about this order..."
             rows={1}
-            className="flex-1 resize-none rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-gray-900 dark:text-slate-200 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-tertiary-500/30 focus:border-tertiary-500"
+            className="flex-1 resize-none rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-gray-900 dark:text-slate-200 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500"
           />
           <button
             onClick={() => {
@@ -215,7 +231,7 @@ export function SO436Conversation() {
               setInput('')
             }}
             disabled={!input.trim() || isStreaming || isTyping}
-            className="p-2 rounded-lg bg-tertiary-500 hover:bg-tertiary-600 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors"
+            className="p-2 rounded-lg bg-primary-500 hover:bg-primary-600 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors"
           >
             <PaperAirplaneIcon className="size-4" />
           </button>

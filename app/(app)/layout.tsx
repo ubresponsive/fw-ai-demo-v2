@@ -941,7 +941,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Main content area */}
-        <main className={`lg:pt-16 bg-white dark:bg-slate-900 transition-all duration-300 ${contentPadding}`}>
+        <main className={`lg:pt-16 min-h-screen bg-white dark:bg-slate-900 transition-all duration-300 ${contentPadding}`}>
           {children}
         </main>
 

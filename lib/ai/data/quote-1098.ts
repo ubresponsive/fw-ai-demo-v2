@@ -243,8 +243,9 @@ export const AGENT_MESSAGES = {
   step12success: (total: string, lineCount: number) =>
     `Added 2 items. Updated total: **${total}** (ex GST) — ${lineCount} line items on the quote.\n\nIs there anything else you need for this quote?`,
   redirectToUpload: "I can help with that — do you have a list to upload, or would you like to search for specific products?",
-  comingSoon: 'This feature is coming soon — try "Help me find products" for the demo.',
-  followUpPlaceholder: 'This feature is coming soon in the full release.',
+  stockCheck: "Here's the stock summary for **CJ Constructions** (Branch 10):\n\n- **Structural Pine 90x45** — 342 on hand, 28 allocated → **314 available**\n- **Hardwood Plywood 2400x1200** — 85 on hand, 12 allocated → **73 available**\n- **Villaboard 2400x1200** — 120 on hand, 45 allocated → **75 available**\n- **Concrete 20kg bags** — 200 on hand, 60 allocated → **140 available**\n\nAll items are in stock at Branch 10. Would you like to check a specific product, or would you like help finding products for this quote?",
+  recentOrders: "**CJ Constructions Pty Ltd** (29468) — last 3 orders:\n\n- **SO 1045/0** — 12 Jan 2026 — $2,847.50 — Framing timber & fixings\n- **SO 982/0** — 28 Nov 2025 — $4,120.00 — Plywood & lining boards\n- **SO 915/0** — 15 Oct 2025 — $1,685.30 — Cement & concrete supplies\n\nAverage order value: **$2,884**. Most purchased categories: **structural timber**, **sheet products**, **concrete**.\n\nWant me to add commonly ordered items to this quote, or would you like to search for specific products?",
+  pricingDiscounts: "**CJ Constructions Pty Ltd** (29468) — pricing tier: **Trade A**\n\n- **Base discount**: 15% off list across timber & hardware\n- **Volume bonus**: Additional 5% on orders over $2,000\n- **Active promotions**: 10% off Villaboard range (ends 15 Mar 2026)\n- **Payment terms**: 30 day account, $15,000 credit limit\n\nWant me to apply these pricing tiers when finding products, or would you like to see pricing for a specific item?",
 }
 
 // ── Keywords that advance from Step 2 to Step 3 ──

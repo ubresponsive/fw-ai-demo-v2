@@ -24,6 +24,7 @@ import {
   SparklesIcon,
 } from '@heroicons/react/24/outline'
 import { ChevronUpIcon as ChevronUpSolidIcon, ChevronDownIcon as ChevronDownSolidIcon } from '@heroicons/react/20/solid'
+import { ChevronDownIcon as ChevronDownSolidSmIcon } from '@heroicons/react/16/solid'
 import { classNames } from '@/lib/utils'
 
 // ── Stats data ──
@@ -217,29 +218,38 @@ export default function SalesOrdersPage() {
           </div>
 
           {/* Branch */}
-          <select className="px-3 py-1.5 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-300">
-            <option>Branch: 10 - TEST BRANCH 010</option>
-          </select>
+          <div className="grid grid-cols-1">
+            <select className="col-start-1 row-start-1 appearance-none rounded-lg bg-white dark:bg-slate-900 py-1.5 pl-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300">
+              <option>Branch: 10 - TEST BRANCH 010</option>
+            </select>
+            <ChevronDownSolidSmIcon aria-hidden="true" className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 dark:text-slate-400 sm:size-4" />
+          </div>
 
           {/* Type */}
-          <select className="px-3 py-1.5 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-300">
-            <option>Type: Order</option>
-            <option>Type: Quote</option>
-            <option>Type: All</option>
-          </select>
+          <div className="grid grid-cols-1">
+            <select className="col-start-1 row-start-1 appearance-none rounded-lg bg-white dark:bg-slate-900 py-1.5 pl-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300">
+              <option>Type: Order</option>
+              <option>Type: Quote</option>
+              <option>Type: All</option>
+            </select>
+            <ChevronDownSolidSmIcon aria-hidden="true" className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 dark:text-slate-400 sm:size-4" />
+          </div>
 
           {/* Status filter */}
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-1.5 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-300"
-          >
-            <option value="all">All Statuses</option>
-            <option value="New">New</option>
-            <option value="Waiting">Waiting</option>
-            <option value="Picking">Picking</option>
-            <option value="Picked (Loc...)">Picked</option>
-          </select>
+          <div className="grid grid-cols-1">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="col-start-1 row-start-1 appearance-none rounded-lg bg-white dark:bg-slate-900 py-1.5 pl-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300"
+            >
+              <option value="all">All Statuses</option>
+              <option value="New">New</option>
+              <option value="Waiting">Waiting</option>
+              <option value="Picking">Picking</option>
+              <option value="Picked (Loc...)">Picked</option>
+            </select>
+            <ChevronDownSolidSmIcon aria-hidden="true" className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 dark:text-slate-400 sm:size-4" />
+          </div>
 
           <div className="ml-auto flex items-center gap-1.5">
             <button

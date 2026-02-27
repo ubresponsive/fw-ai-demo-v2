@@ -110,7 +110,7 @@ export function MessageBubble(props: MessageBubbleProps) {
       <div
         className={
           isUser
-            ? 'max-w-[85%] px-4 py-2.5 rounded-2xl rounded-tr-sm bg-tertiary-500 text-white text-sm leading-relaxed'
+            ? 'max-w-[85%] px-4 py-2.5 rounded-2xl rounded-tr-sm bg-primary-500 text-white text-sm leading-relaxed'
             : 'w-full pl-[34px] text-sm leading-relaxed text-gray-900 dark:text-slate-200'
         }
       >
@@ -144,8 +144,8 @@ export function MessageBubble(props: MessageBubbleProps) {
                 onClick={() => onAction(action)}
                 className={`px-3.5 py-2 rounded-lg text-[13px] font-medium flex items-center gap-1.5 transition-all hover:-translate-y-px hover:shadow-md ${
                   action.style === 'primary'
-                    ? 'bg-tertiary-500 hover:bg-tertiary-600 text-white border-none'
-                    : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-600 hover:border-tertiary-400 dark:hover:border-tertiary-500'
+                    ? 'bg-primary-500 hover:bg-primary-600 text-white border-none'
+                    : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-600 hover:border-primary-300 dark:hover:border-primary-500'
                 }`}
               >
                 {action.style === 'primary' ? '↻' : '→'} {action.label}
@@ -170,7 +170,7 @@ export function MessageBubble(props: MessageBubbleProps) {
                     _isFollowUp: true,
                   })
                 }
-                className="px-3 py-1.5 rounded-full text-xs font-medium border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400 hover:border-tertiary-400 hover:text-tertiary-600 dark:hover:border-tertiary-500 dark:hover:text-tertiary-400 transition-colors"
+                className="px-3 py-1.5 rounded-full text-xs font-medium border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400 hover:border-primary-300 hover:text-primary-600 dark:hover:border-primary-500 dark:hover:text-primary-400 transition-colors"
               >
                 {fu}
               </button>

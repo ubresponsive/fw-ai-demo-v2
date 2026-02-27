@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo, useEffect, useCallback } from 'react'
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import {
   Dialog,
@@ -58,6 +58,7 @@ import {
   MapPinIcon,
 } from '@heroicons/react/24/outline'
 import { ChevronUpIcon as ChevronUpSolidIcon, ChevronDownIcon as ChevronDownSolidIcon } from '@heroicons/react/20/solid'
+import { ChevronDownIcon as ChevronDownSolidSmIcon } from '@heroicons/react/16/solid'
 import { classNames } from '@/lib/utils'
 import { AIDrawerShell } from '@/components/ai-assistant/AIDrawerShell'
 import { SO436Conversation } from '@/components/ai-assistant/conversations/SO436Conversation'
@@ -294,6 +295,7 @@ function SalesOrder436Page() {
   const [aiInput, setAiInput] = useState('')
   const [showActions, setShowActions] = useState(false)
   const [rowSelection, setRowSelection] = useState({})
+  const aiResetRef = useRef<(() => void) | null>(null)
 
   // Sorting
   const [sorting, setSorting] = useState<SortingState>([])
@@ -726,9 +728,12 @@ function SalesOrder436Page() {
                   <div key={field.label} className="flex items-center gap-3">
                     <label className="w-28 text-xs font-medium text-gray-500 dark:text-slate-400 text-right shrink-0">{field.label}</label>
                     {field.type === 'select' ? (
-                      <select className="flex-1 px-2 py-1.5 text-xs border border-gray-200 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-primary-300 dark:focus:ring-primary-500">
-                        <option>{field.value || '—'}</option>
-                      </select>
+                      <div className="flex-1 grid grid-cols-1">
+                        <select className="col-start-1 row-start-1 appearance-none px-2 py-1.5 pr-7 text-xs border border-gray-200 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-primary-300 dark:focus:ring-primary-500">
+                          <option>{field.value || '—'}</option>
+                        </select>
+                        <ChevronDownSolidSmIcon aria-hidden="true" className="pointer-events-none col-start-1 row-start-1 mr-2 size-4 self-center justify-self-end text-gray-400 dark:text-slate-500" />
+                      </div>
                     ) : (
                       <input
                         type="text"
@@ -761,9 +766,12 @@ function SalesOrder436Page() {
                     {field.type === 'checkbox' ? (
                       <input type="checkbox" defaultChecked={field.value as boolean} className="rounded border-gray-300 dark:border-slate-600 dark:bg-slate-700" />
                     ) : field.type === 'select' ? (
-                      <select className="flex-1 px-2 py-1.5 text-xs border border-gray-200 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-primary-300 dark:focus:ring-primary-500">
-                        <option>{field.value || '—'}</option>
-                      </select>
+                      <div className="flex-1 grid grid-cols-1">
+                        <select className="col-start-1 row-start-1 appearance-none px-2 py-1.5 pr-7 text-xs border border-gray-200 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-primary-300 dark:focus:ring-primary-500">
+                          <option>{field.value || '—'}</option>
+                        </select>
+                        <ChevronDownSolidSmIcon aria-hidden="true" className="pointer-events-none col-start-1 row-start-1 mr-2 size-4 self-center justify-self-end text-gray-400 dark:text-slate-500" />
+                      </div>
                     ) : (
                       <input
                         type="text"
@@ -1058,10 +1066,11 @@ function SalesOrder436Page() {
       <AIDrawerShell
         open={aiOpen}
         onClose={() => setAiOpen(false)}
+        onReset={() => aiResetRef.current?.()}
         title="AI Assistant"
         subtitle="Context: SO 436/0"
       >
-        <SO436Conversation />
+        <SO436Conversation resetRef={aiResetRef} />
       </AIDrawerShell>
     </div>
   )

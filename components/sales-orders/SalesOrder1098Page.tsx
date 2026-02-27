@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo, useCallback, useEffect } from 'react'
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import {
   createColumnHelper,
   flexRender,
@@ -119,6 +119,7 @@ const columns = [
 export default function SalesOrder1098Page() {
   const [activeTab, setActiveTab] = useState('lines')
   const [aiOpen, setAiOpen] = useState(false)
+  const aiResetRef = useRef<(() => void) | null>(null)
   const [orderLines, setOrderLines] = useState<QuoteOrderLine[]>([])
   const [highlightedLines, setHighlightedLines] = useState<Set<number>>(new Set())
   const [showToast, setShowToast] = useState(false)
@@ -467,10 +468,11 @@ export default function SalesOrder1098Page() {
       <AIDrawerShell
         open={aiOpen}
         onClose={() => setAiOpen(false)}
+        onReset={() => aiResetRef.current?.()}
         title="AI Assistant"
         subtitle={`Quote: SO ${h.orderNumber} · ${h.customer.name} · ${orderLines.length} lines`}
       >
-        <SO1098Conversation onAddLines={handleAddLines} onClose={() => setAiOpen(false)} />
+        <SO1098Conversation onAddLines={handleAddLines} onClose={() => setAiOpen(false)} resetRef={aiResetRef} />
       </AIDrawerShell>
     </div>
   )

@@ -7,11 +7,12 @@ import {
   DialogPanel,
   DialogTitle,
 } from '@headlessui/react'
-import { XMarkIcon, SparklesIcon } from '@heroicons/react/24/outline'
+import { XMarkIcon, SparklesIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
 
 interface AIDrawerShellProps {
   open: boolean
   onClose: () => void
+  onReset?: () => void
   title?: string
   subtitle?: string
   children: React.ReactNode
@@ -20,6 +21,7 @@ interface AIDrawerShellProps {
 export function AIDrawerShell({
   open,
   onClose,
+  onReset,
   title = 'AI Assistant',
   subtitle,
   children,
@@ -55,12 +57,23 @@ export function AIDrawerShell({
                       )}
                     </div>
                   </div>
-                  <button
-                    onClick={onClose}
-                    className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
-                  >
-                    <XMarkIcon className="size-5 text-gray-400 dark:text-slate-500" />
-                  </button>
+                  <div className="flex items-center gap-1">
+                    {onReset && (
+                      <button
+                        onClick={onReset}
+                        className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                        title="Start new conversation"
+                      >
+                        <ArrowPathIcon className="size-4 text-gray-400 dark:text-slate-500" />
+                      </button>
+                    )}
+                    <button
+                      onClick={onClose}
+                      className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      <XMarkIcon className="size-5 text-gray-400 dark:text-slate-500" />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Content — fills remaining space */}

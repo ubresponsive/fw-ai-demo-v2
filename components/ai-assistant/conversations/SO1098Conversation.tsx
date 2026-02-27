@@ -35,9 +35,10 @@ interface ChatMessage {
 interface SO1098ConversationProps {
   onAddLines: (lines: QuoteOrderLine[]) => void
   onClose?: () => void
+  resetRef?: React.MutableRefObject<(() => void) | null>
 }
 
-export function SO1098Conversation({ onAddLines, onClose }: SO1098ConversationProps) {
+export function SO1098Conversation({ onAddLines, onClose, resetRef }: SO1098ConversationProps) {
   const [step, setStep] = useState(1)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
@@ -54,6 +55,25 @@ export function SO1098Conversation({ onAddLines, onClose }: SO1098ConversationPr
 
   const chatEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+
+  // Expose reset to parent
+  const handleReset = useCallback(() => {
+    setStep(1)
+    setMessages([])
+    setInput('')
+    setIsTyping(false)
+    setOcrItems(OCR_ITEMS_DEFAULT)
+    setMatchedProducts(MATCHED_PRODUCTS_DEFAULT)
+    setCrossSellItems(CROSS_SELL_ITEMS_DEFAULT)
+    setShowProcessing(false)
+    setProcessingItems([])
+    setProductLinesAdded(false)
+    setStreamingMsgId(null)
+  }, [])
+
+  useEffect(() => {
+    if (resetRef) resetRef.current = handleReset
+  }, [resetRef, handleReset])
 
   // Auto-scroll
   useEffect(() => {
@@ -96,8 +116,22 @@ export function SO1098Conversation({ onAddLines, onClose }: SO1098ConversationPr
   const handleStarterSelect = useCallback(
     async (label: string) => {
       addUserMessage(label)
-      setStep(2)
-      await addAssistantMessage(AGENT_MESSAGES.step2)
+      if (label === 'Help me find products') {
+        setStep(2)
+        await addAssistantMessage(AGENT_MESSAGES.step2)
+      } else if (label === 'Check stock availability') {
+        setStep(12)
+        await addAssistantMessage(AGENT_MESSAGES.stockCheck)
+      } else if (label === 'Recent orders') {
+        setStep(12)
+        await addAssistantMessage(AGENT_MESSAGES.recentOrders)
+      } else if (label === 'Pricing & discounts') {
+        setStep(12)
+        await addAssistantMessage(AGENT_MESSAGES.pricingDiscounts)
+      } else {
+        setStep(2)
+        await addAssistantMessage(AGENT_MESSAGES.step2)
+      }
     },
     [addUserMessage, addAssistantMessage]
   )
@@ -120,7 +154,7 @@ export function SO1098Conversation({ onAddLines, onClose }: SO1098ConversationPr
       } else if (step === 3 || step === 4) {
         await addAssistantMessage(AGENT_MESSAGES.redirectToUpload)
       } else {
-        await addAssistantMessage(AGENT_MESSAGES.followUpPlaceholder)
+        await addAssistantMessage(AGENT_MESSAGES.redirectToUpload)
       }
     },
     [step, addUserMessage, addAssistantMessage]
@@ -351,7 +385,7 @@ export function SO1098Conversation({ onAddLines, onClose }: SO1098ConversationPr
             <div key={msg.id} className="mb-4 animate-fade-in">
               {msg.role === 'user' ? (
                 <div className="flex justify-end">
-                  <div className="bg-tertiary-600 text-white px-3.5 py-2 rounded-2xl rounded-br-sm max-w-[85%] text-[13px] leading-relaxed">
+                  <div className="bg-primary-500 text-white px-3.5 py-2 rounded-2xl rounded-br-sm max-w-[85%] text-[13px] leading-relaxed">
                     {msg.text}
                   </div>
                 </div>
@@ -467,7 +501,7 @@ export function SO1098Conversation({ onAddLines, onClose }: SO1098ConversationPr
                 key={a.label}
                 disabled={!a.enabled}
                 onClick={() => a.enabled && handleSend(a.label)}
-                className="px-2.5 py-1 rounded-full text-[11px] font-medium border border-gray-200 dark:border-slate-600 text-gray-500 dark:text-slate-400 hover:border-tertiary-400 hover:text-tertiary-600 dark:hover:text-tertiary-400 hover:bg-tertiary-500/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="px-2.5 py-1 rounded-full text-[11px] font-medium border border-gray-200 dark:border-slate-600 text-gray-500 dark:text-slate-400 hover:border-primary-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-500/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 {a.label}
               </button>
@@ -503,7 +537,7 @@ export function SO1098Conversation({ onAddLines, onClose }: SO1098ConversationPr
             }
             rows={1}
             disabled={!inputEnabled && !isStreaming}
-            className="flex-1 resize-none rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-gray-900 dark:text-slate-200 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-tertiary-500/30 focus:border-tertiary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 resize-none rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-gray-900 dark:text-slate-200 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
           />
           <button
             onClick={() => {
@@ -511,7 +545,7 @@ export function SO1098Conversation({ onAddLines, onClose }: SO1098ConversationPr
               setInput('')
             }}
             disabled={!input.trim() || isStreaming || isTyping || !inputEnabled}
-            className="p-2 rounded-lg bg-tertiary-500 hover:bg-tertiary-600 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors"
+            className="p-2 rounded-lg bg-primary-500 hover:bg-primary-600 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors"
           >
             <PaperAirplaneIcon className="size-4" />
           </button>
