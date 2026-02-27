@@ -215,17 +215,17 @@ export default function SalesOrdersPage() {
       <div className="px-4 pb-2">
         {/* Top row: search + filter toggle + count */}
         <div className="flex items-center gap-2">
-          {/* Search — icon on small, full input on md+ */}
+          {/* Search — icon on small, full input on lg+ */}
           {!searchExpanded ? (
             <>
               <button
                 onClick={() => setSearchExpanded(true)}
-                className="md:hidden p-1.5 rounded-lg text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                className="lg:hidden py-1.5 pr-1.5 rounded-lg text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
                 title="Search orders"
               >
                 <MagnifyingGlassIcon className="size-4" />
               </button>
-              <div className="relative hidden md:block flex-1 max-w-sm">
+              <div className="relative hidden lg:block flex-1 max-w-sm">
                 <MagnifyingGlassIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-gray-400 dark:text-slate-500 pointer-events-none" />
                 <input
                   type="text"
@@ -237,7 +237,7 @@ export default function SalesOrdersPage() {
               </div>
             </>
           ) : (
-            <div className="relative flex-1 md:max-w-sm">
+            <div className="relative flex-1 lg:max-w-sm">
               <MagnifyingGlassIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-gray-400 dark:text-slate-500 pointer-events-none" />
               <input
                 ref={searchInputRef}
@@ -251,8 +251,8 @@ export default function SalesOrdersPage() {
             </div>
           )}
 
-          {/* Inline dropdowns — md+ only */}
-          <div className="hidden md:flex items-center gap-2">
+          {/* Inline dropdowns — lg+ only (enough room for search + 3 dropdowns) */}
+          <div className="hidden lg:flex items-center gap-2">
             <div className="grid grid-cols-1">
               <select className="col-start-1 row-start-1 appearance-none rounded-lg bg-white dark:bg-slate-900 py-1.5 pl-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300 truncate">
                 <option>Branch: 10 - TEST BRANCH 010</option>
@@ -295,9 +295,9 @@ export default function SalesOrdersPage() {
           </div>
         </div>
 
-        {/* Collapsed filter dropdowns — shown below md when filter button toggled */}
+        {/* Collapsed filter dropdowns — shown below lg when filter button toggled */}
         {showFilters && (
-          <div className="flex flex-wrap items-center gap-2 mt-2 md:hidden">
+          <div className="flex flex-wrap items-center gap-2 mt-2 lg:hidden">
             <div className="grid grid-cols-1 flex-1 min-w-[140px]">
               <select className="col-start-1 row-start-1 appearance-none rounded-lg bg-white dark:bg-slate-900 py-1.5 pl-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300 truncate">
                 <option>Branch: 10 - TEST BRANCH 010</option>
