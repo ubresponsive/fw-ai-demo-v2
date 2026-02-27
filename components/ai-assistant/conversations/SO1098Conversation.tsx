@@ -17,7 +17,8 @@ import { useStreaming } from '@/lib/ai/use-streaming'
 import { TypingIndicator } from '../TypingIndicator'
 import { RichText } from '../RichText'
 import { StreamingText } from '../StreamingText'
-import { StarterPrompts } from './so1098/StarterPrompts'
+import { QuickActions, type QuickAction } from '../QuickActions'
+import { FavouritesBar } from '../FavouritesBar'
 import { FileUploadZone } from './so1098/FileUploadZone'
 import { OCRGrid } from './so1098/OCRGrid'
 import { ProcessingChecklist } from './so1098/ProcessingChecklist'
@@ -38,6 +39,13 @@ interface SO1098ConversationProps {
   resetRef?: React.MutableRefObject<(() => void) | null>
 }
 
+const QUOTE_QUICK_ACTIONS: QuickAction[] = [
+  { label: 'Find Products', icon: 'MagnifyingGlassIcon', category: 'Actions' },
+  { label: 'Check Stock', icon: 'CubeIcon', category: 'Actions' },
+  { label: 'Recent Orders', icon: 'ClockIcon', category: 'Analysis' },
+  { label: 'Pricing & Discounts', icon: 'TagIcon', category: 'Analysis' },
+]
+
 export function SO1098Conversation({ onAddLines, onClose, resetRef }: SO1098ConversationProps) {
   const [step, setStep] = useState(1)
   const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -49,12 +57,34 @@ export function SO1098Conversation({ onAddLines, onClose, resetRef }: SO1098Conv
   const [showProcessing, setShowProcessing] = useState(false)
   const [processingItems, setProcessingItems] = useState<string[]>([])
   const [productLinesAdded, setProductLinesAdded] = useState(false)
+  const [showQuickActions, setShowQuickActions] = useState(true)
+  const [favourites, setFavourites] = useState<string[]>(() => {
+    try {
+      const stored = localStorage.getItem('fw-ai-1098-favourites')
+      return stored ? JSON.parse(stored) : []
+    } catch {
+      return []
+    }
+  })
 
   const { streamedText, isStreaming, stream } = useStreaming()
   const [streamingMsgId, setStreamingMsgId] = useState<string | null>(null)
 
   const chatEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+
+  // Persist favourites
+  useEffect(() => {
+    try {
+      localStorage.setItem('fw-ai-1098-favourites', JSON.stringify(favourites))
+    } catch {}
+  }, [favourites])
+
+  const toggleFavourite = useCallback((label: string) => {
+    setFavourites((prev) =>
+      prev.includes(label) ? prev.filter((f) => f !== label) : [...prev, label]
+    )
+  }, [])
 
   // Expose reset to parent
   const handleReset = useCallback(() => {
@@ -69,6 +99,7 @@ export function SO1098Conversation({ onAddLines, onClose, resetRef }: SO1098Conv
     setProcessingItems([])
     setProductLinesAdded(false)
     setStreamingMsgId(null)
+    setShowQuickActions(true)
   }, [])
 
   useEffect(() => {
@@ -112,20 +143,21 @@ export function SO1098Conversation({ onAddLines, onClose, resetRef }: SO1098Conv
     ])
   }, [])
 
-  // ── Step 1: Starter prompt clicked ──
-  const handleStarterSelect = useCallback(
+  // ── Quick action clicked ──
+  const handleQuickAction = useCallback(
     async (label: string) => {
+      setShowQuickActions(false)
       addUserMessage(label)
-      if (label === 'Help me find products') {
+      if (label === 'Find Products') {
         setStep(2)
         await addAssistantMessage(AGENT_MESSAGES.step2)
-      } else if (label === 'Check stock availability') {
+      } else if (label === 'Check Stock') {
         setStep(12)
         await addAssistantMessage(AGENT_MESSAGES.stockCheck)
-      } else if (label === 'Recent orders') {
+      } else if (label === 'Recent Orders') {
         setStep(12)
         await addAssistantMessage(AGENT_MESSAGES.recentOrders)
-      } else if (label === 'Pricing & discounts') {
+      } else if (label === 'Pricing & Discounts') {
         setStep(12)
         await addAssistantMessage(AGENT_MESSAGES.pricingDiscounts)
       } else {
@@ -140,6 +172,7 @@ export function SO1098Conversation({ onAddLines, onClose, resetRef }: SO1098Conv
   const handleSend = useCallback(
     async (text: string) => {
       if (!text.trim()) return
+      setShowQuickActions(false)
       addUserMessage(text)
 
       if (step === 2) {
@@ -148,6 +181,11 @@ export function SO1098Conversation({ onAddLines, onClose, resetRef }: SO1098Conv
         if (hasUploadKeyword) {
           setStep(3)
           await addAssistantMessage(AGENT_MESSAGES.step3)
+        } else if (lower.includes('search') && lower.includes('description')) {
+          await addAssistantMessage(AGENT_MESSAGES.searchByDescription)
+        } else if (lower.includes('previous') || lower.includes('ordered before')) {
+          setStep(12)
+          await addAssistantMessage(AGENT_MESSAGES.recentOrders)
         } else {
           await addAssistantMessage(AGENT_MESSAGES.redirectToUpload)
         }
@@ -359,25 +397,27 @@ export function SO1098Conversation({ onAddLines, onClose, resetRef }: SO1098Conv
 
   return (
     <>
+      {/* Favourites Bar */}
+      <FavouritesBar
+        favourites={favourites}
+        onSelect={handleQuickAction}
+        onRemove={(label) =>
+          setFavourites((prev) => prev.filter((f) => f !== label))
+        }
+      />
+
+      {/* Quick Actions */}
+      {showQuickActions && (
+        <QuickActions
+          onSelect={handleQuickAction}
+          favourites={favourites}
+          onToggleFavourite={toggleFavourite}
+          actions={QUOTE_QUICK_ACTIONS}
+        />
+      )}
+
       {/* Chat Area */}
       <div className="flex-1 overflow-y-auto px-4 py-4">
-        {/* Starter prompts (Step 1) */}
-        {step === 1 && messages.length === 0 && (
-          <div className="mb-4 animate-fade-in">
-            <div className="flex items-start gap-2 mb-3">
-              <div className="w-[26px] h-[26px] rounded-full bg-tertiary-100 dark:bg-tertiary-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                <svg className="w-3.5 h-3.5 text-tertiary-500 dark:text-tertiary-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 0 0-2.455 2.456Z" />
-                </svg>
-              </div>
-              <div className="text-[13px] text-gray-700 dark:text-slate-300 leading-relaxed">
-                How can I help with quote <strong>SO 1098/0</strong> for <strong>CJ Constructions</strong>?
-              </div>
-            </div>
-            <StarterPrompts onSelect={handleStarterSelect} />
-          </div>
-        )}
-
         {/* Messages */}
         {messages.map((msg) => {
           const isMsgStreaming = msg.id === streamingMsgId
@@ -408,6 +448,28 @@ export function SO1098Conversation({ onAddLines, onClose, resetRef }: SO1098Conv
             </div>
           )
         })}
+
+        {/* Step 2 quick actions */}
+        {step === 2 && !isTyping && !isStreaming && messages.length > 0 && (
+          <div className="pl-[34px] flex flex-wrap gap-2 mb-4 animate-fade-in">
+            {[
+              { label: 'Upload a list / photo', action: 'I have a handwritten list to upload' },
+              { label: 'Search by description', action: 'Search catalogue by description' },
+              { label: 'Previous orders', action: "Show what CJ Constructions has ordered before" },
+            ].map((opt) => (
+              <button
+                key={opt.label}
+                onClick={() => {
+                  handleSend(opt.action)
+                  setInput('')
+                }}
+                className="px-3 py-1.5 rounded-lg text-[12px] font-medium border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:border-primary-300 dark:hover:border-primary-500 hover:bg-primary-500/5 hover:text-primary-600 dark:hover:text-primary-400 transition-all"
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Upload zone (Step 3) */}
         {step === 3 && <FileUploadZone onUploadComplete={handleUploadComplete} />}
@@ -488,22 +550,21 @@ export function SO1098Conversation({ onAddLines, onClose, resetRef }: SO1098Conv
           </div>
         )}
 
-        {/* Quick actions at end of flow */}
+        {/* Follow-up suggestions at end of flow */}
         {step >= 12 && !showProcessing && !isTyping && !isStreaming && (
           <div className="my-3 animate-fade-in flex flex-wrap gap-1.5">
             {[
-              { label: 'Check Stock', enabled: false },
-              { label: 'Reprice Quote', enabled: false },
-              { label: 'Customer History', enabled: false },
-              { label: 'Add More Products', enabled: false },
-            ].map((a) => (
+              'Check Stock',
+              'Recent Orders',
+              'Pricing & Discounts',
+              'Find Products',
+            ].map((label) => (
               <button
-                key={a.label}
-                disabled={!a.enabled}
-                onClick={() => a.enabled && handleSend(a.label)}
-                className="px-2.5 py-1 rounded-full text-[11px] font-medium border border-gray-200 dark:border-slate-600 text-gray-500 dark:text-slate-400 hover:border-primary-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-500/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                key={label}
+                onClick={() => handleQuickAction(label)}
+                className="px-2.5 py-1 rounded-full text-[11px] font-medium border border-gray-200 dark:border-slate-600 text-gray-500 dark:text-slate-400 hover:border-primary-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-500/5 transition-colors"
               >
-                {a.label}
+                {label}
               </button>
             ))}
             {onClose && (

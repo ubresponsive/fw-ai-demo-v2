@@ -227,7 +227,7 @@ export const CATALOGUE_SEARCH_STEPS = [
 // ── Agent messages ──
 
 export const AGENT_MESSAGES = {
-  step2: 'How can I help you find products for this quote? I can search the catalogue by description, match from a list, or look at what CJ Constructions has ordered before.\n\nWhat are you working with?',
+  step2: "How can I help you find products for this quote? Pick an option below, or describe what you're looking for.",
   step3: "Upload the list and I'll match each item against our catalogue. I'll show you:\n\n- **Matched products** with a confidence level\n- **Alternatives** where there's no direct match\n- **Customer history** — I'll prioritise products CJ Constructions has ordered before\n\nYou can review everything before I add anything to the quote.\n\nPhoto, scan, or PDF all work — go ahead and upload.",
   step4reading: 'Reading your list...',
   step5: "I've read 6 items from your list. Review what I've captured — you can edit descriptions, quantities, or UOM before I search the catalogue.",
@@ -242,6 +242,7 @@ export const AGENT_MESSAGES = {
   step12processing: 'Adding items to quote...',
   step12success: (total: string, lineCount: number) =>
     `Added 2 items. Updated total: **${total}** (ex GST) — ${lineCount} line items on the quote.\n\nIs there anything else you need for this quote?`,
+  searchByDescription: "Sure — type a product description and I'll search the catalogue. For example:\n\n- **\"90x45 treated pine 4.8m\"**\n- **\"17mm structural ply\"**\n- **\"villaboard 2400x1200\"**\n\nOr if you have several items, uploading a list is the fastest way — I can match them all at once.",
   redirectToUpload: "I can help with that — do you have a list to upload, or would you like to search for specific products?",
   stockCheck: "Here's the stock summary for **CJ Constructions** (Branch 10):\n\n- **Structural Pine 90x45** — 342 on hand, 28 allocated → **314 available**\n- **Hardwood Plywood 2400x1200** — 85 on hand, 12 allocated → **73 available**\n- **Villaboard 2400x1200** — 120 on hand, 45 allocated → **75 available**\n- **Concrete 20kg bags** — 200 on hand, 60 allocated → **140 available**\n\nAll items are in stock at Branch 10. Would you like to check a specific product, or would you like help finding products for this quote?",
   recentOrders: "**CJ Constructions Pty Ltd** (29468) — last 3 orders:\n\n- **SO 1045/0** — 12 Jan 2026 — $2,847.50 — Framing timber & fixings\n- **SO 982/0** — 28 Nov 2025 — $4,120.00 — Plywood & lining boards\n- **SO 915/0** — 15 Oct 2025 — $1,685.30 — Cement & concrete supplies\n\nAverage order value: **$2,884**. Most purchased categories: **structural timber**, **sheet products**, **concrete**.\n\nWant me to add commonly ordered items to this quote, or would you like to search for specific products?",

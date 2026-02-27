@@ -7,9 +7,13 @@ import {
   ArrowTrendingUpIcon,
   CreditCardIcon,
   BuildingOfficeIcon,
+  MagnifyingGlassIcon,
+  DocumentTextIcon,
+  ClockIcon,
+  TagIcon,
 } from '@heroicons/react/24/outline'
 
-interface QuickAction {
+export interface QuickAction {
   label: string
   icon: string
   category: string
@@ -22,9 +26,13 @@ const ICON_MAP: Record<string, React.ElementType> = {
   ArrowTrendingUpIcon,
   CreditCardIcon,
   BuildingOfficeIcon,
+  MagnifyingGlassIcon,
+  DocumentTextIcon,
+  ClockIcon,
+  TagIcon,
 }
 
-const QUICK_ACTIONS: QuickAction[] = [
+const DEFAULT_ACTIONS: QuickAction[] = [
   { label: 'Reprice Order', icon: 'ArrowPathIcon', category: 'Actions' },
   { label: 'Check Stock', icon: 'CubeIcon', category: 'Actions' },
   { label: 'Margin Analysis', icon: 'ChartBarIcon', category: 'Analysis' },
@@ -37,20 +45,23 @@ interface QuickActionsProps {
   onSelect: (label: string) => void
   favourites: string[]
   onToggleFavourite: (label: string) => void
+  actions?: QuickAction[]
 }
 
 export function QuickActions({
   onSelect,
   favourites,
   onToggleFavourite,
+  actions,
 }: QuickActionsProps) {
+  const items = actions ?? DEFAULT_ACTIONS
   return (
     <div className="py-3 px-4 border-b border-gray-200 dark:border-slate-700">
       <div className="text-[11px] font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2.5">
         Quick Actions
       </div>
       <div className="grid grid-cols-2 gap-2">
-        {QUICK_ACTIONS.map((a, i) => {
+        {items.map((a, i) => {
           const Icon = ICON_MAP[a.icon]
           const isFav = favourites.includes(a.label)
           return (
